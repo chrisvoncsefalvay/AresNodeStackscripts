@@ -61,13 +61,6 @@ npm install -g configurable-http-proxy
 pip3 install jupyterhub tensorflow keras
 pip3 install --upgrade notebook
 
-# Generate SSL key
-openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout server.key -out server.pem -passin pass:$JUPYTERPASS -subj "/C=$COUNTRY/ST=$STATE/O=$ORG/L=$LOCALITY/CN=$COMMONNAME"
-chmod 400 server.key
-chmod 400 server.pem
-sudo mkdir /srv/jupyterhub
-cp server.* /srv/jupyterhub/
-
 # Generate jupyter config
 sudo mkdir /etc/jupyterhub
 cd /etc/jupyterhub
@@ -100,4 +93,4 @@ sudo chpasswd << END
 END
 
 # Run jupyterhub
-sudo jupyterhub --ip 0.0.0.0 --port $JUPYTER_PORT 
+sudo jupyterhub --ip 0.0.0.0 --port $JUPYTER_PORT
