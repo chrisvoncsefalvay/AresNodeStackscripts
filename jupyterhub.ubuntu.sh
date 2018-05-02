@@ -82,9 +82,7 @@ fi
 # Create user
 sudo groupadd $USERGROUPNAME
 sudo su -c "useradd $USER_USERNAME -s /bin/bash -m -g $USERGROUPNAME"
-sudo chpasswd << END
-  $USER_USERNAME:$USER_PASSWORD
-END
+sudo echo "$USER_USERNAME:$USER_PASSWORD" | chpasswd
 
 # Run jupyterhub
 sudo jupyterhub --ip 0.0.0.0 --port $JUPYTER_PORT
