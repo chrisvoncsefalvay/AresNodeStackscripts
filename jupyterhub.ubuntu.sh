@@ -10,12 +10,6 @@
 #
 # (c) Chris von Csefalvay, 2018.
 #
-
-# <UDF name="COUNTRY" label="RSA key attribute: Country" default="US" />
-# <UDF name="STATE" label="RSA key attribute: State" default="IL" />
-# <UDF name="LOCALITY" label="RSA key attribute: Locality" default="Chicago" />
-# <UDF name="ORG" label="RSA key attribute: Organisation name" default="Your organisation name" />
-# <UDF name="COMMONNAME" label="RSA key attribute: Key common name" default="Jupyterhub key" />
 # <UDF name="JUPYTER_PORT" label="JupyterHub port" default="8888" />
 # <UDF name="CARTOTOOLS" label="Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
 # <UDF name="OPENCV" label="Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
@@ -58,24 +52,24 @@ then
 fi
 
 npm install -g configurable-http-proxy
-pip3 install jupyterhub tensorflow keras
-pip3 install --upgrade notebook
+sudo pip3 install jupyterhub tensorflow keras
+sudo pip3 install --upgrade notebook
 
 # Generate jupyter config
 sudo mkdir /etc/jupyterhub
-cd /etc/jupyterhub
-jupyterhub --generate-config
+sudo cd /etc/jupyterhub
+sudo jupyterhub --generate-config
 
 # Install the usual pythonic stuff
-pip3 install scipy numpy pandas matplotlib graphviz ggplot
-pip3 install simpy seaborn epipy mesa requests BeautifulSoup4
-pip3 install bokeh scikit-image gensim nltk statsmodels scrapy
-pip3 install biopython cubes deap NetworkX scikit-learn Pillow
+sudo pip3 install scipy numpy pandas matplotlib graphviz ggplot
+sudo pip3 install simpy seaborn epipy mesa requests BeautifulSoup4
+sudo pip3 install bokeh scikit-image gensim nltk statsmodels scrapy
+sudo pip3 install biopython cubes deap NetworkX scikit-learn Pillow
 
 if [ $CARTOTOOLS = "yes" ]
 then
   sudo apt-get install -y proj-bin libgeos-dev
-  pip3 install GEOS GDAL geojson
+  sudo pip3 install GEOS GDAL geojson
 fi
 
 # Install OpenCV
