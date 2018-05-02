@@ -16,7 +16,9 @@
 # <UDF name="LOCALITY" label="RSA key attribute: Locality" default="Chicago" />
 # <UDF name="ORG" label="RSA key attribute: Organisation name" default="Your organisation name" />
 # <UDF name="COMMONNAME" label="RSA key attribute: Key common name" default="Jupyterhub key" />
-# <UDF name="JUPYTER_PORT" label"JupyterHub port" default=8888 />
+# <UDF name="JUPYTER_PORT" label="JupyterHub port" default=8888 />
+# <UDF name="CARTOTOOLS" label="Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
+# <UDF name="OPENCV" label="Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
 
 # Install Anaconda
 wget https://repo.anaconda.com/archive/Anaconda3-5.1.0-Linux-x86_64.sh
@@ -25,14 +27,34 @@ export PATH="$HOME/conda/bin:$PATH"
 echo 'source $HOME/conda/bin/activate' > ~/.bashrc
 source .bashrc
 
+# Install OpenBLAS
+sudo apt-get install -y git
+mkdir ~/tmp
+cd ~/tmp
+git clone https://github.com/xianyi/OpenBLAS.git
+cd OpenBLAS
+make FC=gfortran -j16
+sudo make PREFIX=/usr/local install
+
+
 # Install dependencies
 sudo apt-get install -y python3-pip
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-sudo apt-get install -y nodejs
-sudo apt-get install -y nodejs-legacy
-sudo apt-get install -y npm nodejs-legacy
+sudo apt-get install -y nodejs build-essential cmake g++ gfortran
+sudo apt-get install -y pkg-config python-dev software-properties-common 
+sudo apt-get install -y wget autoremove virtualenv swig python-wheel
+sudo apt-get install -y libcurl3-dev python3-dev python-dev libreetype6-dev
+
+if [ $OPENCV = "yes" ]
+then
+  sudo apt-get install -y libpng12-dev libjpeg8-dev libtiff5-dev libjasper-dev
+  sudo apt-get install -y qtbase5-dev libavcodec-dev libavformat-dev libswscale-dev 
+  sudo apt-get install -y libgtk2.0-dev libv4l-dev libatlas-base-dev gfortran
+  sudo apt-get install -y libhdf5-serial-dev
+fi
+
 npm install -g configurable-http-proxy
-pip3 install jupyterhub
+pip3 install jupyterhub tensorflow keras
 pip3 install --upgrade notebook
 
 # Generate SSL key
@@ -48,11 +70,24 @@ cd /etc/jupyterhub
 jupyterhub --generate-config
 
 # Install the usual pythonic stuff
-pip3 install scipy numpy pandas matplotlib
-pip3 install simpy seaborn epipy mesa requests
+pip3 install scipy numpy pandas matplotlib graphviz ggplot
+pip3 install simpy seaborn epipy mesa requests BeautifulSoup4
 pip3 install bokeh scikit-image gensim nltk statsmodels scrapy
 pip3 install biopython cubes deap NetworkX scikit-learn Pillow
-pip3 install BeautifulSoup4 cartopy GDAL geojson ggplot graphviz 
+
+if [ $CARTOTOOLS = "yes" ]
+then
+  sudo apt-get install -y proj-bin libgeos-dev
+  pip3 install GEOS GDAL geojson
+fi
+
+# Install OpenCV
+
+if [ $OPENCV = "yes" ]
+then
+  sudo apt-get install libopencv-dev python-opencv
+fi
+
 
 # Run jupyterhub
 sudo jupyterhub --ip 0.0.0.0 --port $JUPYTER_PORT 
