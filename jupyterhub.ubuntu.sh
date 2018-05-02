@@ -16,11 +16,15 @@
 # <UDF name="LOCALITY" label="RSA key attribute: Locality" default="Chicago" />
 # <UDF name="ORG" label="RSA key attribute: Organisation name" default="Your organisation name" />
 # <UDF name="COMMONNAME" label="RSA key attribute: Key common name" default="Jupyterhub key" />
-# <UDF name="JUPYTER_PORT" label="JupyterHub port" default=8888 />
+# <UDF name="JUPYTER_PORT" label="JupyterHub port" default="8888" />
 # <UDF name="CARTOTOOLS" label="Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
 # <UDF name="OPENCV" label="Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
+# <UDF name="USER_USERNAME" label="First user username" />
+# <UDF name="USER_PASSWORD" label="First user password" />
+# <UDF name="USERGROUPNAME" label="Usergroup name for Jupyterhub users" default="jupyter" />
 
 # Install Anaconda
+sudo apt-get install -y wget 
 wget https://repo.anaconda.com/archive/Anaconda3-5.1.0-Linux-x86_64.sh
 bash Anaconda3-5.1.0-Linux-x86_64.sh -b -p $HOME/conda
 export PATH="$HOME/conda/bin:$PATH"
@@ -88,6 +92,12 @@ then
   sudo apt-get install libopencv-dev python-opencv
 fi
 
+# Create user
+sudo groupadd $USERGROUPNAME
+sudo su -c "useradd $USER_USERNAME -s /bin/bash -m -g $USERGROUPNAME"
+sudo chpasswd << END
+  $USER_USERNAME:$USER_PASSWORD
+END
 
 # Run jupyterhub
 sudo jupyterhub --ip 0.0.0.0 --port $JUPYTER_PORT 
