@@ -24,8 +24,9 @@ CONFIG_FILE=/etc/jupyterhub/jupyterhub_config.py
 USER=root
 
 echo "Welcome to Chris's awesome Jupyterhub stackscript ;)"
-echo "****************************************************\n\n"
-echo "This will take you through the installation of Jupyterhub.\n\n"
+echo "****************************************************"
+echo "This will take you through the installation of Jupyterhub."
+echo ""
 echo "Your component settings are:"
 echo "OpenCV: $OPENCV"
 echo "Cartography tools: $CARTOTOOLS"
@@ -37,11 +38,11 @@ then
 	echo "This is a barebones install, so it'll be pretty quick."
 fi
 
-echo "\n\n"
+echo ""
 
 echo "----------------------"
 echo "Installing Anaconda..."
-echo "----------------------\n\n"
+echo "----------------------"
 
 # Install Anaconda
 sudo apt-get install -y wget 
@@ -53,7 +54,7 @@ source .bashrc
 
 echo "-----------------------------"
 echo "Installing Python and deps..."
-echo "-----------------------------\n\n"
+echo "-----------------------------"
 
 # Install dependencies
 sudo apt-get install -y python3-pip
@@ -67,7 +68,7 @@ if [ $OPENCV = "yes" ]
 then
   echo "--------------------"
   echo "Installing OpenCV..."
-  echo "--------------------\n\n"
+  echo "--------------------"
   sudo apt-get install -y libpng12-dev libjpeg8-dev libtiff5-dev libjasper-dev
   sudo apt-get install -y qtbase5-dev libavcodec-dev libavformat-dev libswscale-dev 
   sudo apt-get install -y libgtk2.0-dev libv4l-dev libatlas-base-dev gfortran
@@ -76,7 +77,7 @@ fi
 
 echo "------------------------"
 echo "Installing JupyterHub..."
-echo "------------------------\n\n"
+echo "------------------------"
 
 npm install -g configurable-http-proxy
 sudo pip3 install jupyterhub
@@ -85,7 +86,7 @@ sudo pip3 install --upgrade notebook
 # Generate jupyter config
 echo "------------------------------------"
 echo "Generating JupyterHub config file..."
-echo "------------------------------------\n\n"
+echo "------------------------------------"
 sudo mkdir /etc/jupyterhub
 sudo cd /etc/jupyterhub
 sudo jupyterhub --generate-config -f $CONFIG_FILE
@@ -93,7 +94,7 @@ sudo jupyterhub --generate-config -f $CONFIG_FILE
 # Configure config file
 echo "-------------------------------------"
 echo "Configuring JupyterHub config file..."
-echo "-------------------------------------\n\n"
+echo "-------------------------------------"
 echo "c.JupyterHub.ip = '0.0.0.0'" >> $CONFIG_FILE
 echo "c.JupyterHub.port = $JUPYTER_PORT" >> $CONFIG_FILE
 echo "c.JupyterHub.pid_file = '/var/run/$NAME.pid'" >> $CONFIG_FILE
@@ -104,14 +105,14 @@ echo "c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'" >> $CONFIG_FILE
 # Install the usual pythonic stuff
 echo "-------------------------------------------"
 echo "Installing barebones scientific packages..."
-echo "-------------------------------------------\n\n"
+echo "-------------------------------------------"
 sudo pip3 install scipy numpy pandas matplotlib
 
 if [ $BAREBONES = "no" ]
 then
   echo "------------------------------------------------------------"
   echo "Installing extended scientific and visualization packages..."
-  echo "------------------------------------------------------------\n\n"
+  echo "------------------------------------------------------------"
   sudo pip3 install graphviz ggplot deap NetworkX scikit-learn Pillow
   sudo pip3 install simpy seaborn epipy mesa requests BeautifulSoup4
   sudo pip3 install bokeh scikit-image gensim nltk statsmodels scrapy
@@ -122,7 +123,7 @@ if [ $CARTOTOOLS = "yes" ]
 then
   echo "--------------------------------"
   echo "Installing cartographic tools..."
-  echo "--------------------------------\n\n"
+  echo "--------------------------------"
   sudo apt-get install -y proj-bin libgeos-dev
   sudo pip3 install GEOS GDAL geojson
 fi
@@ -131,7 +132,7 @@ if [ $DEEPLEARNING = "yes" ]
 then
   echo "---------------------------------"
   echo "Installing deep learning tools..."
-  echo "---------------------------------\n\n"
+  echo "---------------------------------"
   sudo pip3 install tensorflow keras
 fi
 
@@ -141,14 +142,14 @@ if [ $OPENCV = "yes" ]
 then
   echo "--------------------"
   echo "Installing OpenCV..."
-  echo "--------------------\n\n"
+  echo "--------------------"
   sudo apt-get install libopencv-dev python-opencv
 fi
 
 # Create first user
 echo "----------------------------------"
 echo "Creating admin user $USER_USERNAME"
-echo "----------------------------------\n\n"
+echo "----------------------------------"
 sudo groupadd $USERGROUPNAME
 sudo su -c "useradd $USER_USERNAME -s /bin/bash -m -g $USERGROUPNAME"
 sudo echo "$USER_USERNAME:$USER_PASSWORD" | chpasswd
@@ -157,7 +158,7 @@ sudo echo "$USER_USERNAME:$USER_PASSWORD" | chpasswd
 
 echo "------------------"
 echo "Creating daemon..."
-echo "------------------\n\n"
+echo "------------------"
 
 cat << EOF > jupyterhubdaemon
 #! /bin/sh
@@ -319,22 +320,22 @@ EOF
 
 echo "-----------------"
 echo "Placing daemon..."
-echo "-----------------\n\n"
+echo "-----------------"
 
 sudo mv jupyterhubdaemon /etc/init.d/jupyterhub
 sudo chmod +x /etc/init.d/jupyterhub
 
 echo "--------------------------"
 echo "Setting up for start-up..."
-echo "--------------------------\n\n"
+echo "--------------------------"
 
 # Set jupyterhub to start at startup
 sudo update-rc.d jupyterhub defaults
 
 echo "-------------------------------------------"
 echo "Starting Jupyterhub service on port $JUPYTER_PORT..."
-echo "-------------------------------------------\n\n"
+echo "-------------------------------------------"
 
 sudo service jupyterhub start
 
-echo "\nAll done. Enjoy your Jupyterhub installation!\n"
+echo "\nAll done. Enjoy your Jupyterhub installation!"
