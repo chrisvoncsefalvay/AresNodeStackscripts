@@ -102,6 +102,9 @@ echo "c.JupyterHub.pid_file = '/var/run/$NAME.pid'" >> $CONFIG_FILE
 echo "c.Authenticator.admin_users = {'$USER_USERNAME'}" >> $CONFIG_FILE
 echo "c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'" >> $CONFIG_FILE
 echo "c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'" >> $CONFIG_FILE
+echo "c.JupyterHub.spawner_class = 'sudospawner.SudoSpawner'" >> $CONFIG_FILE
+echo "c.Spawner.cmd = '/usr/local/bin/sudospawner'" >> $CONFIG_FILE
+echo "c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'" >> $CONFIG_FILE 
 sudo jupyterhub upgrade-db
 
 # Install the usual pythonic stuff
@@ -165,10 +168,11 @@ echo "------------------"
 cat << EOF > jupyterhub.service
 [Unit]
 Description=Jupyterhub
+After=syslog.target network.target
 
 [Service]
 User=root
-ExecStart=/usr/bin/jupyterhub -f /etc/jupyterhub/jupyterhub_config.py --JupyterHub.spawner_class=sudospawner.SudoSpawner 
+ExecStart=/usr/local/bin/jupyterhub -f /etc/jupyterhub/jupyterhub_config.py JupyterHub.spawner_class=sudospawner.SudoSpawner 
 WorkingDirectory=/etc/jupyterhub
 
 [Install]
