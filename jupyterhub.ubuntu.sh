@@ -88,8 +88,9 @@ echo "------------------------------------"
 echo "Generating JupyterHub config file..."
 echo "------------------------------------"
 sudo mkdir /etc/jupyterhub
-sudo cd /etc/jupyterhub
+sudo mkdir /usr/local/jupyterhub
 sudo jupyterhub --generate-config -f $CONFIG_FILE
+
 
 # Configure config file
 echo "-------------------------------------"
@@ -101,6 +102,7 @@ echo "c.JupyterHub.pid_file = '/var/run/$NAME.pid'" >> $CONFIG_FILE
 echo "c.Authenticator.admin_users = {'$USER_USERNAME'}" >> $CONFIG_FILE
 echo "c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'" >> $CONFIG_FILE
 echo "c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'" >> $CONFIG_FILE
+sudo jupyterhub upgrade-db
 
 # Install the usual pythonic stuff
 echo "-------------------------------------------"
