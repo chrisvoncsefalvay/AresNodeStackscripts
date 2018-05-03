@@ -20,6 +20,23 @@
 # <UDF name="USERGROUPNAME" label="Usergroup name for Jupyterhub users" default="jupyter" />
 # <UDF name="NAME" label="Process name" default="jupyterhub" />
 
+CONFIG_FILE=/etc/jupyterhub/jupyterhub_config.py
+
+echo "Welcome to Chris's awesome Jupyterhub stackscript ;)"
+echo "****************************************************\n\n"
+echo "This will take you through the installation of Jupyterhub.\n\n"
+echo "You have chosen to install Jupyterhub to be available on port $JUPYTER_PORT."
+
+if [ $BAREBONES = "yes" ] then
+	echo "This is a barebones install, so it'll be pretty quick."
+fi
+
+echo "\n\n"
+
+echo "----------------------"
+echo "Installing Anaconda..."
+echo "----------------------\n\n"
+
 # Install Anaconda
 sudo apt-get install -y wget 
 wget https://repo.anaconda.com/archive/Anaconda3-5.1.0-Linux-x86_64.sh
@@ -27,8 +44,6 @@ bash Anaconda3-5.1.0-Linux-x86_64.sh -b -p $HOME/conda
 export PATH="$HOME/conda/bin:$PATH"
 echo 'source $HOME/conda/bin/activate' > ~/.bashrc
 source .bashrc
-
-
 
 # Install dependencies
 sudo apt-get install -y python3-pip
@@ -51,9 +66,23 @@ sudo pip3 install jupyterhub
 sudo pip3 install --upgrade notebook
 
 # Generate jupyter config
+echo "------------------------------------"
+echo "Generating JupyterHub config file..."
+echo "------------------------------------\n\n"
 sudo mkdir /etc/jupyterhub
 sudo cd /etc/jupyterhub
-sudo jupyterhub --generate-config -f /etc/jupyterhub/jupyterhub_config.py
+sudo jupyterhub --generate-config -f $CONFIG_FILE
+
+# Configure config file
+echo "-------------------------------------"
+echo "Configuring JupyterHub config file..."
+echo "-------------------------------------\n\n"
+echo "c.JupyterHub.ip = '0.0.0.0'" >> $CONFIG_FILE
+echo "c.JupyterHub.hub_port = $JUPYTER_PORT" >> $CONFIG_FILE
+echo "c.JupyterHub.pid_file = '/var/run/$NAME.pid'" >> $CONFIG_FILE
+echo "c.Authenticator.admin_users = set(\"$USER_USERNAME\")" >> $CONFIG_FILE
+echo "c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'" >> $CONFIG_FILE
+echo "c.JupyterHub.log_file = '/var/log/jupyterhub.log'" >> $CONFIG_FILE
 
 # Install the usual pythonic stuff
 sudo pip3 install scipy numpy pandas matplotlib
@@ -84,6 +113,11 @@ then
   sudo apt-get install libopencv-dev python-opencv
 fi
 
+# Create first user
+sudo groupadd $USERGROUPNAME
+sudo su -c "useradd $USER_USERNAME -s /bin/bash -m -g $USERGROUPNAME"
+sudo echo "$USER_USERNAME:$USER_PASSWORD" | chpasswd
+
 # Create daemon
 
 cat << EOF > jupyterhubdaemon
@@ -109,7 +143,7 @@ cat << EOF > jupyterhubdaemon
 PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
 DESC="Multi-user server for Jupyter notebooks"
 DAEMON=/usr/local/bin/jupyterhub
-DAEMON_ARGS="--ip 0.0.0.0 --port $JUPYTER_PORT"
+DAEMON_ARGS="--config=$CONFIG_FILE"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
@@ -246,11 +280,6 @@ EOF
 
 sudo chmod a+x jupyterhubdaemon
 sudo mv jupyterhubdaemon /etc/init.d/jupyterhub
-
-# Create user
-sudo groupadd $USERGROUPNAME
-sudo su -c "useradd $USER_USERNAME -s /bin/bash -m -g $USERGROUPNAME"
-sudo echo "$USER_USERNAME:$USER_PASSWORD" | chpasswd
 
 # Set jupyterhub to start at startup
 sudo update-rc.d jupyterhub defaults
