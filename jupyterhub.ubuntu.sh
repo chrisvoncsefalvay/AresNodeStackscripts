@@ -32,7 +32,8 @@ echo "Cartography tools: $CARTOTOOLS"
 echo "Deep learning tools: $DEEPLEARNING"
 
 
-if [ $BAREBONES = "yes" ] then
+if [ $BAREBONES = "yes" ] 
+then
 	echo "This is a barebones install, so it'll be pretty quick."
 fi
 
