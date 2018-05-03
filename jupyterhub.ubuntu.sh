@@ -80,7 +80,7 @@ echo "Installing JupyterHub..."
 echo "------------------------"
 
 npm install -g configurable-http-proxy
-sudo pip3 install jupyterhub
+sudo pip3 install jupyterhub sudospawner
 sudo pip3 install --upgrade notebook
 
 # Generate jupyter config
