@@ -25,7 +25,11 @@ CONFIG_FILE=/etc/jupyterhub/jupyterhub_config.py
 echo "Welcome to Chris's awesome Jupyterhub stackscript ;)"
 echo "****************************************************\n\n"
 echo "This will take you through the installation of Jupyterhub.\n\n"
-echo "You have chosen to install Jupyterhub to be available on port $JUPYTER_PORT."
+echo "Your component settings are:"
+echo "OpenCV: $OPENCV"
+echo "Cartography tools: $CARTOTOOLS"
+echo "Deep learning tools: $DEEPLEARNING"
+
 
 if [ $BAREBONES = "yes" ] then
 	echo "This is a barebones install, so it'll be pretty quick."
@@ -45,6 +49,10 @@ export PATH="$HOME/conda/bin:$PATH"
 echo 'source $HOME/conda/bin/activate' > ~/.bashrc
 source .bashrc
 
+echo "-----------------------------"
+echo "Installing Python and deps..."
+echo "-----------------------------\n\n"
+
 # Install dependencies
 sudo apt-get install -y python3-pip
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
@@ -55,11 +63,18 @@ sudo apt-get install -y libcurl3-dev python3-dev python-dev libfreetype6-dev
 
 if [ $OPENCV = "yes" ]
 then
+  echo "--------------------"
+  echo "Installing OpenCV..."
+  echo "--------------------\n\n"
   sudo apt-get install -y libpng12-dev libjpeg8-dev libtiff5-dev libjasper-dev
   sudo apt-get install -y qtbase5-dev libavcodec-dev libavformat-dev libswscale-dev 
   sudo apt-get install -y libgtk2.0-dev libv4l-dev libatlas-base-dev gfortran
   sudo apt-get install -y libhdf5-serial-dev
 fi
+
+echo "------------------------"
+echo "Installing JupyterHub..."
+echo "------------------------\n\n"
 
 npm install -g configurable-http-proxy
 sudo pip3 install jupyterhub
@@ -85,10 +100,16 @@ echo "c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'"
 echo "c.JupyterHub.log_file = '/var/log/jupyterhub.log'" >> $CONFIG_FILE
 
 # Install the usual pythonic stuff
+echo "-------------------------------------------"
+echo "Installing barebones scientific packages..."
+echo "-------------------------------------------\n\n"
 sudo pip3 install scipy numpy pandas matplotlib
 
 if [ $BAREBONES = "no" ]
 then
+  echo "------------------------------------------------------------"
+  echo "Installing extended scientific and visualization packages..."
+  echo "------------------------------------------------------------\n\n"
   sudo pip3 install graphviz ggplot deap NetworkX scikit-learn Pillow
   sudo pip3 install simpy seaborn epipy mesa requests BeautifulSoup4
   sudo pip3 install bokeh scikit-image gensim nltk statsmodels scrapy
@@ -97,12 +118,18 @@ fi
 
 if [ $CARTOTOOLS = "yes" ]
 then
+  echo "--------------------------------"
+  echo "Installing cartographic tools..."
+  echo "--------------------------------\n\n"
   sudo apt-get install -y proj-bin libgeos-dev
   sudo pip3 install GEOS GDAL geojson
 fi
 
 if [ $DEEPLEARNING = "yes" ]
 then
+  echo "---------------------------------"
+  echo "Installing deep learning tools..."
+  echo "---------------------------------\n\n"
   sudo pip3 install tensorflow keras
 fi
 
@@ -110,15 +137,25 @@ fi
 
 if [ $OPENCV = "yes" ]
 then
+  echo "--------------------"
+  echo "Installing OpenCV..."
+  echo "--------------------\n\n"
   sudo apt-get install libopencv-dev python-opencv
 fi
 
 # Create first user
+echo "----------------------------------"
+echo "Creating admin user $USER_USERNAME"
+echo "----------------------------------\n\n"
 sudo groupadd $USERGROUPNAME
 sudo su -c "useradd $USER_USERNAME -s /bin/bash -m -g $USERGROUPNAME"
 sudo echo "$USER_USERNAME:$USER_PASSWORD" | chpasswd
 
 # Create daemon
+
+echo "------------------"
+echo "Creating daemon..."
+echo "------------------\n\n"
 
 cat << EOF > jupyterhubdaemon
 #! /bin/sh
@@ -278,9 +315,24 @@ esac
 
 EOF
 
+echo "-----------------"
+echo "Placing daemon..."
+echo "-----------------\n\n"
+
 sudo chmod a+x jupyterhubdaemon
 sudo mv jupyterhubdaemon /etc/init.d/jupyterhub
 
+echo "--------------------------"
+echo "Setting up for start-up..."
+echo "--------------------------\n\n"
+
 # Set jupyterhub to start at startup
 sudo update-rc.d jupyterhub defaults
+
+echo "-------------------------------------------"
+echo "Starting Jupyterhub service on port $JUPYTER_PORT..."
+echo "-------------------------------------------\n\n"
+
 sudo service jupyterhub start
+
+echo "\nAll done. Enjoy your Jupyterhub installation!\n"
