@@ -14,6 +14,7 @@
 # <UDF name="INSTALL_RSTUDIO" label="Install RStudio?" oneOf="yes,no" default="yes" />
 # <UDF name="JUPYTER_PORT" label="JupyterHub port" default="8888" />
 # <UDF name="RSTUDIO_PORT" label="RStudio port" default="9999" />
+# <UDF name="RSTUDIO_VERSION" label="RStudio version" default="1.1.447" />
 # <UDF name="BAREBONES" label="Barebones install (only instals basic Python packages)" oneOf="yes,no" default="no" />
 # <UDF name="CARTOTOOLS" label="Python: Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
 # <UDF name="OPENCV" label="Python: Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
@@ -86,6 +87,17 @@ echo "---------------"
 sudo apt-get install r-base 
 
 
+if [ $INSTALL_RSTUDIO = "yes" ]
+then
+	echo "---------------------"
+	echo "Installing RStudio..."
+	echo "---------------------"
+	
+	sudo apt-get install gdebi-core
+	wget https://download2.rstudio.org/rstudio-server-$RSTUDIO_VERSION-amd64.deb
+	sudo gdebi rstudio-server-$RSTUDIO_VERSION-amd64.deb
+fi
+
 
 
 echo "-----------------------------"
@@ -94,6 +106,7 @@ echo "-----------------------------"
 
 # Install dependencies
 sudo apt-get install -y python3-pip
+sudo pip3 install --upgrade pip
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs build-essential cmake g++ gfortran libopenblas-dev
 sudo apt-get install -y pkg-config python-dev software-properties-common 
