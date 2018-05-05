@@ -40,17 +40,13 @@ fi
 
 echo ""
 
-echo "----------------------"
-echo "Installing Anaconda..."
-echo "----------------------"
 
-# Install Anaconda
-sudo apt-get install -y wget 
-wget https://repo.anaconda.com/archive/Anaconda3-5.1.0-Linux-x86_64.sh
-bash Anaconda3-5.1.0-Linux-x86_64.sh -b -p $HOME/conda
-export PATH="$HOME/conda/bin:$PATH"
-echo 'source $HOME/conda/bin/activate' > ~/.bashrc
-source .bashrc
+echo "------------------"
+echo "Updating system..."
+echo "------------------"
+
+sudo apt-get update
+sudo apt-get upgrade -y
 
 echo "-----------------------------"
 echo "Installing Python and deps..."
@@ -80,7 +76,7 @@ echo "Installing JupyterHub..."
 echo "------------------------"
 
 npm install -g configurable-http-proxy
-sudo pip3 install jupyterhub sudospawner
+sudo pip3 install jupyterhub sudospawner virtualenv
 sudo pip3 install --upgrade notebook
 
 # Generate jupyter config
@@ -185,11 +181,11 @@ echo "-----------------"
 echo "Placing daemon..."
 echo "-----------------"
 
+sudo mkdir /usr/lib/systemd/system
 sudo mv jupyterhub.service /usr/lib/systemd/system/jupyterhub.service
 sudo chmod a+x /usr/lib/systemd/system/jupyterhub.service
 sudo systemctl enable jupyterhub
 sudo systemctl daemon-reload
-
 
 echo "-------------------------------------------"
 echo "Starting Jupyterhub service on port $JUPYTER_PORT..."
