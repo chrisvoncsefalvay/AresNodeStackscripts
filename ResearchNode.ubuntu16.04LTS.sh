@@ -26,7 +26,7 @@
 
 # IMPORTING STACK SCRIPTS
 source <ssinclude StackScriptID=1>	# Linode stock functions - https://www.linode.com/stackscripts/view/1
-
+source <ssinclude StackScriptID=312380> # install_Rpkg() function - https://manager.linode.com/stackscripts/edit/312380
 
 CONFIG_FILE=/etc/jupyterhub/jupyterhub_config.py
 USER=root
@@ -97,6 +97,10 @@ then
 	wget https://download2.rstudio.org/rstudio-server-$RSTUDIO_VERSION-amd64.deb
 	sudo gdebi rstudio-server-$RSTUDIO_VERSION-amd64.deb
 fi
+
+echo "----------------------"
+echo "Installing IRKernel..."
+echo "----------------------"
 
 
 
