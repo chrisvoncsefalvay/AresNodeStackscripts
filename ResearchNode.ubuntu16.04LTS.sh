@@ -27,6 +27,7 @@
 # IMPORTING STACK SCRIPTS
 source <ssinclude StackScriptID=1>	# Linode stock functions - https://www.linode.com/stackscripts/view/1
 source <ssinclude StackScriptID=312380> # install_Rpkg() function - https://manager.linode.com/stackscripts/edit/312380
+source <ssinclude StackScriptID=312388> # install_IRKernel() function - 
 
 CONFIG_FILE=/etc/jupyterhub/jupyterhub_config.py
 USER=root
@@ -102,6 +103,7 @@ echo "----------------------"
 echo "Installing IRKernel..."
 echo "----------------------"
 
+install_IRKernel()
 
 
 echo "-----------------------------"
