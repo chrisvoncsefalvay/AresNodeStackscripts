@@ -174,6 +174,7 @@ After=syslog.target network.target
 User=root
 ExecStart=/usr/local/bin/jupyterhub -f /etc/jupyterhub/jupyterhub_config.py JupyterHub.spawner_class=sudospawner.SudoSpawner 
 WorkingDirectory=/etc/jupyterhub
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
@@ -184,23 +185,17 @@ echo "-----------------"
 echo "Placing daemon..."
 echo "-----------------"
 
-sudo mv jupyterhub.service /lib/systemd/system/jupyterhub.service
-sudo chmod a+x /lib/systemd/system/jupyterhub.service
+sudo mv jupyterhub.service /usr/lib/systemd/system/jupyterhub.service
+sudo chmod a+x /usr/lib/systemd/system/jupyterhub.service
+sudo systemctl enable jupyterhub
 sudo systemctl daemon-reload
-sudo systemctl start jupyterhub
 
-
-echo "--------------------------"
-echo "Setting up for start-up..."
-echo "--------------------------"
-
-# Set jupyterhub to start at startup
-sudo update-rc.d jupyterhub defaults
 
 echo "-------------------------------------------"
 echo "Starting Jupyterhub service on port $JUPYTER_PORT..."
 echo "-------------------------------------------"
 
-sudo service jupyterhub start
+sudo systemctl restart jupyterhub
 
-echo "\nAll done. Enjoy your Jupyterhub installation!"
+
+echo "All done. Enjoy your Jupyterhub installation!"
