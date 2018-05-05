@@ -20,6 +20,10 @@
 # <UDF name="USERGROUPNAME" label="Usergroup name for Jupyterhub users" default="jupyter" />
 # <UDF name="PROCNAME" label="Process name" default="jupyterhub" />
 
+# IMPORTING STACK SCRIPTS
+source <ssinclude StackScriptID=1>	# Linode stock functions - https://www.linode.com/stackscripts/view/1
+
+
 CONFIG_FILE=/etc/jupyterhub/jupyterhub_config.py
 USER=root
 
@@ -41,12 +45,13 @@ fi
 echo ""
 
 
-echo "------------------"
-echo "Updating system..."
-echo "------------------"
+echo "------------------------------------------------"
+echo "Updating system and installing the good stuff..."
+echo "------------------------------------------------"
 
 sudo apt-get update
 sudo apt-get upgrade -y
+goodstuff()
 
 echo "-----------------------------"
 echo "Installing Python and deps..."
