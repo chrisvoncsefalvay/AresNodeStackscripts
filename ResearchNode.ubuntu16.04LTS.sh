@@ -77,9 +77,11 @@ echo "Updating system and installing the good stuff..."
 echo "------------------------------------------------"
 
 sudo apt-get update
-sudo apt-get upgrade -y
-goodstuff()
 
+if [ $BAREBONES = "no" ]
+then
+	sudo apt-get upgrade -y
+fi
 
 echo "---------------"
 echo "Installing R..."
