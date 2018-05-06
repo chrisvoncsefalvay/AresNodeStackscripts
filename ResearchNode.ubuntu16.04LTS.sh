@@ -100,19 +100,8 @@ echo "---------------"
 echo "Installing R..."
 echo "---------------"
 
-sudo apt-get install -y r-base 
+sudo apt-get install -y r-base-core 
 
-
-if [ $INSTALL_RSTUDIO = "yes" ]
-then
-	echo "---------------------"
-	echo "Installing RStudio..."
-	echo "---------------------"
-	
-	sudo apt-get install -y gdebi-core
-	wget https://download2.rstudio.org/rstudio-server-$RSTUDIO_VERSION-amd64.deb
-	sudo gdebi rstudio-server-$RSTUDIO_VERSION-amd64.deb
-fi
 
 echo "-----------------------------"
 echo "Installing Python and deps..."
@@ -253,11 +242,39 @@ then
   install_Rpkg compiler foreach doParallel
 fi
 
+# RStudio install
+if [ $INSTALL_RSTUDIO = "yes" ]
+then
+	echo "---------------------"
+	echo "Installing RStudio..."
+	echo "---------------------"
+	
+	sudo apt-get install -y gdebi-core
+	wget https://download2.rstudio.org/rstudio-server-$RSTUDIO_VERSION-amd64.deb
+	sudo gdebi -n rstudio-server-$RSTUDIO_VERSION-amd64.deb
+fi
+
+# Configure RStudio config file
+echo "----------------------------------"
+echo "Configuring RStudio config file..."
+echo "----------------------------------"
+
+sudo groupadd $USERGROUPNAME
+
+cat << EOF > /etc/rstudio/rserver.conf
+  www-port=$RSTUDIO_PORT
+  www-address=0.0.0.0
+  rsession-which-r=$(which R)
+  auth-required-user-group=$USERGROUPNAME
+EOF
+
+sudo rstudio-server restart
+
+
 # Create first user
 echo "----------------------------------"
 echo "Creating admin user $USER_USERNAME"
 echo "----------------------------------"
-sudo groupadd $USERGROUPNAME
 sudo su -c "useradd $USER_USERNAME -s /bin/bash -m -g $USERGROUPNAME"
 sudo echo "$USER_USERNAME:$USER_PASSWORD" | chpasswd
 
