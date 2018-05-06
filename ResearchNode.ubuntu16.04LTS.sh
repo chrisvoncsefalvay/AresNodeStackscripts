@@ -24,6 +24,8 @@
 # <UDF name="USERGROUPNAME" label="Usergroup name for Jupyterhub users" default="jupyter" />
 
 
+exec >/root/stacklog.txt
+
 # IMPORTING STACK SCRIPTS
 source <ssinclude StackScriptID=1>	# Linode stock functions - https://www.linode.com/stackscripts/view/1
 
