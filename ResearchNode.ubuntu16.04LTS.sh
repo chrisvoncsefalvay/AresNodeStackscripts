@@ -24,8 +24,6 @@
 # <UDF name="USERGROUPNAME" label="Usergroup name for Jupyterhub users" default="jupyter" />
 
 
-exec >/root/stacklog.txt
-
 # IMPORTING STACK SCRIPTS
 source <ssinclude StackScriptID=1>	# Linode stock functions - https://www.linode.com/stackscripts/view/1
 
@@ -83,6 +81,7 @@ echo "------------------"
 echo "Adding apt repo..."
 echo "------------------"
 
+sudo apt-get install -y software-properties-common python-software-properties
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
 
@@ -102,7 +101,7 @@ echo "---------------"
 echo "Installing R..."
 echo "---------------"
 
-sudo apt-get install -y r-base-core 
+sudo apt-get install -y r-base
 
 
 echo "-----------------------------"
