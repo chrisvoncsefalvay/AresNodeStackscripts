@@ -34,7 +34,7 @@ install_Rpkg () {
   for pkg in "$@"
   do
     echo "Installing R package $pkg..."
-    echo "install.packages(\"${pkg}\", repos=\"https://cran.rstudio.com\")" | R --no-save
+    sudo R CMD INSTALL -l /usr/local/lib/R/site-library $pkg
   done
 }
 
@@ -150,11 +150,9 @@ echo "----------------------"
 R --no-save << EOF
     install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest'))
     devtools::install_github('IRkernel/IRkernel')
+    IRKernel::installspec()
 EOF
-  
-R --no-save << EOF
-    IRkernel::installspec()
-EOF
+
 
 # Configure config file
 echo "-------------------------------------"
