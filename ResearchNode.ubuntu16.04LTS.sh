@@ -100,7 +100,7 @@ echo "---------------"
 echo "Installing R..."
 echo "---------------"
 
-sudo apt-get install r-base 
+sudo apt-get install -y r-base 
 
 
 if [ $INSTALL_RSTUDIO = "yes" ]
@@ -109,7 +109,7 @@ then
 	echo "Installing RStudio..."
 	echo "---------------------"
 	
-	sudo apt-get install gdebi-core
+	sudo apt-get install -y gdebi-core
 	wget https://download2.rstudio.org/rstudio-server-$RSTUDIO_VERSION-amd64.deb
 	sudo gdebi rstudio-server-$RSTUDIO_VERSION-amd64.deb
 fi
@@ -223,7 +223,7 @@ then
   echo "--------------------"
   echo "Installing OpenCV..."
   echo "--------------------"
-  sudo apt-get install libopencv-dev python-opencv
+  sudo apt-get install -y libopencv-dev python-opencv
 fi
 
 
