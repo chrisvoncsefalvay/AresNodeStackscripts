@@ -1,4 +1,8 @@
 #!/bin/bash
+set -e
+set -u
+exec &> /root/stackscript.log
+
 #
 # Complete ResearchNode script: installs
 # * a complete Jupyterhub environment,
