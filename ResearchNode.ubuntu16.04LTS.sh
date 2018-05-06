@@ -1,6 +1,4 @@
 #!/bin/bash
-exec &> /root/stackscript.log
-
 #
 # Complete ResearchNode script: installs
 # * a complete Jupyterhub environment,
@@ -36,7 +34,7 @@ install_Rpkg () {
   for pkg in "$@"
   do
     echo "Installing R package $pkg..."
-    echo "install.packages('$pkg', lib='/usr/local/lib/R/site-library')" | sudo -i R --no-save
+    echo "install.packages('$pkg', lib='/usr/local/lib/R/site-library', repos='http://cran.us.r-project.org')" | sudo -i R --no-save
   done
 }
 
@@ -94,11 +92,6 @@ echo "------------------------------------------------"
 
 sudo apt-get update
 
-if [ $BAREBONES = "no" ]
-then
-	sudo apt-get upgrade -y
-fi
-
 echo "---------------"
 echo "Installing R..."
 echo "---------------"
@@ -151,7 +144,7 @@ echo "Installing IRKernel..."
 echo "----------------------"
     
 R --no-save << EOF
-    install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest'))
+    install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest'), lib='/usr/local/lib/R/site-library', repos='http://cran.us.r-project.org')
     devtools::install_github('IRkernel/IRkernel')
     IRKernel::installspec()
 EOF
@@ -223,7 +216,7 @@ if [ $BAREBONES = "no" ]
 then
   # Must-haves
   install_Rpkg Rcpp data.table parallel curl jsonlite httr devtools testthat roxygen2 magrittr
-  # Database connectors
+  # Database connectors
   install_Rpkg RMySQL RSQLite
   # Foreign sources
   install_Rpkg rio datapasta xlsx XLConnect foreign validate
