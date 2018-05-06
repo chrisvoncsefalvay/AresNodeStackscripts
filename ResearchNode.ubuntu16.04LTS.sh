@@ -81,7 +81,7 @@ echo "------------------"
 echo "Adding apt repo..."
 echo "------------------"
 
-sudo apt-get install -y software-properties-common python-software-properties
+sudo apt-get install -y software-properties-common python-software-properties libssl-dev
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
 
@@ -225,7 +225,7 @@ then
   # Visualization
   install_Rpkg ggplot2 ggvis rgl leaflet dygraphs NetworkD3 gridExtra corrplot fmsb wordcloud RColorBrewer
   # Modeling
-  install_Rpkg car caret mgcv lme4 randomForest multcomp vcd glmnet survival MASS metrics e1071 qdap sentimentr tidytext
+  install_Rpkg glmnet survival MASS metrics e1071 qdap sentimentr tidytext
   # Reporting tools
   install_Rpkg shiny xtable rmarkdown knitr 
   # Spatial data
