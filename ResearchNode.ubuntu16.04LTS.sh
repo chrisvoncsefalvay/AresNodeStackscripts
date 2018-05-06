@@ -34,7 +34,7 @@ install_Rpkg () {
   for pkg in "$@"
   do
     echo "Installing R package $pkg..."
-    sudo R CMD INSTALL -l /usr/local/lib/R/site-library $pkg
+    echo "install.packages('$pkg', lib='/usr/local/lib/R/site-library')" | R --no-save
   done
 }
 
