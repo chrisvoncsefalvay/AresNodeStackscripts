@@ -26,11 +26,24 @@
 
 # IMPORTING STACK SCRIPTS
 source <ssinclude StackScriptID=1>	# Linode stock functions - https://www.linode.com/stackscripts/view/1
-source <ssinclude StackScriptID=312380> # install_Rpkg() function - https://manager.linode.com/stackscripts/edit/312380
-source <ssinclude StackScriptID=312388> # install_IRKernel() function - 
+
+
+# Declaring R package installer function
+
+install_Rpkg () {  
+  for pkg in "$@"
+  do
+    echo "Installing R package $pkg..."
+    echo "install.packages(\"${pkg}\", repos=\"https://cran.rstudio.com\")" | R --no-save
+  done
+}
+
+# Declaring base variables
 
 CONFIG_FILE=/etc/jupyterhub/jupyterhub_config.py
 USER=root
+
+# Initiating process
 
 echo "Welcome to Chris's awesome Jupyterhub stackscript ;)"
 echo "****************************************************"
@@ -101,13 +114,6 @@ then
 	sudo gdebi rstudio-server-$RSTUDIO_VERSION-amd64.deb
 fi
 
-echo "----------------------"
-echo "Installing IRKernel..."
-echo "----------------------"
-
-install_IRKernel()
-
-
 echo "-----------------------------"
 echo "Installing Python and deps..."
 echo "-----------------------------"
@@ -148,6 +154,18 @@ sudo mkdir /etc/jupyterhub
 sudo mkdir /usr/local/jupyterhub
 sudo jupyterhub --generate-config -f $CONFIG_FILE
 
+echo "----------------------"
+echo "Installing IRKernel..."
+echo "----------------------"
+    
+R --no-save << EOF
+    install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest'))
+    devtools::install_github('IRkernel/IRkernel')
+EOF
+  
+R --no-save << EOF
+    IRkernel::installspec()
+EOF
 
 # Configure config file
 echo "-------------------------------------"
@@ -206,6 +224,33 @@ then
   echo "Installing OpenCV..."
   echo "--------------------"
   sudo apt-get install libopencv-dev python-opencv
+fi
+
+
+# Install basic R packages
+
+if [ $BAREBONES = "no" ]
+then
+  # Must-haves
+  install_Rpkg Rcpp data.table parallel curl jsonlite httr devtools testthat roxygen2 magrittr
+  # Database connectors
+  install_Rpkg RMySQL RSQLite
+  # Foreign sources
+  install_Rpkg rio datapasta xlsx XLConnect foreign validate
+  # Data munging
+  install_Rpkg dplyr tidyr sqldf stringr lubridate iterator purrr reshape2 
+  # Visualization
+  install_Rpkg ggplot2 ggvis rgl leaflet dygraphs NetworkD3 gridExtra corrplot fmsb wordcloud RColorBrewer
+  # Modeling
+  install_Rpkg car caret mgcv lme4 randomForest multcomp vcd glmnet survival MASS metrics e1071 qdap sentimentr tidytext
+  # Reporting tools
+  install_Rpkg shiny xtable rmarkdown knitr 
+  # Spatial data
+  install_Rpkg sp maptools maps ggmap tmap tmaptools mapsapi tidycensus
+  # Time series
+  install_Rpkg zoo xts quantmod 
+  # Progtools
+  install_Rpkg compiler foreach doParallel
 fi
 
 # Create first user
