@@ -97,7 +97,8 @@ echo "Updating system and installing the good stuff..."
 echo "------------------------------------------------"
 
 sudo apt-get update
-
+sudo apt-get -y libxml2-dev
+sudo apt-get -y 
 
 echo "---------------"
 echo "Installing R..."
