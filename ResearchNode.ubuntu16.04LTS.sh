@@ -76,12 +76,18 @@ echo ""
 echo "OK, let's go! ..."
 echo ""
 
+echo "------------------------------------"
+echo "Configuring libssl and linking it..."
+echo "------------------------------------"
+
+sudo apt-get install -y software-properties-common python-software-properties 
+sudo apt-get install -y libssl-dev
+
 
 echo "------------------"
 echo "Adding apt repo..."
 echo "------------------"
 
-sudo apt-get install -y software-properties-common python-software-properties libssl-dev
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
 
@@ -91,6 +97,7 @@ echo "Updating system and installing the good stuff..."
 echo "------------------------------------------------"
 
 sudo apt-get update
+
 
 echo "---------------"
 echo "Installing R..."
@@ -215,13 +222,15 @@ fi
 if [ $BAREBONES = "no" ]
 then
   # Must-haves
-  install_Rpkg Rcpp data.table parallel curl jsonlite httr devtools testthat roxygen2 magrittr
+  install_Rpkg Rcpp 
+  install_Rpkg data.table parallel curl jsonlite httr devtools testthat roxygen2 magrittr cronR
+  install_Rpkg addinslist
   # Database connectors
   install_Rpkg RMySQL RSQLite
   # Foreign sources
   install_Rpkg rio datapasta xlsx XLConnect foreign validate
   # Data munging
-  install_Rpkg dplyr tidyr sqldf stringr lubridate iterator purrr reshape2 
+  install_Rpkg plyr dplyr tidyr sqldf stringr lubridate iterator purrr reshape2 
   # Visualization
   install_Rpkg ggplot2 ggvis rgl leaflet dygraphs NetworkD3 gridExtra corrplot fmsb wordcloud RColorBrewer
   # Modeling
