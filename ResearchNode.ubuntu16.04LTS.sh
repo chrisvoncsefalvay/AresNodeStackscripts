@@ -19,7 +19,7 @@
 # <UDF name="BAREBONES" label="Barebones install (only instals basic Python packages)" oneOf="yes,no" default="no" />
 # <UDF name="CARTOTOOLS" label="Python: Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
 # <UDF name="OPENCV" label="Python: Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
-# <UDF name="DEEPLEARNING" label="Python: Do you want to install deep learning support?" oneOf="yes,no" default="no" />
+# <UDF name="BIOINFORMATICS" label="Python: Do you want to install bioinformatics tools?" oneOf="yes,no" default="no" />
 # <UDF name="USER_USERNAME" label="First user username" />
 # <UDF name="USER_PASSWORD" label="First user password" />
 # <UDF name="USERGROUPNAME" label="Usergroup name for Jupyterhub users" default="jupyter" />
@@ -214,17 +214,21 @@ then
   sudo apt-get update
   sudo apt-get install -y pyproj 
   sudo apt-get install -y gdal-bin python-gdal python3-gdal
-  sudo pip3 install GEOS GDAL
-  sudo pip3 install geopandas geojson geopy
+  sudo pip3 install GEOS 
+  sudo pip3 install GDAL pygdal
+  sudo pip3 install geopandas geojson geopy geoviews elevation OSMnx giddy
+  sudo pip3 install spint landsatxplore telluric 
+  sudo pip3 install mapbox mapboxgl
 fi
 
-
-if [ $DEEPLEARNING = "yes" ]
+if [ $BIOINFORMATICS = "yes" ]
 then
-  echo "---------------------------------"
-  echo "Installing deep learning tools..."
-  echo "---------------------------------"
-  sudo pip3 install tensorflow keras
+  echo "------------------------------------"
+  echo "Installing bioinformatics toolkit..."
+  echo "------------------------------------"
+
+
+
 fi
 
 # Install OpenCV
@@ -235,6 +239,7 @@ then
   echo "Installing OpenCV..."
   echo "--------------------"
   sudo apt-get install -y libopencv-dev python-opencv
+  sudo pip3 install opencv-contrib-python
 fi
 
 
