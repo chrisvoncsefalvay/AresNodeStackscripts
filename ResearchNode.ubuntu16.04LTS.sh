@@ -78,6 +78,20 @@ echo ""
 echo "OK, let's go! ..."
 echo ""
 
+
+echo "------------------------------------------------"
+echo "Updating system and installing the good stuff..."
+echo "------------------------------------------------"
+
+sudo apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+sudo apt-get install -y libxml2-dev wget autoremove libcurl3-dev libfreetype6-dev
+sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
+sudo apt-get install -y checkinstall libreadline-gplv2-dev libncursesw5-dev 
+sudo apt-get install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
+sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev
+
+
 echo "------------------------------------"
 echo "Configuring libssl and linking it..."
 echo "------------------------------------"
@@ -85,17 +99,6 @@ echo "------------------------------------"
 sudo apt-get install -y software-properties-common build-essential
 sudo apt-get install -y python-software-properties 
 sudo apt-get install -y libssl-dev openssl-dev
-
-echo "------------------------------------------------"
-echo "Updating system and installing the good stuff..."
-echo "------------------------------------------------"
-
-sudo apt-get update
-sudo apt-get install -y libxml2-dev wget autoremove libcurl3-dev libfreetype6-dev
-sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
-sudo apt-get install -y checkinstall libreadline-gplv2-dev libncursesw5-dev 
-sudo apt-get install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
-sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev
 
 
 echo "------------------"
