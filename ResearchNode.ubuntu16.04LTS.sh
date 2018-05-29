@@ -156,6 +156,7 @@ fi
 echo "-------------------------------------------"
 echo "Installing barebones scientific packages..."
 echo "-------------------------------------------"
+sudo pip3 install Cython
 sudo pip3 install scipy numpy pandas matplotlib
 
 if [ $BAREBONES = "no" ]
@@ -208,9 +209,13 @@ then
   echo "--------------------------------"
   echo "Installing cartographic tools..."
   echo "--------------------------------"
-  sudo apt-get install -y proj-bin libgeos-dev 
-  
-  sudo pip3 install GEOS GDAL geojson
+  sudo apt-get install -y proj-bin libproj-dev libgeos-dev
+  sudo add-apt-repository -y ppa:ubuntugis/ppa
+  sudo apt-get update
+  sudo apt-get install -y pyproj 
+  sudo apt-get install -y gdal-bin python-gdal python3-gdal
+  sudo pip3 install GEOS GDAL
+  sudo pip3 install geopandas geojson geopy
 fi
 
 
