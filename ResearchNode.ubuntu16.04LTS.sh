@@ -11,21 +11,25 @@
 #
 # (c) Chris von Csefalvay, 2018.
 #
-# <UDF name="JUPYTER_PORT" label="JupyterHub port" default="8888" />
-# <UDF name="PYTHON_VERSION" label="Python version" oneOf="3.5" default="3.5" />
-# <UDF name="INSTALL_RSTUDIO" label="Install RStudio?" oneOf="yes,no" default="yes" />
-# <UDF name="RSTUDIO_PORT" label="RStudio port" default="9999" />
-# <UDF name="RSTUDIO_VERSION" label="RStudio version" default="1.1.447" />
-# <UDF name="BAREBONES" label="Barebones install (only instals basic Python packages)" oneOf="yes,no" default="no" />
-# <UDF name="CARTOTOOLS" label="Python: Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
-# <UDF name="OPENCV" label="Python: Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
-# <UDF name="BIOINFORMATICS" label="Python: Do you want to install bioinformatics tools?" oneOf="yes,no" default="no" />
-# <UDF name="INSTALL_MONGO" label="Do you want to install MongoDB?" oneOf="yes,no" default="yes" />
-# <UDF name="INSTALL_NEO4J" label="Do you want to install Neo4j?" oneOf="yes,no" default="yes" />
-# <UDF name="USER_USERNAME" label="First user username" />
-# <UDF name="USER_PASSWORD" label="First user password" />
-# <UDF name="USERGROUPNAME" label="Usergroup name for Jupyterhub users" default="jupyter" />
-
+# <UDF name="JUPYTER_PORT" label="PYTHON: JupyterHub port" default="8888" />
+# <UDF name="PYTHON_VERSION" label="PYTHON: Python version" oneOf="3.5" default="3.5" />
+# <UDF name="INSTALL_RSTUDIO" label="RSTUDIO: Install RStudio?" oneOf="yes,no" default="yes" />
+# <UDF name="RSTUDIO_PORT" label="RSTUDIO: RStudio port" default="9999" />
+# <UDF name="RSTUDIO_VERSION" label="RSTUDIO: RStudio version" default="1.1.447" />
+# <UDF name="BAREBONES" label="FEATURES: Barebones install (only instals basic Python packages)" oneOf="yes,no" default="no" />
+# <UDF name="CARTOTOOLS" label="FEATURES: Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
+# <UDF name="OPENCV" label="FEATURES: Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
+# <UDF name="BIOINFORMATICS" label="FEATURES: Do you want to install bioinformatics tools?" oneOf="yes,no" default="no" />
+# <UDF name="INSTALL_MONGO" label="DATABASES: Do you want to install MongoDB?" oneOf="yes,no" default="yes" />
+# <UDF name="INSTALL_NEO4J" label="DATABASES: Do you want to install Neo4j?" oneOf="yes,no" default="yes" />
+# <UDF name="USER_USERNAME" label="SYSTEM: First user username" />
+# <UDF name="USER_PASSWORD" label="SYSTEM: First user password" />
+# <UDF name="USERGROUPNAME" label="SYSTEM: Usergroup name for Jupyterhub users" default="jupyter" />
+# <UDF name="PREFERRED_EDITOR" label="SYSTEM: Preferred editor" oneOf="vim,nano" />
+# <UDF name="GIT_USERNAME" label="GIT: Github username" />
+# <UDF name="GIT_FULLNAME" label="GIT: Full name" />
+# <UDF name="GIT_EMAIL" label="GIT: E-mail address" />
+# <UDF name="GIT_TOKEN" label="GIT: Personal Access Token" />
 
 # IMPORTING STACK SCRIPTS
 source <ssinclude StackScriptID=1>	# Linode stock functions - https://www.linode.com/stackscripts/view/1
@@ -448,7 +452,6 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
-
 echo "-----------------"
 echo "Placing daemon..."
 echo "-----------------"
@@ -458,6 +461,75 @@ sudo mv jupyterhub.service /usr/lib/systemd/system/jupyterhub.service
 sudo chmod a+x /usr/lib/systemd/system/jupyterhub.service
 sudo systemctl enable jupyterhub
 sudo systemctl daemon-reload
+
+echo "------------------"
+echo "Configuring git..."
+echo "------------------"
+
+cat << EOF > /tmp/template.gitconfig
+[user]
+	name = $GIT_FULLNAME
+	email = $GIT_EMAIL
+	username = $USER_USERNAME
+[core]
+	editor = $PREFERRED_EDITOR
+	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+	excludesfile = ~/.gitignore	
+[push]
+	default = matching
+[color]
+	ui = auto
+[color "branch"]
+	current = yellow bold
+	local = green bold
+	remote = cyan bold
+[color "diff"]
+	meta = yellow bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
+[color "status"]
+	added = green bold
+	changed = yellow bold
+	untracked = red bold
+[diff]
+	tool = vimdiff
+[difftool]
+	prompt = false
+[gitflow "prefix"]
+	feature = feature-
+	release = release-
+	hotfix = hotfix-
+	support = support-
+	versiontag = v
+EOF
+
+if [ -n "$GITHUB_USERNAME" ] || [ -n "$GITHUB_TOKEN" ]
+then
+cat << EOF >> /tmp/template.gitconfig
+[github]
+	user = $GITHUB_USERNAME
+	token = $GITHUB_TOKEN
+EOF
+elif [ -n "$GITHUB_USERNAME" ]
+then
+cat << EOF >> /tmp/template.gitconfig
+[github]
+	token = $GITHUB_TOKEN
+EOF
+fi
+
+
+if [ $INSTALL_MONIT = "yes" ]
+then
+  echo "-------------------"
+  echo "Installing monit..."
+  echo "-------------------"
+  
+  sudo apt-get -y install monit
+
+fi
 
 echo "-------------------------------------------"
 echo "Starting Jupyterhub service on port $JUPYTER_PORT..."
