@@ -11,11 +11,11 @@
 #
 # (c) Chris von Csefalvay, 2018.
 #
-# <UDF name="INSTALL_RSTUDIO" label="Install RStudio?" oneOf="yes,no" default="yes" />
 # <UDF name="JUPYTER_PORT" label="JupyterHub port" default="8888" />
+# <UDF name="PYTHON_VERSION" label="Python version" oneOf="3.5" default="3.5" />
+# <UDF name="INSTALL_RSTUDIO" label="Install RStudio?" oneOf="yes,no" default="yes" />
 # <UDF name="RSTUDIO_PORT" label="RStudio port" default="9999" />
 # <UDF name="RSTUDIO_VERSION" label="RStudio version" default="1.1.447" />
-# <UDF name="PYTHON_VERSION" label="Python version" oneOf="3.5" default="3.5" />
 # <UDF name="BAREBONES" label="Barebones install (only instals basic Python packages)" oneOf="yes,no" default="no" />
 # <UDF name="CARTOTOOLS" label="Python: Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
 # <UDF name="OPENCV" label="Python: Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
@@ -58,19 +58,62 @@ echo ""
 echo "Python"
 echo "------"
 echo "Version: $PYTHON_VERSION"
-echo "OpenCV: $OPENCV"
-echo "Cartography tools: $CARTOTOOLS"
-echo "Deep learning tools: $DEEPLEARNING"
 echo ""
-echo "R & RStudio"
-echo "-----------"
-echo "RStudio install: $INSTALL_RSTUDIO"
+
+if [ $INSTALL_RSTUDIO = "yes" ]
+then
+  echo "R & RStudio"
+  echo "-----------"
+  echo "R version: "
+  echo "RStudio version: $RSTUDIO_VERSION"
+  echo ""
+fi
+
+echo "Components"
+echo "----------"
+echo "OpenCV:               $OPENCV"
+echo "GIS tools:            $CARTOTOOLS"
+echo "Deep learning tools:  $DEEPLEARNING"
+echo "Bioinformatics tools: $BIOINFORMATICS"
+echo ""
+
+echo "Databases"
+echo "---------"
+echo "* PostgreSQL"
+echo "* SQLite"
+if [ $INSTALL_MONGO = "yes" ]
+then
+  echo "* MongoDB"
+fi
+if [ $INSTALL_NEO4J = "yes" ]
+then
+  echo "* Neo4j"
+fi
+
 echo ""
 echo "Ports"
-echo "*---> RStudio: $RSTUDIO_PORT"
-echo "*---> Jupyter: $JUPYTER_PORT"
-
-
+echo "-----"
+echo ""
+echo "         SERVICE       |  PORT  "
+echo "-----------------------|--------
+echo "*-------->     RStudio | $RSTUDIO_PORT"
+echo "*-------->     Jupyter | $JUPYTER_PORT"
+if [ $INSTALL_MONIT = "yes" ]
+then
+echo "*-------->       monit | 1234"
+fi
+if [ $DEEPLEARNING = "yes" ]
+echo "*--------> TensorBoard | 1234"
+fi
+if [ $INSTALL_NEO4J = "yes" ]
+then
+echo "*-------->       Neo4j | 1234"
+fi
+if [ $INSTALL_MONGO = "yes" ]
+echo "*-------->       Mongo | 1234"
+fi
+echo "*-------->  PostgreSQL | 1234 
+echo "-----------------------|-------"
 if [ $BAREBONES = "yes" ] 
 then
 	echo "This is a barebones install, so it'll be pretty quick."
@@ -123,6 +166,8 @@ cd /tmp
 sudo wget https://bootstrap.pypa.io/get-pip.py
 python3 get-pip.py
 
+sudo pip3 install virtualenv
+
 
 # --- INSTALLING R -----------------------------------------------------------
 echo "------------------"
@@ -156,15 +201,20 @@ then
   sudo apt-get update -y
   sudo apt-get -y install neo4j
   
-  ppip3 install 
+  pip3 install neo4j-driver py2neo neomodel
 fi
 
 if [ $INSTALL_MONGO = "yes" ]
 then
+  echo "---------------------"
+  echo "Installing MongoDB..."
+  echo "---------------------"
+
   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
   echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
   sudo apt-get update
   sudo apt-get install -y mongodb-org
+  pip3 install pymongo
 fi
 
 echo "------------------------"
@@ -184,6 +234,7 @@ then
   sudo apt-get install -y qtbase5-dev libavcodec-dev libavformat-dev libswscale-dev 
   sudo apt-get install -y libgtk2.0-dev libv4l-dev libatlas-base-dev gfortran
   sudo apt-get install -y libhdf5-serial-dev
+  pip3 install opencv-contrib-python
 fi
 
 
@@ -201,9 +252,35 @@ then
   echo "------------------------------------------------------------"
   sudo pip3 install graphviz ggplot deap NetworkX scikit-learn Pillow
   sudo pip3 install simpy seaborn epipy mesa requests BeautifulSoup4
-  sudo pip3 install bokeh scikit-image gensim nltk statsmodels scrapy
-  sudo pip3 install biopython cubes 
+  sudo pip3 install bokeh scikit-image gensim statsmodels scrapy
+  sudo pip3 install cubes PyMC PyMix BayesPy requests 
+  sudo pip3 install scikit-image scikit-chem scikit-dataaccess 
+  sudo pip3 install scikit-datasets scikit-plot scikit-metrics scikit-neuralnetwork
 fi
+
+
+# --- INSTALLING NLP PACKAGES ----------------------------------------------
+echo "--------------------------------------------------"
+echo "Installing natural language processing packages..."
+echo "--------------------------------------------------"
+sudo pip3 install nltk 
+sudo pip3 install textblob 
+sudo pip3 install nalaf
+sudo pip3 install spacy
+sudo python3 -m nalaf.download_data
+sudo python3 -m nltk.downloader -d /usr/local/share/nltk_data all 
+sudo python -m spacy download en_core_web_sm
+
+# --- INSTALLING ML/DL PACKAGES -------------------------------------------
+echo "----------------------------"
+echo "Installing ML/DL packages..."
+echo "----------------------------"
+sudo pip3 install scikit-learn scikit-neuralnetwork yellowbrick
+sudo pip3 install tensorflow
+sudo pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.0-cp36-cp36m-linux_x86_64.whl 
+sudo pip3 install torchvision
+sudo pip3 install keras
+sudo pip3 install caffe
 
 
 # --- INSTALLING JUPYTERHUB ---------------------------------------------------
@@ -268,6 +345,8 @@ then
   echo "------------------------------------"
 
   sudo pip3 install biopython 
+  sudo pip3 install scikit-bio
+  install_Rpkg purrr 
 
 fi
 
@@ -289,6 +368,7 @@ if [ $BAREBONES = "no" ]
 then
   # Must-haves
   install_Rpkg Rcpp 
+  install_Rpkg boot glmnet pwr
   install_Rpkg data.table parallel curl jsonlite httr devtools testthat roxygen2 magrittr cronR
   install_Rpkg addinslist
   # Database connectors
