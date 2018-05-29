@@ -193,7 +193,7 @@ then
   echo "Installing Neo4j..."
   echo "-------------------"
 
-  sudo apt-get install default-jre default-jre-headless
+  sudo apt-get install -y default-jre default-jre-headless
   sudo update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/bin/java
   sudo update-alternatives --set javac /usr/lib/jvm/java-8-openjdk-amd64/bin/javac
   cd /tmp
@@ -203,7 +203,7 @@ then
   sudo apt-get update -y
   sudo apt-get -y install neo4j
   
-  pip3 install neo4j-driver py2neo neomodel
+  pip3 install neo4j-driver==1.5.0 py2neo neomodel
 fi
 
 if [ $INSTALL_MONGO = "yes" ]
@@ -403,17 +403,32 @@ then
 	echo "Installing RStudio $RSTUDIO_VERSION..."
 	echo "---------------------------"
 	
-	wget https://download2.rstudio.org/rstudio-server-$RSTUDIO_VERSION-amd64.deb
-	sudo gdebi -n rstudio-server-$RSTUDIO_VERSION-amd64.deb
+	if [[ $RSTUDIO_VERSION =~ "1.1.[0-9]{1,3}" ]]
+	then
+        	sudo wget https://download2.rstudio.org/rstudio-server/$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
+	else
+		sudo wget https://s3.amazonaws.com/rstudio-ide-build/desktop/trusty/amd64/rstudio-$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
+	fi
+	
+	sudo gdebi -n /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
+	sudo rm /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
 fi
+
 if [ $INSTALL_SHINYSERVER = "yes" ]
 then
 	echo "---------------------------------"
 	echo "Installing Shiny Server $SHINYSERVER_VERSION..."
 	echo "---------------------------------"
 
-	wget https://download2.rstudio.org/rstudio-server-$RSTUDIO_VERSION-amd64.deb
-	sudo gdebi -n rstudio-server-$RSTUDIO_VERSION-amd64.deb
+	if [[ $SHINYSERVER_VERSION =~ "1.5.7.[0-9]{1,3}"]
+	then
+		sudo wget https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-$SHINYSERVER_VERSION-amd64.deb -O /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
+	else
+		sudo wget https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubuntu-14.04/x86_64/shiny-server-$SHINYSERVER_VERSION-amd64.deb -O /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
+	fi
+	
+	sudo gdebi -n /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
+	sudo rm /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
 fi
 
 # Configure RStudio config file
