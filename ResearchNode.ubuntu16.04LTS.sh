@@ -97,8 +97,9 @@ echo "Updating system and installing the good stuff..."
 echo "------------------------------------------------"
 
 sudo apt-get update
-sudo apt-get -y libxml2-dev
-sudo apt-get -y 
+sudo apt-get install -y libxml2-dev wget autoremove libcurl3-dev libfreetype6-dev
+sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
+
 
 echo "---------------"
 echo "Installing R..."
@@ -107,18 +108,16 @@ echo "---------------"
 sudo apt-get install -y r-base
 
 
-echo "-----------------------------"
-echo "Installing Python and deps..."
-echo "-----------------------------"
 
-# Install dependencies
-sudo apt-get install -y python3-pip
-sudo pip3 install --upgrade pip
+
+
+echo "--------------------"
+echo "Installing NodeJS..."
+echo "--------------------"
+
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-sudo apt-get install -y nodejs build-essential cmake g++ gfortran libopenblas-dev
-sudo apt-get install -y pkg-config python-dev software-properties-common 
-sudo apt-get install -y wget autoremove virtualenv swig python-wheel
-sudo apt-get install -y libcurl3-dev python3-dev python-dev libfreetype6-dev
+sudo apt-get install -y nodejs
+
 
 if [ $OPENCV = "yes" ]
 then
