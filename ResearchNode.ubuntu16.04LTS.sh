@@ -20,6 +20,8 @@
 # <UDF name="CARTOTOOLS" label="Python: Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
 # <UDF name="OPENCV" label="Python: Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
 # <UDF name="BIOINFORMATICS" label="Python: Do you want to install bioinformatics tools?" oneOf="yes,no" default="no" />
+# <UDF name="INSTALL_MONGO" label="Do you want to install MongoDB?" oneOf="yes,no" default="yes" />
+# <UDF name="INSTALL_NEO4J" label="Do you want to install Neo4j?" oneOf="yes,no" default="yes" />
 # <UDF name="USER_USERNAME" label="First user username" />
 # <UDF name="USER_PASSWORD" label="First user password" />
 # <UDF name="USERGROUPNAME" label="Usergroup name for Jupyterhub users" default="jupyter" />
@@ -91,7 +93,6 @@ sudo apt-get install -y checkinstall libreadline-gplv2-dev libncursesw5-dev
 sudo apt-get install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
 sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev
 
-
 # --- INSTALLING LIBSSL -------------------------------------------------------
 echo "------------------------------------"
 echo "Configuring libssl and linking it..."
@@ -100,7 +101,6 @@ echo "------------------------------------"
 sudo apt-get install -y software-properties-common build-essential
 sudo apt-get install -y python-software-properties 
 sudo apt-get install -y libssl-dev libssl-doc
-
 
 
 # --- INSTALLING NODEJS -------------------------------------------------------
@@ -138,6 +138,41 @@ echo "Installing R..."
 echo "---------------"
 sudo apt-get install -y r-base r-*
 
+
+# --- INSTALLING DATABASES ----------------------------------------------------
+if [ $INSTALL_NEO4J = "yes" ]
+then
+  echo "-------------------"
+  echo "Installing Neo4j..."
+  echo "-------------------"
+
+  sudo apt-get install default-jre default-jre-headless
+  sudo update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/bin/java
+  sudo update-alternatives --set javac /usr/lib/jvm/java-8-openjdk-amd64/bin/javac
+  cd /tmp
+  wget --no-check-certificate -O - https://debian.neo4j.org/neotechnology.gpg.key | sudo apt-key add -
+  echo 'deb http://debian.neo4j.org/repo stable/' | sudo tee /etc/apt/sources.list.d/neo4j.list
+  
+  sudo apt-get update -y
+  sudo apt-get -y install neo4j
+  
+  ppip3 install 
+fi
+
+if [ $INSTALL_MONGO = "yes" ]
+then
+  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+  echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+  sudo apt-get update
+  sudo apt-get install -y mongodb-org
+fi
+
+echo "------------------------"
+echo "Installing Postgresql..."
+echo "-------------------------"
+
+sudo apt-get install -y postgresql postgresql-contrib
+pip3 install psycopg2
 
 # --- INSTALLING OPENCV -------------------------------------------------------
 if [ $OPENCV = "yes" ]
@@ -204,11 +239,12 @@ sudo jupyterhub upgrade-db
 
 
 
+# --- INSTALLING GIS TOOLS ----------------------------------------------------
 if [ $CARTOTOOLS = "yes" ]
 then
-  echo "--------------------------------"
-  echo "Installing cartographic tools..."
-  echo "--------------------------------"
+  echo "-----------------------"
+  echo "Installing GIS tools..."
+  echo "-----------------------"
   sudo apt-get install -y proj-bin libproj-dev libgeos-dev
   sudo add-apt-repository -y ppa:ubuntugis/ppa
   sudo apt-get update
@@ -221,13 +257,17 @@ then
   sudo pip3 install mapbox mapboxgl
 fi
 
+
+
+# --- INSTALLING BIOINFORMATICS TOOLS -----------------------------------------
+
 if [ $BIOINFORMATICS = "yes" ]
 then
   echo "------------------------------------"
   echo "Installing bioinformatics toolkit..."
   echo "------------------------------------"
 
-
+  sudo pip3 install biopython 
 
 fi
 
