@@ -78,7 +78,7 @@ echo ""
 echo "OK, let's go! ..."
 echo ""
 
-
+# --- INSTALLING UPDATES ------------------------------------------------------
 echo "------------------------------------------------"
 echo "Updating system and installing the good stuff..."
 echo "------------------------------------------------"
@@ -92,15 +92,40 @@ sudo apt-get install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
 sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev
 
 
+# --- INSTALLING LIBSSL -------------------------------------------------------
 echo "------------------------------------"
 echo "Configuring libssl and linking it..."
 echo "------------------------------------"
 
 sudo apt-get install -y software-properties-common build-essential
 sudo apt-get install -y python-software-properties 
-sudo apt-get install -y libssl-dev openssl-dev
+sudo apt-get install -y libssl-dev libssl-doc
 
 
+
+# --- INSTALLING NODEJS -------------------------------------------------------
+echo "--------------------"
+echo "Installing NodeJS..."
+echo "--------------------"
+
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+
+# --- INSTALLING PYTHON -------------------------------------------------------
+echo "----------------------------"
+echo "Installing Python and pip..."
+echo "----------------------------"
+
+sudo apt-get install -y python python-pip python3 python3-pip python3* libpython3*
+
+cd /tmp
+sudo wget https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py
+
+
+
+# --- INSTALLING R -----------------------------------------------------------
 echo "------------------"
 echo "Adding apt repo..."
 echo "------------------"
@@ -113,32 +138,10 @@ echo "---------------"
 echo "Installing R..."
 echo "---------------"
 
-sudo apt-get install -y r-base
+sudo apt-get install -y r-base r-*
 
 
-if [ PYTHON_VERSION = "3.5" ]
-then
-	sudo apt-get install python3 libpython3-all-dev
-else
-	sudo mkdir python
-	wget https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz
-	tar -xzvf Python-3.6.5.tgz
-	cd Python-3.6.5
-	./configure --enable-optimizations
-	make -j 8
-	sudo make install
-fi
-
-sudo apt-get install -y python3-pip python3-wheel
-
-echo "--------------------"
-echo "Installing NodeJS..."
-echo "--------------------"
-
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-
+# --- INSTALLING OPENCV -------------------------------------------------------
 if [ $OPENCV = "yes" ]
 then
   echo "--------------------"
@@ -150,49 +153,8 @@ then
   sudo apt-get install -y libhdf5-serial-dev
 fi
 
-echo "------------------------"
-echo "Installing JupyterHub..."
-echo "------------------------"
 
-npm install -g configurable-http-proxy
-sudo pip3 install jupyterhub sudospawner virtualenv
-sudo pip3 install --upgrade notebook
-
-# Generate jupyter config
-echo "------------------------------------"
-echo "Generating JupyterHub config file..."
-echo "------------------------------------"
-sudo mkdir /etc/jupyterhub
-sudo mkdir /usr/local/jupyterhub
-sudo jupyterhub --generate-config -f $CONFIG_FILE
-
-echo "----------------------"
-echo "Installing IRKernel..."
-echo "----------------------"
-    
-R --no-save << EOF
-    install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest'), lib='/usr/local/lib/R/site-library', repos='http://cran.us.r-project.org')
-    devtools::install_github('IRkernel/IRkernel')
-    IRKernel::installspec()
-EOF
-
-
-# Configure config file
-echo "-------------------------------------"
-echo "Configuring JupyterHub config file..."
-echo "-------------------------------------"
-echo "c.JupyterHub.ip = '0.0.0.0'" >> $CONFIG_FILE
-echo "c.JupyterHub.port = $JUPYTER_PORT" >> $CONFIG_FILE
-echo "c.JupyterHub.pid_file = '/var/run/$NAME.pid'" >> $CONFIG_FILE
-echo "c.Authenticator.admin_users = {'$USER_USERNAME'}" >> $CONFIG_FILE
-echo "c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'" >> $CONFIG_FILE
-echo "c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'" >> $CONFIG_FILE
-echo "c.JupyterHub.spawner_class = 'sudospawner.SudoSpawner'" >> $CONFIG_FILE
-echo "c.Spawner.cmd = '/usr/local/bin/sudospawner'" >> $CONFIG_FILE
-echo "c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'" >> $CONFIG_FILE 
-sudo jupyterhub upgrade-db
-
-# Install the usual pythonic stuff
+# --- INSTALLING PYTHON PACKAGES ----------------------------------------------
 echo "-------------------------------------------"
 echo "Installing barebones scientific packages..."
 echo "-------------------------------------------"
@@ -209,6 +171,42 @@ then
   sudo pip3 install biopython cubes 
 fi
 
+
+# --- INSTALLING JUPYTERHUB ---------------------------------------------------
+echo "------------------------"
+echo "Installing JupyterHub..."
+echo "------------------------"
+
+npm install -g configurable-http-proxy
+sudo pip3 install jupyterhub sudospawner virtualenv
+sudo pip3 install --upgrade notebook
+
+# Generate jupyter config
+echo "------------------------------------"
+echo "Generating JupyterHub config file..."
+echo "------------------------------------"
+sudo mkdir /etc/jupyterhub
+sudo mkdir /usr/local/jupyterhub
+sudo jupyterhub --generate-config -f $CONFIG_FILE
+
+# Configure config file
+echo "-------------------------------------"
+echo "Configuring JupyterHub config file..."
+echo "-------------------------------------"
+echo "c.JupyterHub.ip = '0.0.0.0'" >> $CONFIG_FILE
+echo "c.JupyterHub.port = $JUPYTER_PORT" >> $CONFIG_FILE
+echo "c.JupyterHub.pid_file = '/var/run/$NAME.pid'" >> $CONFIG_FILE
+echo "c.Authenticator.admin_users = {'$USER_USERNAME'}" >> $CONFIG_FILE
+echo "c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'" >> $CONFIG_FILE
+echo "c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'" >> $CONFIG_FILE
+echo "c.JupyterHub.spawner_class = 'sudospawner.SudoSpawner'" >> $CONFIG_FILE
+echo "c.Spawner.cmd = '/usr/local/bin/sudospawner'" >> $CONFIG_FILE
+echo "c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'" >> $CONFIG_FILE 
+sudo jupyterhub upgrade-db
+
+
+
+
 if [ $CARTOTOOLS = "yes" ]
 then
   echo "--------------------------------"
@@ -217,6 +215,7 @@ then
   sudo apt-get install -y proj-bin libgeos-dev
   sudo pip3 install GEOS GDAL geojson
 fi
+
 
 if [ $DEEPLEARNING = "yes" ]
 then
