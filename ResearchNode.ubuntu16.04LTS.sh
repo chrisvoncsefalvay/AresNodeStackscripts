@@ -15,7 +15,9 @@
 # <UDF name="PYTHON_VERSION" label="PYTHON: Python version" oneOf="3.5" default="3.5" />
 # <UDF name="INSTALL_RSTUDIO" label="RSTUDIO: Install RStudio?" oneOf="yes,no" default="yes" />
 # <UDF name="RSTUDIO_PORT" label="RSTUDIO: RStudio port" default="9999" />
-# <UDF name="RSTUDIO_VERSION" label="RSTUDIO: RStudio version" default="1.1.447" />
+# <UDF name="RSTUDIO_VERSION" label="RSTUDIO: RStudio version (stable: 1.1.453)" default="1.1.453" />
+# <UDF name="INSTALL_SHINYSERVER" label="RSTUDIO: Install Shiny server?" oneOf="yes,no" default="yes" />
+# <UDF name="SHINYSERVER_VERSION" label="RSTUDIO: Shiny server version (stable: 1.5.7.907)" default="1.5.7.907" />
 # <UDF name="BAREBONES" label="FEATURES: Barebones install (only instals basic Python packages)" oneOf="yes,no" default="no" />
 # <UDF name="CARTOTOOLS" label="FEATURES: Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
 # <UDF name="OPENCV" label="FEATURES: Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
@@ -102,10 +104,6 @@ echo "         SERVICE       |  PORT  "
 echo "-----------------------|--------
 echo "*-------->     RStudio | $RSTUDIO_PORT"
 echo "*-------->     Jupyter | $JUPYTER_PORT"
-if [ $INSTALL_MONIT = "yes" ]
-then
-echo "*-------->       monit | 1234"
-fi
 if [ $DEEPLEARNING = "yes" ]
 echo "*--------> TensorBoard | 1234"
 fi
@@ -138,7 +136,7 @@ sudo apt-get install -y libxml2-dev wget autoremove libcurl3-dev libfreetype6-de
 sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
 sudo apt-get install -y checkinstall libreadline-gplv2-dev libncursesw5-dev 
 sudo apt-get install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
-sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev
+sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev git git-flow
 
 # --- INSTALLING LIBSSL -------------------------------------------------------
 echo "------------------------------------"
@@ -386,7 +384,8 @@ then
   # Modeling
   install_Rpkg glmnet survival MASS metrics e1071 qdap sentimentr tidytext
   # Reporting tools
-  install_Rpkg shiny xtable rmarkdown knitr 
+  install_Rpkg shiny 
+  install_Rpkg xtable rmarkdown knitr 
   # Spatial data
   install_Rpkg sp maptools maps ggmap tmap tmaptools mapsapi tidycensus
   # Time series
@@ -398,11 +397,21 @@ fi
 # RStudio install
 if [ $INSTALL_RSTUDIO = "yes" ]
 then
-	echo "---------------------"
-	echo "Installing RStudio..."
-	echo "---------------------"
-	
 	sudo apt-get install -y gdebi-core
+
+	echo "---------------------------"
+	echo "Installing RStudio $RSTUDIO_VERSION..."
+	echo "---------------------------"
+	
+	wget https://download2.rstudio.org/rstudio-server-$RSTUDIO_VERSION-amd64.deb
+	sudo gdebi -n rstudio-server-$RSTUDIO_VERSION-amd64.deb
+fi
+if [ $INSTALL_SHINYSERVER = "yes" ]
+then
+	echo "---------------------------------"
+	echo "Installing Shiny Server $SHINYSERVER_VERSION..."
+	echo "---------------------------------"
+
 	wget https://download2.rstudio.org/rstudio-server-$RSTUDIO_VERSION-amd64.deb
 	sudo gdebi -n rstudio-server-$RSTUDIO_VERSION-amd64.deb
 fi
@@ -520,22 +529,12 @@ cat << EOF >> /tmp/template.gitconfig
 EOF
 fi
 
-
-if [ $INSTALL_MONIT = "yes" ]
-then
-  echo "-------------------"
-  echo "Installing monit..."
-  echo "-------------------"
-  
-  sudo apt-get -y install monit
-
-fi
-
 echo "-------------------------------------------"
 echo "Starting Jupyterhub service on port $JUPYTER_PORT..."
 echo "-------------------------------------------"
 
+
 sudo systemctl restart jupyterhub
 
 
-echo "All done. Enjoy your Jupyterhub installation!"
+echo "All done. Enjoy your Jupyterhub & RStudio installation!"
