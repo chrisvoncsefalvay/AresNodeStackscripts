@@ -505,18 +505,18 @@ cat << EOF > /tmp/template.gitconfig
 	versiontag = v
 EOF
 
-if [ -n "$GITHUB_USERNAME" ] || [ -n "$GITHUB_TOKEN" ]
+if [ -n "$GIT_USERNAME" ] || [ -n "$GIT_TOKEN" ]
 then
 cat << EOF >> /tmp/template.gitconfig
 [github]
-	user = $GITHUB_USERNAME
-	token = $GITHUB_TOKEN
+	user = $GIT_USERNAME
+	token = $GIT_TOKEN
 EOF
-elif [ -n "$GITHUB_USERNAME" ]
+elif [ -n "$GIT_USERNAME" ]
 then
 cat << EOF >> /tmp/template.gitconfig
 [github]
-	token = $GITHUB_TOKEN
+	token = $GIT_TOKEN
 EOF
 fi
 
