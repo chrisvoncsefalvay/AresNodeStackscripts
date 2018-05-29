@@ -103,7 +103,7 @@ sudo apt-get install -y libxml2-dev wget autoremove libcurl3-dev libfreetype6-de
 sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
 sudo apt-get install -y checkinstall libreadline-gplv2-dev libncursesw5-dev 
 sudo apt-get install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
-
+sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev
 
 echo "---------------"
 echo "Installing R..."
@@ -114,14 +114,18 @@ sudo apt-get install -y r-base
 
 if [ PYTHON_VERSION = "3.5" ]
 then
-
+	sudo apt-get install python3 libpython3-all-dev
 else
-	sudo mkdir tmp
-	cd tmp
+	sudo mkdir python
 	wget https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz
-	
+	tar -xzvf Python-3.6.5.tgz
+	cd Python-3.6.5
+	./configure --enable-optimizations
+	make -j 8
+	sudo make install
 fi
 
+sudo apt-get install -y python3-pip python3-wheel
 
 echo "--------------------"
 echo "Installing NodeJS..."
