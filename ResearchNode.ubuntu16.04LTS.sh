@@ -208,7 +208,8 @@ then
   echo "--------------------------------"
   echo "Installing cartographic tools..."
   echo "--------------------------------"
-  sudo apt-get install -y proj-bin libgeos-dev gdal-bin
+  sudo apt-get install -y proj-bin libgeos-dev 
+  
   sudo pip3 install GEOS GDAL geojson
 fi
 
