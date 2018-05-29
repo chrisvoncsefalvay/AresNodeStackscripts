@@ -15,7 +15,7 @@
 # <UDF name="JUPYTER_PORT" label="JupyterHub port" default="8888" />
 # <UDF name="RSTUDIO_PORT" label="RStudio port" default="9999" />
 # <UDF name="RSTUDIO_VERSION" label="RStudio version" default="1.1.447" />
-# <UDF name="PYTHON_VERSION" label="Python version" oneOf="3.5,3.6.5" default="3.6.5" />
+# <UDF name="PYTHON_VERSION" label="Python version" oneOf="3.5" default="3.5" />
 # <UDF name="BAREBONES" label="Barebones install (only instals basic Python packages)" oneOf="yes,no" default="no" />
 # <UDF name="CARTOTOOLS" label="Python: Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
 # <UDF name="OPENCV" label="Python: Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
@@ -113,16 +113,15 @@ sudo apt-get install -y nodejs
 
 
 # --- INSTALLING PYTHON -------------------------------------------------------
-echo "----------------------------"
-echo "Installing Python and pip..."
-echo "----------------------------"
+echo "--------------------------------"
+echo "Installing Python $PYTHON_VERSION and pip..."
+echo "--------------------------------"
 
 sudo apt-get install -y python python-pip python3 python3-pip python3* libpython3*
 
 cd /tmp
 sudo wget https://bootstrap.pypa.io/get-pip.py
 python3 get-pip.py
-
 
 
 # --- INSTALLING R -----------------------------------------------------------
@@ -137,7 +136,6 @@ sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linu
 echo "---------------"
 echo "Installing R..."
 echo "---------------"
-
 sudo apt-get install -y r-base r-*
 
 
@@ -176,7 +174,6 @@ fi
 echo "------------------------"
 echo "Installing JupyterHub..."
 echo "------------------------"
-
 npm install -g configurable-http-proxy
 sudo pip3 install jupyterhub sudospawner virtualenv
 sudo pip3 install --upgrade notebook
@@ -206,13 +203,12 @@ sudo jupyterhub upgrade-db
 
 
 
-
 if [ $CARTOTOOLS = "yes" ]
 then
   echo "--------------------------------"
   echo "Installing cartographic tools..."
   echo "--------------------------------"
-  sudo apt-get install -y proj-bin libgeos-dev
+  sudo apt-get install -y proj-bin libgeos-dev gdal-bin
   sudo pip3 install GEOS GDAL geojson
 fi
 
