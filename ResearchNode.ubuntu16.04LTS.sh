@@ -340,14 +340,14 @@ echo "Configuring JupyterHub config file..."
 echo "-------------------------------------"
 
 cat << EOF >> $CONFIG_FILE
-c.JupyterHub.ip = '0.0.0.0'
-c.JupyterHub.port = $JUPYTER_PORT
-c.JupyterHub.pid_file = '/var/run/$NAME.pid'
-c.Authenticator.admin_users = {'$USER_USERNAME'}
-c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
-c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
-c.Spawner.cmd = '/usr/local/bin/sudospawner'
-c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
+	c.JupyterHub.ip = '0.0.0.0'
+	c.JupyterHub.port = $JUPYTER_PORT
+	c.JupyterHub.pid_file = '/var/run/$NAME.pid'
+	c.Authenticator.admin_users = {'$USER_USERNAME'}
+	c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
+	c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
+	c.Spawner.cmd = '/usr/local/bin/sudospawner'
+	c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
 EOF
 
 # Upgrading the jupyterhub DB
@@ -360,6 +360,7 @@ sudo jupyterhub upgrade-db
 
 if [ $CARTOTOOLS = "yes" ]
 then
+
   echo "-----------------------"
   echo "Installing GIS tools..."
   echo "-----------------------"
@@ -374,6 +375,7 @@ then
   sudo pip3 install geopandas geojson geopy geoviews elevation OSMnx giddy
   sudo pip3 install spint landsatxplore telluric 
   sudo pip3 install mapbox mapboxgl
+
 fi
 
 
@@ -394,7 +396,7 @@ then
 fi
 
 
-# Install OpenCV
+# --- INSTALLING OPENCV -----------------------------------------------------
 
 if [ $OPENCV = "yes" ]
 then
@@ -403,67 +405,58 @@ then
   echo "Installing OpenCV..."
   echo "--------------------"
   sudo apt-get install -y libopencv-dev python-opencv
-  sudo pip3 install opencv-contrib-python
+  sudo pip3 install opencv-contrib-python imtools
 
 fi
 
 
 # Install basic R packages
 
-if [ $BAREBONES = "no" ]
-then
 
-  # Must-haves
-  install_Rpkg Rcpp 
-  install_Rpkg boot glmnet pwr
-  install_Rpkg data.table parallel curl jsonlite httr devtools testthat roxygen2 magrittr cronR
-  install_Rpkg addinslist
-  # Database connectors
-  install_Rpkg RMySQL RSQLite
-  # Foreign sources
-  install_Rpkg rio datapasta xlsx XLConnect foreign validate
-  # Data munging
-  install_Rpkg plyr dplyr tidyr sqldf stringr lubridate iterator purrr reshape2 
-  # Visualization
-  install_Rpkg ggplot2 ggvis rgl leaflet dygraphs NetworkD3 gridExtra corrplot fmsb wordcloud RColorBrewer
-  # Modeling
-  install_Rpkg glmnet survival MASS metrics e1071 qdap sentimentr tidytext
-  # Reporting tools
-  install_Rpkg shiny 
-  install_Rpkg xtable rmarkdown knitr 
-  # Spatial data
-  install_Rpkg sp maptools maps ggmap tmap tmaptools mapsapi tidycensus
-  # Time series
-  install_Rpkg zoo xts quantmod 
-  # Progtools
-  install_Rpkg compiler foreach doParallel
-  
-fi
+# Must-haves
+install_Rpkg Rcpp 
+install_Rpkg boot glmnet pwr
+install_Rpkg data.table parallel curl jsonlite httr devtools testthat roxygen2 magrittr cronR
+install_Rpkg addinslist
+# Database connectors
+install_Rpkg RMySQL RSQLite
+# Foreign sources
+install_Rpkg rio datapasta xlsx XLConnect foreign validate
+# Data munging
+install_Rpkg plyr dplyr tidyr sqldf stringr lubridate iterator purrr reshape2 
+# Visualization
+install_Rpkg ggplot2 ggvis rgl leaflet dygraphs NetworkD3 gridExtra corrplot fmsb wordcloud RColorBrewer
+# Modeling
+install_Rpkg glmnet survival MASS metrics e1071 qdap sentimentr tidytext
+# Reporting tools
+install_Rpkg shiny 
+install_Rpkg xtable rmarkdown knitr 
+# Spatial data
+install_Rpkg sp maptools maps ggmap tmap tmaptools mapsapi tidycensus
+# Time series
+install_Rpkg zoo xts quantmod 
+# Progtools
+install_Rpkg compiler foreach doParallel
+
 
 # RStudio install
-if [ $INSTALL_RSTUDIO = "yes" ]
-then
-	sudo apt-get install -y gdebi-core
+sudo apt-get install -y gdebi-core
 
-	echo "---------------------------"
-	echo "Installing RStudio $RSTUDIO_VERSION..."
-	echo "---------------------------"
-	
-	if [[ $RSTUDIO_VERSION =~ "1.1.[0-9]{1,3}" ]]
-	then
-	
-        sudo wget https://download2.rstudio.org/rstudio-server/$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
-	
-	else
-	
-		sudo wget https://s3.amazonaws.com/rstudio-ide-build/desktop/trusty/amd64/rstudio-$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
-	
-	fi
-	
-	sudo gdebi -n /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
-	sudo rm /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
-	
+echo "---------------------------"
+echo "Installing RStudio $RSTUDIO_VERSION..."
+echo "---------------------------"
+
+if [[ $RSTUDIO_VERSION =~ "1\.1\.\d*" ]]
+then
+	echo "Stable version $RSTUDIO_VERSION requested"
+	sudo wget https://download2.rstudio.org/rstudio-server/$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
+else
+	echo "Nightly version $RSTUDIO_VERSION requested"
+	sudo wget https://s3.amazonaws.com/rstudio-ide-build/server/trusty/amd64/rstudio-server-$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
 fi
+
+sudo gdebi -n /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
+sudo rm /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
 
 
 if [ $INSTALL_SHINYSERVER = "yes" ]
@@ -475,7 +468,7 @@ then
 
 	if [[ $SHINYSERVER_VERSION=~"1.5.7.[0-9]{1,3}" ]]
 	then
-		
+
 		sudo wget https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-$SHINYSERVER_VERSION-amd64.deb -O /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
 	
 	else
