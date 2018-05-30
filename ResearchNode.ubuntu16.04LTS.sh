@@ -22,6 +22,8 @@
 # <UDF name="CARTOTOOLS" label="FEATURES: Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
 # <UDF name="OPENCV" label="FEATURES: Do you want to install OpenCV and deep learning tools?" oneOf="yes,no" default="no" />
 # <UDF name="BIOINFORMATICS" label="FEATURES: Do you want to install bioinformatics tools?" oneOf="yes,no" default="no" />
+# <UDF name="DEEPLEARNING" label="FEATURES: Do you want to install deep learning tools?" oneOf="yes,no" default="no" />
+# <UDF name="DOWNLOAD_CORPORA" label="FEATURES: Do you want to download corpora?" oneOf="yes,no" default="no" />
 # <UDF name="INSTALL_MONGO" label="DATABASES: Do you want to install MongoDB?" oneOf="yes,no" default="yes" />
 # <UDF name="INSTALL_NEO4J" label="DATABASES: Do you want to install Neo4j?" oneOf="yes,no" default="yes" />
 # <UDF name="USER_USERNAME" label="SYSTEM: First user username" />
@@ -51,6 +53,7 @@ install_Rpkg () {
 
 CONFIG_FILE=/etc/jupyterhub/jupyterhub_config.py
 USER=root
+
 
 # Initiating process
 
@@ -103,23 +106,23 @@ echo "Ports"
 echo "-----"
 echo ""
 echo "         SERVICE       |  PORT  "
-echo "-----------------------|--------
+echo "-----------------------|--------"
 echo "*-------->     RStudio | $RSTUDIO_PORT"
 echo "*-------->     Jupyter | $JUPYTER_PORT"
 
 if [ $DEEPLEARNING = "yes" ]
 then
-echo "*--------> TensorBoard | 1234"
+	echo "*--------> TensorBoard | 1234"
 fi
 
 if [ $INSTALL_NEO4J = "yes" ]
 then
-echo "*-------->       Neo4j | 1234"
+	echo "*-------->       Neo4j | 1234"
 fi
 
 if [ $INSTALL_MONGO = "yes" ]
 then
-echo "*-------->       Mongo | 1234"
+	echo "*-------->       Mongo | 1234"
 fi
 
 echo "*-------->  PostgreSQL | 1234"
@@ -127,11 +130,11 @@ echo "-----------------------|-------"
 
 if [ $BAREBONES = "yes" ] 
 then
-	echo "This is a barebones install, so it\'ll be pretty quick."
+	echo "This is a barebones install, so ir wi..ll be pretty quick."
 fi
 
 echo ""
-echo "OK, let's go! ..."
+echo "OK, ready to roll!"
 echo ""
 
 # --- INSTALLING UPDATES ------------------------------------------------------
@@ -146,6 +149,7 @@ sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
 sudo apt-get install -y checkinstall libreadline-gplv2-dev libncursesw5-dev 
 sudo apt-get install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
 sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev git git-flow
+
 
 # --- INSTALLING LIBSSL -------------------------------------------------------
 echo "------------------------------------"
@@ -187,18 +191,18 @@ echo "------------------"
 
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 echo 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/' >> /etc/apt/sources.list
+sudo apt-get update
 
 
 echo "---------------"
 echo "Installing R..."
 echo "---------------"
 
-
-sudo apt-get install -y r-base r-base-dev r-base-core r-base-core-dbg r-base-latex r-base-
-sudo apt-get install -y 
+sudo apt-get install -y r-base r-base-dev r-base-core r-base-core-dbg r-base-latex
 
 
 # --- INSTALLING DATABASES ----------------------------------------------------
+
 if [ $INSTALL_NEO4J = "yes" ]
 then
   echo "-------------------"
@@ -208,8 +212,8 @@ then
   sudo apt-get install -y default-jre default-jre-headless
   sudo update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/bin/java
   sudo update-alternatives --set javac /usr/lib/jvm/java-8-openjdk-amd64/bin/javac
-  cd /tmp
-  wget --no-check-certificate -O - https://debian.neo4j.org/neotechnology.gpg.key | sudo apt-key add -
+
+  wget --no-check-certificate https://debian.neo4j.org/neotechnology.gpg.key -O /tmp/neotechnology.key | sudo apt-key add /tmp/neotechnology.key
   echo 'deb http://debian.neo4j.org/repo stable/' | sudo tee /etc/apt/sources.list.d/neo4j.list
   	
   sudo apt-get update -y
@@ -283,20 +287,25 @@ fi
 echo "--------------------------------------------------"
 echo "Installing natural language processing packages..."
 echo "--------------------------------------------------"
+
 sudo pip3 install nltk 
 sudo pip3 install textblob 
 sudo pip3 install nalaf
 sudo pip3 install spacy
-sudo python3 -m nalaf.download_data
-sudo python3 -m nltk.downloader -d /usr/local/share/nltk_data all 
-sudo python -m spacy download en_core_web_sm
 
+if [ $DOWNLOAD_CORPORA = "yes" ]
+then
+	sudo python3 -m nalaf.download_data
+	sudo python3 -m nltk.downloader -d /usr/local/share/nltk_data all 
+	sudo python -m spacy download en_core_web_sm
+fi
 
 # --- INSTALLING ML/DL PACKAGES -------------------------------------------
 
 echo "----------------------------"
 echo "Installing ML/DL packages..."
 echo "----------------------------"
+
 sudo pip3 install scikit-learn scikit-neuralnetwork yellowbrick
 sudo pip3 install tensorflow
 sudo pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.0-cp35-cp35m-linux_x86_64.whl 
@@ -305,9 +314,11 @@ sudo pip3 install keras
 
 
 # --- INSTALLING JUPYTERHUB ---------------------------------------------------
+
 echo "------------------------"
 echo "Installing JupyterHub..."
 echo "------------------------"
+
 npm install -g configurable-http-proxy
 sudo pip3 install jupyterhub sudospawner virtualenv
 sudo pip3 install --upgrade notebook
@@ -316,33 +327,42 @@ sudo pip3 install --upgrade notebook
 echo "------------------------------------"
 echo "Generating JupyterHub config file..."
 echo "------------------------------------"
+
 sudo mkdir /etc/jupyterhub
 sudo mkdir /usr/local/jupyterhub
 sudo jupyterhub --generate-config -f $CONFIG_FILE
+
 
 # Configure config file
 echo "-------------------------------------"
 echo "Configuring JupyterHub config file..."
 echo "-------------------------------------"
-echo "c.JupyterHub.ip = '0.0.0.0'" >> $CONFIG_FILE
-echo "c.JupyterHub.port = $JUPYTER_PORT" >> $CONFIG_FILE
-echo "c.JupyterHub.pid_file = '/var/run/$NAME.pid'" >> $CONFIG_FILE
-echo "c.Authenticator.admin_users = {'$USER_USERNAME'}" >> $CONFIG_FILE
-echo "c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'" >> $CONFIG_FILE
-echo "c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'" >> $CONFIG_FILE
-echo "c.JupyterHub.spawner_class = 'sudospawner.SudoSpawner'" >> $CONFIG_FILE
-echo "c.Spawner.cmd = '/usr/local/bin/sudospawner'" >> $CONFIG_FILE
-echo "c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'" >> $CONFIG_FILE 
+
+cat << EOF >> $CONFIG_FILE
+c.JupyterHub.ip = '0.0.0.0'
+c.JupyterHub.port = $JUPYTER_PORT
+c.JupyterHub.pid_file = '/var/run/$NAME.pid'
+c.Authenticator.admin_users = {'$USER_USERNAME'}
+c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
+c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
+c.Spawner.cmd = '/usr/local/bin/sudospawner'
+c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
+EOF
+
+# Upgrading the jupyterhub DB
+
 sudo jupyterhub upgrade-db
 
 
 
 # --- INSTALLING GIS TOOLS ----------------------------------------------------
+
 if [ $CARTOTOOLS = "yes" ]
 then
   echo "-----------------------"
   echo "Installing GIS tools..."
   echo "-----------------------"
+
   sudo apt-get install -y proj-bin libproj-dev libgeos-dev
   sudo add-apt-repository -y ppa:ubuntugis/ppa
   sudo apt-get update
@@ -361,6 +381,7 @@ fi
 
 if [ $BIOINFORMATICS = "yes" ]
 then
+
   echo "------------------------------------"
   echo "Installing bioinformatics toolkit..."
   echo "------------------------------------"
@@ -371,15 +392,18 @@ then
 
 fi
 
+
 # Install OpenCV
 
 if [ $OPENCV = "yes" ]
 then
+
   echo "--------------------"
   echo "Installing OpenCV..."
   echo "--------------------"
   sudo apt-get install -y libopencv-dev python-opencv
   sudo pip3 install opencv-contrib-python
+
 fi
 
 
@@ -387,6 +411,7 @@ fi
 
 if [ $BAREBONES = "no" ]
 then
+
   # Must-haves
   install_Rpkg Rcpp 
   install_Rpkg boot glmnet pwr
@@ -411,6 +436,7 @@ then
   install_Rpkg zoo xts quantmod 
   # Progtools
   install_Rpkg compiler foreach doParallel
+  
 fi
 
 # RStudio install
@@ -424,9 +450,13 @@ then
 	
 	if [[ $RSTUDIO_VERSION =~ "1.1.[0-9]{1,3}" ]]
 	then
+	
         sudo wget https://download2.rstudio.org/rstudio-server/$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
+	
 	else
+	
 		sudo wget https://s3.amazonaws.com/rstudio-ide-build/desktop/trusty/amd64/rstudio-$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
+	
 	fi
 	
 	sudo gdebi -n /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
@@ -437,15 +467,20 @@ fi
 
 if [ $INSTALL_SHINYSERVER = "yes" ]
 then
+	
 	echo "---------------------------------"
 	echo "Installing Shiny Server $SHINYSERVER_VERSION..."
 	echo "---------------------------------"
 
 	if [[ $SHINYSERVER_VERSION =~ "1.5.7.[0-9]{1,3}"]
 	then
+		
 		sudo wget https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-$SHINYSERVER_VERSION-amd64.deb -O /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
+	
 	else
+		
 		sudo wget https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubuntu-14.04/x86_64/shiny-server-$SHINYSERVER_VERSION-amd64.deb -O /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
+	
 	fi
 	
 	sudo gdebi -n /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
@@ -557,13 +592,16 @@ then
 		[github]
 			user = $GIT_USERNAME
 			token = $GIT_TOKEN
-	EOF
+    EOF
+
 elif [ -n "$GIT_USERNAME" ]
 then
+
 	cat << EOF >> /tmp/template.gitconfig
 	[github]
 		token = $GIT_TOKEN
 	EOF
+
 fi
 
 echo "-------------------------------------------"
