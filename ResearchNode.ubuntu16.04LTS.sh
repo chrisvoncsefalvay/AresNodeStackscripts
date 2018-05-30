@@ -289,74 +289,14 @@ then
   echo "--------------------"
   echo "Installing OpenCV..."
   echo "--------------------"
-  sudo apt-get install -y libpng12-dev libjpeg8-dev libtiff5-dev libjasper-dev
-  sudo apt-get install -y qtbase5-dev libavcodec-dev libavformat-dev libswscale-dev 
-  sudo apt-get install -y libgtk2.0-dev libv4l-dev libatlas-base-dev gfortran
-  sudo apt-get install -y libhdf5-serial-dev
-  pip3 install opencv-contrib-python
+  # DOWNLOAD AND LAUNCH OPENCV INSTALLER
+  
 fi
 
 
 # --- INSTALLING PYTHON PACKAGES ----------------------------------------------
 
-echo "-------------------------------------------"
-echo "Installing barebones scientific packages..."
-echo "-------------------------------------------"
-sudo pip3 install Cython
-sudo pip3 install scipy numpy pandas matplotlib
-
-if [ $BAREBONES = "no" ]
-then
-  echo "------------------------------------------------------------"
-  echo "Installing extended scientific and visualization packages..."
-  echo "------------------------------------------------------------"
-  sudo pip3 install graphviz ggplot deap NetworkX scikit-learn Pillow
-  sudo pip3 install simpy seaborn epipy mesa requests BeautifulSoup4
-  sudo pip3 install bokeh scikit-image gensim statsmodels scrapy
-  sudo pip3 install cubes PyMC PyMix BayesPy requests 
-  sudo pip3 install scikit-image scikit-chem scikit-dataaccess 
-  sudo pip3 install scikit-datasets scikit-plot scikit-metrics scikit-neuralnetwork
-fi
-
-
-# --- INSTALLING NLP PACKAGES ----------------------------------------------
-
-if [ $BAREBONES = "no" ]
-	
-	echo "--------------------------------------------------"
-	echo "Installing natural language processing packages..."
-	echo "--------------------------------------------------"
-
-	sudo pip3 install nltk 
-	sudo pip3 install textblob 
-	sudo pip3 install nalaf
-	sudo pip3 install spacy
-
-	if [ $DOWNLOAD_CORPORA = "yes" ]
-	then
-		sudo python3 -m nalaf.download_data
-		sudo python3 -m nltk.downloader -d /usr/local/share/nltk_data all 
-		sudo python3 -m spacy download en_core_web_sm
-	fi
-
-fi
-
-
-# --- INSTALLING ML/DL PACKAGES -------------------------------------------
-
-if [ $BAREBONES = "no" ]
-
-	echo "----------------------------"
-	echo "Installing ML/DL packages..."
-	echo "----------------------------"
-
-	sudo pip3 install scikit-learn scikit-neuralnetwork yellowbrick
-	sudo pip3 install tensorflow
-	sudo pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.0-cp35-cp35m-linux_x86_64.whl 
-	sudo pip3 install torchvision
-	sudo pip3 install keras
-
-fi
+# INSTALLER GOES HERE
 
 # --- INSTALLING JUPYTERHUB ---------------------------------------------------
 
