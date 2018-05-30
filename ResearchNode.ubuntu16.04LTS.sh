@@ -14,7 +14,7 @@
 # <UDF name="JUPYTER_PORT" label="PYTHON: JupyterHub port" default="8888" />
 # <UDF name="PYTHON_VERSION" label="PYTHON: Python version" oneOf="3.5" default="3.5" />
 # <UDF name="RSTUDIO_PORT" label="RSTUDIO: RStudio port" default="9999" />
-# <UDF name="RSTUDIO_VERSION" label="RSTUDIO: RStudio version (stable: 1.1.453)" default="1.1.453" />
+# <UDF name="RSTUDIO_VERSION" label="RSTUDIO: RStudio version" oneOf="1.1.453,1.2.672" default="1.1.453" />
 # <UDF name="SHINYSERVER_VERSION" label="RSTUDIO: Shiny server version (stable: 1.5.7.907)" default="1.5.7.907" />
 # <UDF name="BAREBONES" label="FEATURES: Barebones install (only instals basic Python packages)" oneOf="yes,no" default="no" />
 # <UDF name="CARTOTOOLS" label="FEATURES: Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
