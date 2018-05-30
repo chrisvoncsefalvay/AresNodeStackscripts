@@ -68,7 +68,69 @@ system_create_admin_user () {
     echo "Creating admin user ${1}"
     echo "----------------------------------"
     
-    sudo su -c "useradd "$1" -s /bin/bash -m -g "$3"
+    sudo su -c "useradd \"$1\" -s /bin/bash -m -g \"$3\""
     sudo echo "$1":"$2" | chpasswd
+
+}
+
+system_configure_git () {
+# Params:
+# @param $1		Full name for Git
+# @param $2		Email
+# @param $3		User username
+# @param $4		Preferred editor
+# @param $5		Github username
+
+	echo "------------------"
+	echo "Configuring git..."
+	echo "------------------"
+
+	cat << EOF > /tmp/template.gitconfig
+[user]
+		name = ${1}
+		email = ${2}
+		username = ${3}
+[core]
+		editor = ${4}
+		whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+		excludesfile = ~/.gitignore	
+[push]
+		default = matching
+[color]
+		ui = auto
+[color "branch"]
+		current = yellow bold
+		local = green bold
+		remote = cyan bold
+[color "diff"]
+		meta = yellow bold
+		frag = magenta bold
+		old = red bold
+		new = green bold
+		whitespace = red reverse
+[color "status"]
+		added = green bold
+		changed = yellow bold
+		untracked = red bold
+[diff]
+		tool = vimdiff
+[difftool]
+		prompt = false
+[gitflow "prefix"]
+		feature = feature-
+		release = release-
+		hotfix = hotfix-
+		support = support-
+		versiontag = v
+EOF
+
+if [ -n $5 ]; then
+
+	cat << EOF >> /tmp/template.gitconfig
+[github]
+user = $GIT_USERNAME
+EOF
+
+fi
 
 }

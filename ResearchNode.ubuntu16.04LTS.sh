@@ -13,10 +13,8 @@
 #
 # <UDF name="JUPYTER_PORT" label="PYTHON: JupyterHub port" default="8888" />
 # <UDF name="PYTHON_VERSION" label="PYTHON: Python version" oneOf="3.5" default="3.5" />
-# <UDF name="INSTALL_RSTUDIO" label="RSTUDIO: Install RStudio?" oneOf="yes,no" default="yes" />
 # <UDF name="RSTUDIO_PORT" label="RSTUDIO: RStudio port" default="9999" />
 # <UDF name="RSTUDIO_VERSION" label="RSTUDIO: RStudio version (stable: 1.1.453)" default="1.1.453" />
-# <UDF name="INSTALL_SHINYSERVER" label="RSTUDIO: Install Shiny server?" oneOf="yes,no" default="yes" />
 # <UDF name="SHINYSERVER_VERSION" label="RSTUDIO: Shiny server version (stable: 1.5.7.907)" default="1.5.7.907" />
 # <UDF name="BAREBONES" label="FEATURES: Barebones install (only instals basic Python packages)" oneOf="yes,no" default="no" />
 # <UDF name="CARTOTOOLS" label="FEATURES: Do you want to install cartography and GIS tools?" oneOf="yes,no" default="no" />
@@ -35,6 +33,7 @@
 # <UDF name="GIT_EMAIL" label="GIT: E-mail address" />
 # <UDF name="GIT_PASSWORD" label="GIT: Key for your generated GitHub RSA key" />
 # <UDF name="GITHUB_TOKEN" label="GIT: GitHub Access Token to allow direct upload of your generated key to your account as an authenticated key. This key MUST HAVE ALL user/public_key permissions." />
+# <UDF name="TESTING" label="TEST VARIABLE: choose some shit" manyOf="One,Two,Three,Potatoes" />
 
 # IMPORTING STACK SCRIPTS
 source <ssinclude StackScriptID=1>	# Linode stock functions - https://www.linode.com/stackscripts/view/1
@@ -60,8 +59,7 @@ install_Rpkg () {
 
 create_ssh_key () {
 
-	if [ -z $1 ]
-	then	
+	if [ -z $1 ]; then	
 		KEY_LOCATION="/home/${USER_USERNAME}/.ssh/id_rsa"
 	else
 		KEY_LOCATION="$1"
@@ -102,14 +100,11 @@ echo "------"
 echo "Version: $PYTHON_VERSION"
 echo ""
 
-if [ $INSTALL_RSTUDIO = "yes" ]
-then
-  echo "R & RStudio"
-  echo "-----------"
-  echo "R version: "
-  echo "RStudio version: $RSTUDIO_VERSION"
-  echo ""
-fi
+echo "R & RStudio"
+echo "-----------"
+echo "R version: "
+echo "RStudio version: $RSTUDIO_VERSION"
+echo ""
 
 echo "Components"
 echo "----------"
@@ -124,13 +119,11 @@ echo "---------"
 echo "* PostgreSQL"
 echo "* SQLite"
 
-if [ $INSTALL_MONGO = "yes" ]
-then
+if [ $INSTALL_MONGO = "yes" ]; then
   echo "* MongoDB"
 fi
 
-if [ $INSTALL_NEO4J = "yes" ]
-then
+if [ $INSTALL_NEO4J = "yes" ]; then
   echo "* Neo4j"
 fi
 
@@ -186,7 +179,12 @@ install_system_update_system()
 install_system_nodejs()
 
 ## Creating user group
-system_create_usergroup(${USERGROUPNAME})
+system_create_usergroup ${USERGROUPNAME}
+
+## Configuring Git
+
+system_configure_git "${GIT_FULLNAME}" $GIT_EMAIL $USER_USERNAME $PREFERRED_EDITOR $GIT_USERNAME 
+
 
 # --- INSTALLING PYTHON -------------------------------------------------------
 
@@ -217,9 +215,6 @@ install_db_postgresql()
 
 if [ $OPENCV = "yes" ]
 then
-	echo "--------------------"
-	echo "Installing OpenCV..."
-	echo "--------------------"
 	
 	curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.OpenCv.sh | sudo bash -
 
@@ -332,91 +327,6 @@ install_Shiny ${SHINYSERVER_VERSION}
 create_admin_user ${USER_USERNAME} ${USER_PASSWORD} ${USERGROUPNAME}
 
 
-
-# Create daemon
-
-echo "------------------"
-echo "Creating daemon..."
-echo "------------------"
-
-cat << EOF > jupyterhub.service
-[Unit]
-Description=Jupyterhub
-After=syslog.target network.target
-
-[Service]
-User=root
-ExecStart=/usr/local/bin/jupyterhub -f /etc/jupyterhub/jupyterhub_config.py JupyterHub.spawner_class=sudospawner.SudoSpawner 
-WorkingDirectory=/etc/jupyterhub
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-echo "-----------------"
-echo "Placing daemon..."
-echo "-----------------"
-
-sudo mkdir /usr/lib/systemd/system
-sudo mv jupyterhub.service /usr/lib/systemd/system/jupyterhub.service
-sudo chmod a+x /usr/lib/systemd/system/jupyterhub.service
-sudo systemctl enable jupyterhub
-sudo systemctl daemon-reload
-
-echo "------------------"
-echo "Configuring git..."
-echo "------------------"
-
-cat << EOF > /tmp/template.gitconfig
-[user]
-		name = $GIT_FULLNAME
-		email = $GIT_EMAIL
-		username = $USER_USERNAME
-[core]
-		editor = $PREFERRED_EDITOR
-		whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
-		excludesfile = ~/.gitignore	
-[push]
-		default = matching
-[color]
-		ui = auto
-[color "branch"]
-		current = yellow bold
-		local = green bold
-		remote = cyan bold
-[color "diff"]
-		meta = yellow bold
-		frag = magenta bold
-		old = red bold
-		new = green bold
-		whitespace = red reverse
-[color "status"]
-		added = green bold
-		changed = yellow bold
-		untracked = red bold
-[diff]
-		tool = vimdiff
-[difftool]
-		prompt = false
-[gitflow "prefix"]
-		feature = feature-
-		release = release-
-		hotfix = hotfix-
-		support = support-
-		versiontag = v
-EOF
-
-if [ -n "$GIT_USERNAME" ]
-then
-	cat << EOF >> /tmp/template.gitconfig
-		[github]
-			user = $GIT_USERNAME
-EOF
-
-fi
-
-
 echo "--------------------------------"
 echo "Generating Github SSH/RSA key..."
 echo "--------------------------------"
@@ -438,17 +348,17 @@ echo ""
 echo "You can now use your server:"
 echo "----------------------------"
 echo ""
-echo "RStudio (${RSTUDIO_VERSION}): http://${IPADDR}:${RSTUDIO_PORT}"
 
-if [ $INSTALL_SHINYSERVER = "yes" ]
-then
-	echo "Shiny (${SHINYSERVER_VERSION}): http://${IPADDR}:3838"
-fi
+echo "RStudio (${RSTUDIO_VERSION}): http://${IPADDR}:${RSTUDIO_PORT}"
+echo "Shiny (${SHINYSERVER_VERSION}): http://${IPADDR}:3838"
 
 echo "Jupyterhub (Python ${PYTHON_VERSION}): http://${IPADDR}:${JUPYTER_PORT}"
 echo "Postgresql: pgsql://${IPADDR}:5432"
+
 echo ""
 
+echo "Randoms:"
+echo $TESTING
 
 if [ $KEY_UPLOAD_RESULT = 200 ]
 then
