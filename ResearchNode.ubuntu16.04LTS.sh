@@ -33,10 +33,16 @@
 # <UDF name="GIT_USERNAME" label="GIT: Github username" />
 # <UDF name="GIT_FULLNAME" label="GIT: Full name" />
 # <UDF name="GIT_EMAIL" label="GIT: E-mail address" />
-# <UDF name="GIT_TOKEN" label="GIT: Personal Access Token" />
+# <UDF name="GIT_PASSWORD" label="GIT: Key for your generated GitHub RSA key" />
+# <UDF name="GITHUB_TOKEN" label="GIT: GitHub Access Token to allow direct upload of your generated key to your account as an authenticated key. This key MUST HAVE ALL user/public_key permissions." />
 
 # IMPORTING STACK SCRIPTS
 source <ssinclude StackScriptID=1>	# Linode stock functions - https://www.linode.com/stackscripts/view/1
+
+
+# Getting the IP address of the current box
+
+IPADDR=$(/sbin/ifconfig eth0 | awk '/inet / { print $2 }' | sed 's/addr://')
 
 
 # Declaring R package installer function
@@ -48,6 +54,34 @@ install_Rpkg () {
     echo "install.packages('$pkg', lib='/usr/local/lib/R/site-library', repos='http://cran.us.r-project.org')" | sudo -i R --no-save
   done
 }
+
+
+# Declaring function for generating the ssh key
+
+create_ssh_key () {
+
+	if [ -z $1 ]
+	then	
+		KEY_LOCATION="/home/${USER_USERNAME}/.ssh/id_rsa"
+	else
+		KEY_LOCATION="$1"
+	fi
+	
+	echo "Generating public key for ${GIT_EMAIL} to ${KEY_LOCATION}..."
+	
+	ssh-keygen -t rsa -b 4096 -f "${KEY_LOCATION}" -C "${GIT_EMAIL}" -q -P "$GIT_PASSWORD"
+	eval "$(ssh-agent -s)"
+	ssh-add ~/.ssh/id_rsa
+	
+	PUBLIC_KEY=$(cat ${KEY_LOCATION})
+	
+	local RESULT_STATUS = $(curl -u ${GIT_USERNAME}:${GITHUB_TOKEN} --data '{"title": "Research box at ${IPADDR} (${USER_USERNAME}:${LINODE_DATACENTERID}.${LINODE_LISHUSERNAME})", "key": "${PUBLIC_KEY}"}' https://api.github.com/user/keys)
+	
+	KEY_UPLOAD_RESULT = "$(RESULT_STATUS | grep HTTP)"
+	
+	echo "${KEY_UPLOAD_RESULT}"
+}
+
 
 # Declaring base variables
 
@@ -130,7 +164,7 @@ echo "-----------------------|-------"
 
 if [ $BAREBONES = "yes" ] 
 then
-	echo "This is a barebones install, so ir wi..ll be pretty quick."
+	echo "This is a barebones install, so it will be pretty quick."
 fi
 
 echo ""
@@ -149,6 +183,7 @@ sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
 sudo apt-get install -y checkinstall libreadline-gplv2-dev libncursesw5-dev 
 sudo apt-get install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
 sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev git git-flow
+sudo apt-get install -y libv8-dev
 
 
 # --- INSTALLING LIBSSL -------------------------------------------------------
@@ -286,34 +321,42 @@ fi
 
 # --- INSTALLING NLP PACKAGES ----------------------------------------------
 
-echo "--------------------------------------------------"
-echo "Installing natural language processing packages..."
-echo "--------------------------------------------------"
+if [ $BAREBONES = "no" ]
+	
+	echo "--------------------------------------------------"
+	echo "Installing natural language processing packages..."
+	echo "--------------------------------------------------"
 
-sudo pip3 install nltk 
-sudo pip3 install textblob 
-sudo pip3 install nalaf
-sudo pip3 install spacy
+	sudo pip3 install nltk 
+	sudo pip3 install textblob 
+	sudo pip3 install nalaf
+	sudo pip3 install spacy
 
-if [ $DOWNLOAD_CORPORA = "yes" ]
-then
-	sudo python3 -m nalaf.download_data
-	sudo python3 -m nltk.downloader -d /usr/local/share/nltk_data all 
-	sudo python -m spacy download en_core_web_sm
+	if [ $DOWNLOAD_CORPORA = "yes" ]
+	then
+		sudo python3 -m nalaf.download_data
+		sudo python3 -m nltk.downloader -d /usr/local/share/nltk_data all 
+		sudo python -m spacy download en_core_web_sm
+	fi
+
 fi
+
 
 # --- INSTALLING ML/DL PACKAGES -------------------------------------------
 
-echo "----------------------------"
-echo "Installing ML/DL packages..."
-echo "----------------------------"
+if [ $BAREBONES = "no" ]
 
-sudo pip3 install scikit-learn scikit-neuralnetwork yellowbrick
-sudo pip3 install tensorflow
-sudo pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.0-cp35-cp35m-linux_x86_64.whl 
-sudo pip3 install torchvision
-sudo pip3 install keras
+	echo "----------------------------"
+	echo "Installing ML/DL packages..."
+	echo "----------------------------"
 
+	sudo pip3 install scikit-learn scikit-neuralnetwork yellowbrick
+	sudo pip3 install tensorflow
+	sudo pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.0-cp35-cp35m-linux_x86_64.whl 
+	sudo pip3 install torchvision
+	sudo pip3 install keras
+
+fi
 
 # --- INSTALLING JUPYTERHUB ---------------------------------------------------
 
@@ -413,32 +456,35 @@ fi
 
 # Install basic R packages
 
+if [ $BAREBONES = "no" ]
+then
 
-# Must-haves
-install_Rpkg Rcpp 
-install_Rpkg boot glmnet pwr
-install_Rpkg data.table parallel curl jsonlite httr devtools testthat roxygen2 magrittr cronR
-install_Rpkg addinslist
-# Database connectors
-install_Rpkg RMySQL RSQLite
-# Foreign sources
-install_Rpkg rio datapasta xlsx XLConnect foreign validate
-# Data munging
-install_Rpkg plyr dplyr tidyr sqldf stringr lubridate iterator purrr reshape2 
-# Visualization
-install_Rpkg ggplot2 ggvis rgl leaflet dygraphs NetworkD3 gridExtra corrplot fmsb wordcloud RColorBrewer
-# Modeling
-install_Rpkg glmnet survival MASS metrics e1071 qdap sentimentr tidytext
-# Reporting tools
-install_Rpkg shiny 
-install_Rpkg xtable rmarkdown knitr 
-# Spatial data
-install_Rpkg sp maptools maps ggmap tmap tmaptools mapsapi tidycensus
-# Time series
-install_Rpkg zoo xts quantmod 
-# Progtools
-install_Rpkg compiler foreach doParallel
+	# Must-haves
+	install_Rpkg Rcpp 
+	install_Rpkg boot glmnet pwr
+	install_Rpkg data.table parallel curl jsonlite httr devtools testthat roxygen2 magrittr cronR
+	install_Rpkg addinslist
+	# Database connectors
+	install_Rpkg RMySQL RSQLite
+	# Foreign sources
+	install_Rpkg rio datapasta xlsx XLConnect foreign validate
+	# Data munging
+	install_Rpkg plyr dplyr tidyr sqldf stringr lubridate iterator purrr reshape2 
+	# Visualization
+	install_Rpkg ggplot2 ggvis rgl leaflet dygraphs NetworkD3 gridExtra corrplot fmsb wordcloud RColorBrewer
+	# Modeling
+	install_Rpkg glmnet survival MASS metrics e1071 qdap sentimentr tidytext
+	# Reporting tools
+	install_Rpkg shiny 
+	install_Rpkg xtable rmarkdown knitr 
+	# Spatial data
+	install_Rpkg sp maptools maps ggmap tmap tmaptools mapsapi tidycensus
+	# Time series
+	install_Rpkg zoo xts quantmod 
+	# Progtools
+	install_Rpkg compiler foreach doParallel
 
+fi
 
 # RStudio install
 sudo apt-get install -y gdebi-core
@@ -591,14 +637,11 @@ EOF
 fi
 
 
-if [ -n "$GIT_TOKEN" ]
-then
+echo "--------------------------------"
+echo "Generating Github SSH/RSA key..."
+echo "--------------------------------"
 
-	cat << EOF >> /tmp/template.gitconfig
-		token = $GIT_TOKEN
-EOF
-
-fi
+create_ssh_key()
 
 
 echo "-------------------------------------------"
@@ -608,4 +651,35 @@ echo "-------------------------------------------"
 
 sudo systemctl restart jupyterhub
 
+
 echo "All done. Enjoy your Jupyterhub & RStudio installation!"
+echo ""
+echo ""
+echo "You can now use your server:"
+echo "----------------------------"
+echo ""
+echo "RStudio (${RSTUDIO_VERSION}): http://${IPADDR}:${RSTUDIO_PORT}"
+
+if [ $INSTALL_SHINYSERVER = "yes" ]
+then
+	echo "Shiny (${SHINYSERVER_VERSION}): http://${IPADDR}:3838"
+fi
+
+echo "Jupyterhub (Python ${PYTHON_VERSION}): http://${IPADDR}:${JUPYTER_PORT}"
+echo "Postgresql: pgsql://${IPADDR}:5432"
+echo ""
+
+
+if [ $KEY_UPLOAD_RESULT = 200 ]
+then
+	echo "Your key has been automatically uploaded to your GitHub account (username: ${GIT_USERNAME}). You have nothing more to do. Your keypair is located at ${KEY_LOCATION}."
+else
+	echo "The automatic key upload process has failed (the server returned an error code ${KEY_UPLOAD_RESULTS}). To upload your GitHub key, follow the steps below:"
+	echo ""
+	echo "1) Go to https://github.com/settings/ssh/new and log in."
+	echo "2) Copy your public key, displayed below, in the big textbox:
+	echo ""
+	echo "${PUBLIC_KEY}"
+	echo ""
+	echo "3) Click on 'Add SSH key'."
+fi	
