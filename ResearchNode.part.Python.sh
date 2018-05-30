@@ -7,7 +7,7 @@
 #
 # Sourcing script:
 #
-#		curl https://github.com | sudo bash -
+#		curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Python.sh | sudo bash -
 #
 # Part of the CBRD/ResearchNode project.
 #

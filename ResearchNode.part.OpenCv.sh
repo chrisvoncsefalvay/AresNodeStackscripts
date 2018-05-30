@@ -1,3 +1,24 @@
+#!/bin/bash
+
+# ResearchNode installer
+#
+# OpenCV packages subroutine
+#
+#
+# Sourcing script (DIRECTLY INVOKED – NO FUNCTION CALL NEEDED!):
+#
+#		curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.OpenCV.sh | sudo bash -
+#
+# Part of the CBRD/ResearchNode project.
+#
+# For information, please visit:
+# 
+#	http://www.github.com/chrisvoncsefalvay/stackscripts
+#
+# (c) Chris von Csefalvay, 2018.
+#	  <chris@chrisvoncsefalvay.com>
+#
+
 echo "--------------------"
 echo "Installing OpenCV..."
 echo "--------------------"

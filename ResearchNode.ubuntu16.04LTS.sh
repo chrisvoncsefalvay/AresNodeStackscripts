@@ -290,11 +290,13 @@ then
   echo "Installing OpenCV..."
   echo "--------------------"
   # DOWNLOAD AND LAUNCH OPENCV INSTALLER
-  
+  curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.OpenCV.sh | sudo bash -
+
 fi
 
 
 # --- INSTALLING PYTHON PACKAGES ----------------------------------------------
+#		curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.OpenCV.sh | sudo bash -
 
 # INSTALLER GOES HERE
 
