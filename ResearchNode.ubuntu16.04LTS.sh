@@ -159,6 +159,7 @@ echo "------------------------------------"
 sudo apt-get install -y software-properties-common build-essential
 sudo apt-get install -y python-software-properties python3-software-properties
 sudo apt-get install -y libssl-dev libssl-doc
+sudo apt-get install -y libcurl4-openssl-dev
 
 
 # --- INSTALLING NODEJS -------------------------------------------------------
@@ -340,14 +341,14 @@ echo "Configuring JupyterHub config file..."
 echo "-------------------------------------"
 
 cat << EOF >> $CONFIG_FILE
-	c.JupyterHub.ip = '0.0.0.0'
-	c.JupyterHub.port = $JUPYTER_PORT
-	c.JupyterHub.pid_file = '/var/run/$NAME.pid'
-	c.Authenticator.admin_users = {'$USER_USERNAME'}
-	c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
-	c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
-	c.Spawner.cmd = '/usr/local/bin/sudospawner'
-	c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
+c.JupyterHub.ip = '0.0.0.0'
+c.JupyterHub.port = $JUPYTER_PORT
+c.JupyterHub.pid_file = '/var/run/$NAME.pid'
+c.Authenticator.admin_users = {'$USER_USERNAME'}
+c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
+c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
+c.Spawner.cmd = '/usr/local/bin/sudospawner'
+c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
 EOF
 
 # Upgrading the jupyterhub DB
@@ -580,23 +581,25 @@ cat << EOF > /tmp/template.gitconfig
 		versiontag = v
 EOF
 
-if [ -n "$GIT_USERNAME" ] || [ -n "$GIT_TOKEN" ]
+if [ -n "$GIT_USERNAME" ]
 then
 	cat << EOF >> /tmp/template.gitconfig
 		[github]
 			user = $GIT_USERNAME
-			token = $GIT_TOKEN
-    EOF
+EOF
 
-elif [ -n "$GIT_USERNAME" ]
+fi
+
+
+if [ -n "$GIT_TOKEN" ]
 then
 
 	cat << EOF >> /tmp/template.gitconfig
-	[github]
 		token = $GIT_TOKEN
-	EOF
+EOF
 
 fi
+
 
 echo "-------------------------------------------"
 echo "Starting Jupyterhub service on port $JUPYTER_PORT..."
@@ -604,6 +607,5 @@ echo "-------------------------------------------"
 
 
 sudo systemctl restart jupyterhub
-
 
 echo "All done. Enjoy your Jupyterhub & RStudio installation!"
