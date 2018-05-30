@@ -87,10 +87,12 @@ echo "Databases"
 echo "---------"
 echo "* PostgreSQL"
 echo "* SQLite"
+
 if [ $INSTALL_MONGO = "yes" ]
 then
   echo "* MongoDB"
 fi
+
 if [ $INSTALL_NEO4J = "yes" ]
 then
   echo "* Neo4j"
@@ -104,21 +106,28 @@ echo "         SERVICE       |  PORT  "
 echo "-----------------------|--------
 echo "*-------->     RStudio | $RSTUDIO_PORT"
 echo "*-------->     Jupyter | $JUPYTER_PORT"
+
 if [ $DEEPLEARNING = "yes" ]
+then
 echo "*--------> TensorBoard | 1234"
 fi
+
 if [ $INSTALL_NEO4J = "yes" ]
 then
 echo "*-------->       Neo4j | 1234"
 fi
+
 if [ $INSTALL_MONGO = "yes" ]
+then
 echo "*-------->       Mongo | 1234"
 fi
-echo "*-------->  PostgreSQL | 1234 
+
+echo "*-------->  PostgreSQL | 1234"
 echo "-----------------------|-------"
+
 if [ $BAREBONES = "yes" ] 
 then
-	echo "This is a barebones install, so it'll be pretty quick."
+	echo "This is a barebones install, so it\'ll be pretty quick."
 fi
 
 echo ""
@@ -144,7 +153,7 @@ echo "Configuring libssl and linking it..."
 echo "------------------------------------"
 
 sudo apt-get install -y software-properties-common build-essential
-sudo apt-get install -y python-software-properties 
+sudo apt-get install -y python-software-properties python3-software-properties
 sudo apt-get install -y libssl-dev libssl-doc
 
 
@@ -162,13 +171,13 @@ echo "--------------------------------"
 echo "Installing Python $PYTHON_VERSION and pip..."
 echo "--------------------------------"
 
-sudo apt-get install -y python python-pip python3 python3-pip python3* libpython3*
+sudo apt-get install -y python python-pip python3 python3-pip python3 libpython3-all-dev
+sudo apt-get install -y g++
 
-cd /tmp
-sudo wget https://bootstrap.pypa.io/get-pip.py
-python3 get-pip.py
+sudo wget https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+sudo python3 /tmp/get-pip.py
 
-sudo pip3 install virtualenv
+sudo pip3 install virtualenv virtualenvwrapper
 
 
 # --- INSTALLING R -----------------------------------------------------------
@@ -177,13 +186,16 @@ echo "Adding apt repo..."
 echo "------------------"
 
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
+echo 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/' >> /etc/apt/sources.list
 
 
 echo "---------------"
 echo "Installing R..."
 echo "---------------"
-sudo apt-get install -y r-base r-*
+
+
+sudo apt-get install -y r-base r-base-dev r-base-core r-base-core-dbg r-base-latex r-base-
+sudo apt-get install -y 
 
 
 # --- INSTALLING DATABASES ----------------------------------------------------
@@ -199,11 +211,13 @@ then
   cd /tmp
   wget --no-check-certificate -O - https://debian.neo4j.org/neotechnology.gpg.key | sudo apt-key add -
   echo 'deb http://debian.neo4j.org/repo stable/' | sudo tee /etc/apt/sources.list.d/neo4j.list
-  
+  	
   sudo apt-get update -y
   sudo apt-get -y install neo4j
   
-  pip3 install neo4j-driver==1.5.0 py2neo neomodel
+  sudo pip3 uninstall scikit-learn
+  sudo pip3 install scikit-learn>=0.18.1
+  sudo pip3 install neo4j-driver==1.5.2 py2neo neomodel
 fi
 
 if [ $INSTALL_MONGO = "yes" ]
@@ -216,7 +230,7 @@ then
   echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
   sudo apt-get update
   sudo apt-get install -y mongodb-org
-  pip3 install pymongo
+  sudo pip3 install pymongo
 fi
 
 echo "------------------------"
@@ -224,9 +238,11 @@ echo "Installing Postgresql..."
 echo "-------------------------"
 
 sudo apt-get install -y postgresql postgresql-contrib
-pip3 install psycopg2
+sudo pip3 install psycopg2
+
 
 # --- INSTALLING OPENCV -------------------------------------------------------
+
 if [ $OPENCV = "yes" ]
 then
   echo "--------------------"
@@ -241,6 +257,7 @@ fi
 
 
 # --- INSTALLING PYTHON PACKAGES ----------------------------------------------
+
 echo "-------------------------------------------"
 echo "Installing barebones scientific packages..."
 echo "-------------------------------------------"
@@ -262,6 +279,7 @@ fi
 
 
 # --- INSTALLING NLP PACKAGES ----------------------------------------------
+
 echo "--------------------------------------------------"
 echo "Installing natural language processing packages..."
 echo "--------------------------------------------------"
@@ -273,16 +291,17 @@ sudo python3 -m nalaf.download_data
 sudo python3 -m nltk.downloader -d /usr/local/share/nltk_data all 
 sudo python -m spacy download en_core_web_sm
 
+
 # --- INSTALLING ML/DL PACKAGES -------------------------------------------
+
 echo "----------------------------"
 echo "Installing ML/DL packages..."
 echo "----------------------------"
 sudo pip3 install scikit-learn scikit-neuralnetwork yellowbrick
 sudo pip3 install tensorflow
-sudo pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.0-cp36-cp36m-linux_x86_64.whl 
+sudo pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.0-cp35-cp35m-linux_x86_64.whl 
 sudo pip3 install torchvision
 sudo pip3 install keras
-sudo pip3 install caffe
 
 
 # --- INSTALLING JUPYTERHUB ---------------------------------------------------
@@ -405,14 +424,16 @@ then
 	
 	if [[ $RSTUDIO_VERSION =~ "1.1.[0-9]{1,3}" ]]
 	then
-        	sudo wget https://download2.rstudio.org/rstudio-server/$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
+        sudo wget https://download2.rstudio.org/rstudio-server/$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
 	else
 		sudo wget https://s3.amazonaws.com/rstudio-ide-build/desktop/trusty/amd64/rstudio-$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
 	fi
 	
 	sudo gdebi -n /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
 	sudo rm /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
+	
 fi
+
 
 if [ $INSTALL_SHINYSERVER = "yes" ]
 then
@@ -429,6 +450,7 @@ then
 	
 	sudo gdebi -n /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
 	sudo rm /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
+	
 fi
 
 # Configure RStudio config file
@@ -492,56 +514,56 @@ echo "------------------"
 
 cat << EOF > /tmp/template.gitconfig
 [user]
-	name = $GIT_FULLNAME
-	email = $GIT_EMAIL
-	username = $USER_USERNAME
+		name = $GIT_FULLNAME
+		email = $GIT_EMAIL
+		username = $USER_USERNAME
 [core]
-	editor = $PREFERRED_EDITOR
-	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
-	excludesfile = ~/.gitignore	
+		editor = $PREFERRED_EDITOR
+		whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+		excludesfile = ~/.gitignore	
 [push]
-	default = matching
+		default = matching
 [color]
-	ui = auto
+		ui = auto
 [color "branch"]
-	current = yellow bold
-	local = green bold
-	remote = cyan bold
+		current = yellow bold
+		local = green bold
+		remote = cyan bold
 [color "diff"]
-	meta = yellow bold
-	frag = magenta bold
-	old = red bold
-	new = green bold
-	whitespace = red reverse
+		meta = yellow bold
+		frag = magenta bold
+		old = red bold
+		new = green bold
+		whitespace = red reverse
 [color "status"]
-	added = green bold
-	changed = yellow bold
-	untracked = red bold
+		added = green bold
+		changed = yellow bold
+		untracked = red bold
 [diff]
-	tool = vimdiff
+		tool = vimdiff
 [difftool]
-	prompt = false
+		prompt = false
 [gitflow "prefix"]
-	feature = feature-
-	release = release-
-	hotfix = hotfix-
-	support = support-
-	versiontag = v
+		feature = feature-
+		release = release-
+		hotfix = hotfix-
+		support = support-
+		versiontag = v
 EOF
 
 if [ -n "$GIT_USERNAME" ] || [ -n "$GIT_TOKEN" ]
 then
-cat << EOF >> /tmp/template.gitconfig
-[github]
-	user = $GIT_USERNAME
-	token = $GIT_TOKEN
-EOF
+	cat << EOF >> /tmp/template.gitconfig
+		[github]
+			user = $GIT_USERNAME
+			token = $GIT_TOKEN
+	EOF
 elif [ -n "$GIT_USERNAME" ]
 then
-cat << EOF >> /tmp/template.gitconfig
-[github]
-	token = $GIT_TOKEN
-EOF
+	cat << EOF >> /tmp/template.gitconfig
+	[github]
+		token = $GIT_TOKEN
+	EOF
 fi
 
 echo "-------------------------------------------"
