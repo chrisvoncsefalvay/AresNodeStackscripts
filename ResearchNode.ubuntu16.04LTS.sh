@@ -217,7 +217,7 @@ sudo apt-get install -y g++
 sudo wget https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
 sudo python3 /tmp/get-pip.py
 
-sudo pip3 --upgrade pip
+sudo pip3 install --upgrade pip setuptools
 sudo pip3 install virtualenv virtualenvwrapper
 
 
@@ -336,7 +336,7 @@ if [ $BAREBONES = "no" ]
 	then
 		sudo python3 -m nalaf.download_data
 		sudo python3 -m nltk.downloader -d /usr/local/share/nltk_data all 
-		sudo python -m spacy download en_core_web_sm
+		sudo python3 -m spacy download en_core_web_sm
 	fi
 
 fi
