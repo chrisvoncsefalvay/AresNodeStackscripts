@@ -19,6 +19,21 @@
 #	  <chris@chrisvoncsefalvay.com>
 #
 
+install_python3 () {
+	echo "----------------------------"
+	echo "Installing Python and pip..."
+	echo "----------------------------"
+
+	sudo apt-get install -y python python-pip python3 python3-pip python3 libpython3-all-dev
+	sudo apt-get install -y g++
+
+	sudo wget https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+	sudo python3 /tmp/get-pip.py
+
+	sudo pip3 install --upgrade pip setuptools
+	sudo pip3 install virtualenv virtualenvwrapper
+}
+
 install_barebones () {
 	echo "-----------------------------------"
 	echo "Installing basic Python packages..."
@@ -76,4 +91,30 @@ install_ML () {
 	sudo pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.0-cp35-cp35m-linux_x86_64.whl 
 	sudo pip3 install torchvision
 	sudo pip3 install keras	
+}
+
+install_cartotools () {
+  echo "-----------------------"
+  echo "Installing GIS tools..."
+  echo "-----------------------"
+
+  sudo apt-get install -y proj-bin libproj-dev libgeos-dev
+  sudo add-apt-repository -y ppa:ubuntugis/ppa
+  sudo apt-get update
+  sudo apt-get install -y pyproj 
+  sudo apt-get install -y gdal-bin python-gdal python3-gdal
+  sudo pip3 install GEOS 
+  sudo pip3 install GDAL pygdal
+  sudo pip3 install geopandas geojson geopy geoviews elevation OSMnx giddy
+  sudo pip3 install spint landsatxplore telluric 
+  sudo pip3 install mapbox mapboxgl
+}
+
+install_bioinformatics () {
+  echo "------------------------------------"
+  echo "Installing bioinformatics toolkit..."
+  echo "------------------------------------"
+
+  sudo pip3 install biopython 
+  sudo pip3 install scikit-bio
 }

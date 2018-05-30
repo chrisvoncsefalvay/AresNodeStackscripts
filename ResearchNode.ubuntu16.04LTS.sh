@@ -85,7 +85,6 @@ create_ssh_key () {
 
 # Declaring base variables
 
-CONFIG_FILE=/etc/jupyterhub/jupyterhub_config.py
 USER=root
 
 
@@ -171,196 +170,92 @@ echo ""
 echo "OK, ready to roll!"
 echo ""
 
-# --- INSTALLING UPDATES ------------------------------------------------------
-echo "------------------------------------------------"
-echo "Updating system and installing the good stuff..."
-echo "------------------------------------------------"
 
-sudo apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
-sudo apt-get install -y libxml2-dev wget autoremove libcurl3-dev libfreetype6-dev
-sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
-sudo apt-get install -y checkinstall libreadline-gplv2-dev libncursesw5-dev 
-sudo apt-get install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
-sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev git git-flow
-sudo apt-get install -y libv8-dev
+# --- SYSTEM PREPARATION -----------------------------------------------------
 
+##	Downloading installer script
+curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.System.sh | sudo bash -
 
-# --- INSTALLING LIBSSL -------------------------------------------------------
-echo "------------------------------------"
-echo "Configuring libssl and linking it..."
-echo "------------------------------------"
+##	Installing libssl
+install_system_libssl()
 
-sudo apt-get install -y software-properties-common build-essential
-sudo apt-get install -y python-software-properties python3-software-properties
-sudo apt-get install -y libssl-dev libssl-doc
-sudo apt-get install -y libcurl4-openssl-dev
+##	Updating system
+install_system_update_system()
 
+##	Installing NodeJS
+install_system_nodejs()
 
-# --- INSTALLING NODEJS -------------------------------------------------------
-echo "--------------------"
-echo "Installing NodeJS..."
-echo "--------------------"
-
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
+## Creating user group
+system_create_usergroup(${USERGROUPNAME})
 
 # --- INSTALLING PYTHON -------------------------------------------------------
-echo "--------------------------------"
-echo "Installing Python $PYTHON_VERSION and pip..."
-echo "--------------------------------"
 
-sudo apt-get install -y python python-pip python3 python3-pip python3 libpython3-all-dev
-sudo apt-get install -y g++
-
-sudo wget https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
-sudo python3 /tmp/get-pip.py
-
-sudo pip3 install --upgrade pip setuptools
-sudo pip3 install virtualenv virtualenvwrapper
-
+curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Python.sh | sudo bash -
 
 # --- INSTALLING R -----------------------------------------------------------
-echo "------------------"
-echo "Adding apt repo..."
-echo "------------------"
 
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-echo 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/' >> /etc/apt/sources.list
-sudo apt-get update
-
-
-echo "---------------"
-echo "Installing R..."
-echo "---------------"
-
-sudo apt-get install -y r-base r-base-dev r-base-core r-base-core-dbg r-base-latex
-
+curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.R_base.sh | sudo bash -
 
 # --- INSTALLING DATABASES ----------------------------------------------------
 
 if [ $INSTALL_NEO4J = "yes" ]
 then
-  echo "-------------------"
-  echo "Installing Neo4j..."
-  echo "-------------------"
-
-  sudo apt-get install -y default-jre default-jre-headless
-  sudo update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/bin/java
-  sudo update-alternatives --set javac /usr/lib/jvm/java-8-openjdk-amd64/bin/javac
-
-  wget --no-check-certificate https://debian.neo4j.org/neotechnology.gpg.key -O /tmp/neotechnology.key | sudo apt-key add /tmp/neotechnology.key
-  echo 'deb http://debian.neo4j.org/repo stable/' | sudo tee /etc/apt/sources.list.d/neo4j.list
-  	
-  sudo apt-get update -y
-  sudo apt-get -y install neo4j
-  
-  sudo pip3 uninstall scikit-learn
-  sudo pip3 install scikit-learn>=0.18.1
-  sudo pip3 install neo4j-driver==1.5.2 py2neo neomodel
+	install_db_neo4j()
+	
 fi
 
 if [ $INSTALL_MONGO = "yes" ]
 then
-  echo "---------------------"
-  echo "Installing MongoDB..."
-  echo "---------------------"
-
-  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
-  echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-  sudo apt-get update
-  sudo apt-get install -y mongodb-org
-  sudo pip3 install pymongo
+	install_db_mongodb()
+	
 fi
 
-echo "------------------------"
-echo "Installing Postgresql..."
-echo "-------------------------"
-
-sudo apt-get install -y postgresql postgresql-contrib
-sudo pip3 install psycopg2
+install_db_postgresql()
 
 
 # --- INSTALLING OPENCV -------------------------------------------------------
 
 if [ $OPENCV = "yes" ]
 then
-  echo "--------------------"
-  echo "Installing OpenCV..."
-  echo "--------------------"
-  # DOWNLOAD AND LAUNCH OPENCV INSTALLER
-  curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.OpenCV.sh | sudo bash -
+	echo "--------------------"
+	echo "Installing OpenCV..."
+	echo "--------------------"
+	
+	curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.OpenCv.sh | sudo bash -
 
 fi
 
 
 # --- INSTALLING PYTHON PACKAGES ----------------------------------------------
-#		curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.OpenCV.sh | sudo bash -
 
-# INSTALLER GOES HERE
+# Source installation scripts
+curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Python.sh | sudo bash -
 
-# --- INSTALLING JUPYTERHUB ---------------------------------------------------
+install_barebones()
 
-echo "------------------------"
-echo "Installing JupyterHub..."
-echo "------------------------"
+if [ $BAREBONES = "no" ]
+then
 
-npm install -g configurable-http-proxy
-sudo pip3 install jupyterhub sudospawner virtualenv
-sudo pip3 install --upgrade notebook
+	install_general()
+	install_dataviz()
+	install_nlp()
+	install_ML()
 
-# Generate jupyter config
-echo "------------------------------------"
-echo "Generating JupyterHub config file..."
-echo "------------------------------------"
+fi
 
-sudo mkdir /etc/jupyterhub
-sudo mkdir /usr/local/jupyterhub
-sudo jupyterhub --generate-config -f $CONFIG_FILE
+if [ $BAREBONES = "no" ] && [ $INSTALL_CORPORA = "yes" ]
+then
 
-
-# Configure config file
-echo "-------------------------------------"
-echo "Configuring JupyterHub config file..."
-echo "-------------------------------------"
-
-cat << EOF >> $CONFIG_FILE
-c.JupyterHub.ip = '0.0.0.0'
-c.JupyterHub.port = $JUPYTER_PORT
-c.JupyterHub.pid_file = '/var/run/$NAME.pid'
-c.Authenticator.admin_users = {'$USER_USERNAME'}
-c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
-c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
-c.Spawner.cmd = '/usr/local/bin/sudospawner'
-c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
-EOF
-
-# Upgrading the jupyterhub DB
-
-sudo jupyterhub upgrade-db
-
+	download_corpora()
+	
+fi
 
 
 # --- INSTALLING GIS TOOLS ----------------------------------------------------
 
-if [ $CARTOTOOLS = "yes" ]
+if [ $BAREBONES = "no" ] && [ $CARTOTOOLS = "yes" ]
 then
-
-  echo "-----------------------"
-  echo "Installing GIS tools..."
-  echo "-----------------------"
-
-  sudo apt-get install -y proj-bin libproj-dev libgeos-dev
-  sudo add-apt-repository -y ppa:ubuntugis/ppa
-  sudo apt-get update
-  sudo apt-get install -y pyproj 
-  sudo apt-get install -y gdal-bin python-gdal python3-gdal
-  sudo pip3 install GEOS 
-  sudo pip3 install GDAL pygdal
-  sudo pip3 install geopandas geojson geopy geoviews elevation OSMnx giddy
-  sudo pip3 install spint landsatxplore telluric 
-  sudo pip3 install mapbox mapboxgl
+	install_cartotools()
 
 fi
 
@@ -368,32 +263,20 @@ fi
 
 # --- INSTALLING BIOINFORMATICS TOOLS -----------------------------------------
 
-if [ $BIOINFORMATICS = "yes" ]
+if [ $BAREBONES = "no" ] && [ $BIOINFORMATICS = "yes" ]
 then
-
-  echo "------------------------------------"
-  echo "Installing bioinformatics toolkit..."
-  echo "------------------------------------"
-
-  sudo pip3 install biopython 
-  sudo pip3 install scikit-bio
-  install_Rpkg purrr 
+	install_bioinformatics()
 
 fi
 
 
-# --- INSTALLING OPENCV -----------------------------------------------------
+# --- INSTALLING JUPYTERHUB ---------------------------------------------------
 
-if [ $OPENCV = "yes" ]
-then
+curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Jupyter.sh | sudo bash -
 
-  echo "--------------------"
-  echo "Installing OpenCV..."
-  echo "--------------------"
-  sudo apt-get install -y libopencv-dev python-opencv
-  sudo pip3 install opencv-contrib-python imtools
+configure_jupyterhub $JUPYTER_PORT $USER_USERNAME
 
-fi
+
 
 
 # Install basic R packages
@@ -429,71 +312,26 @@ then
 fi
 
 # RStudio install
-sudo apt-get install -y gdebi-core
 
-echo "---------------------------"
-echo "Installing RStudio $RSTUDIO_VERSION..."
-echo "---------------------------"
+curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.RStudio.sh | sudo bash -
 
-if [[ $RSTUDIO_VERSION =~ "1\.1\.\d*" ]]
-then
-	echo "Stable version $RSTUDIO_VERSION requested"
-	sudo wget https://download2.rstudio.org/rstudio-server/$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
-else
-	echo "Nightly version $RSTUDIO_VERSION requested"
-	sudo wget https://s3.amazonaws.com/rstudio-ide-build/server/trusty/amd64/rstudio-server-$RSTUDIO_VERSION-amd64.deb -O /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
-fi
+install_RStudio ${RSTUDIO_VERSION}
 
-sudo gdebi -n /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
-sudo rm /tmp/rstudio-$RSTUDIO_VERSION-amd64.deb
+configure_RStudio ${RSTUDIO_PORT} ${USERGROUPNAME}
 
 
-if [ $INSTALL_SHINYSERVER = "yes" ]
-then
-	
-	echo "---------------------------------"
-	echo "Installing Shiny Server $SHINYSERVER_VERSION..."
-	echo "---------------------------------"
+# Shiny install
 
-	if [[ $SHINYSERVER_VERSION=~"1.5.7.[0-9]{1,3}" ]]
-	then
+curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Shiny.sh | sudo bash -
 
-		sudo wget https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-$SHINYSERVER_VERSION-amd64.deb -O /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
-	
-	else
-		
-		sudo wget https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubuntu-14.04/x86_64/shiny-server-$SHINYSERVER_VERSION-amd64.deb -O /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
-	
-	fi
-	
-	sudo gdebi -n /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
-	sudo rm /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
-	
-fi
-
-# Configure RStudio config file
-echo "----------------------------------"
-echo "Configuring RStudio config file..."
-echo "----------------------------------"
-
-sudo groupadd $USERGROUPNAME
-
-cat << EOF > /etc/rstudio/rserver.conf
-  www-port=$RSTUDIO_PORT
-  www-address=0.0.0.0
-  rsession-which-r=$(which R)
-  auth-required-user-group=$USERGROUPNAME
-EOF
-
-sudo rstudio-server restart
+install_Shiny ${SHINYSERVER_VERSION}
 
 
-# Create first user
-echo "----------------------------------"
-echo "Creating admin user $USER_USERNAME"
-echo "----------------------------------"
-sudo su -c "useradd $USER_USERNAME -s /bin/bash -m -g $USERGROUPNAME"
-sudo echo "$USER_USERNAME:$USER_PASSWORD" | chpasswd
+## Create first (Admin) user
+
+create_admin_user ${USER_USERNAME} ${USER_PASSWORD} ${USERGROUPNAME}
+
+
 
 # Create daemon
 

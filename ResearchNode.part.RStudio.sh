@@ -19,24 +19,37 @@
 #	  <chris@chrisvoncsefalvay.com>
 #
 
+install_RStudio () {
+	sudo apt-get install -y gdebi-core
 
-sudo apt-get install -y gdebi-core
+	echo "---------------------------"
+	echo "Installing RStudio ${1}..."
+	echo "---------------------------"
 
-echo "---------------------------"
-echo "Installing RStudio \"$1\"..."
-echo "---------------------------"
+	if [[ "$1" =~ "1\.1\.\d*" ]]; then
+		echo 'Stable version ${1} requested'
+		sudo wget https://download2.rstudio.org/rstudio-server/"$1"-amd64.deb -O /tmp/rstudio-"$1"-amd64.deb
+	else
+		echo 'Nightly version ${1} requested'
+		sudo wget https://s3.amazonaws.com/rstudio-ide-build/server/trusty/amd64/rstudio-server-"$1"-amd64.deb -O /tmp/rstudio-"$1"-amd64.deb
+	fi
 
-if [[ "$1" =~ "1\.1\.\d*" ]]
-then
-	echo 'Stable version ${1} requested'
-	sudo wget https://download2.rstudio.org/rstudio-server/"$1"-amd64.deb -O /tmp/rstudio-"$1"-amd64.deb
-	
-else
+	sudo gdebi -n /tmp/rstudio-"$1"-amd64.deb
+	sudo rm /tmp/rstudio-"$1"-amd64.deb
+}
 
-	echo 'Nightly version ${1} requested'
-	sudo wget https://s3.amazonaws.com/rstudio-ide-build/server/trusty/amd64/rstudio-server-"$1"-amd64.deb -O /tmp/rstudio-"$1"-amd64.deb
-	
-fi
+configure_RStudio () {
+	echo "----------------------------------"
+	echo "Configuring RStudio config file..."
+	echo "----------------------------------"
 
-sudo gdebi -n /tmp/rstudio-"$1"-amd64.deb
-sudo rm /tmp/rstudio-"$1"-amd64.deb
+
+	cat << EOF > /etc/rstudio/rserver.conf
+			www-port="$1"
+			www-address=0.0.0.0
+			rsession-which-r=$(which R)
+			auth-required-user-group="$2"
+	EOF
+
+	sudo rstudio-server restart
+}
