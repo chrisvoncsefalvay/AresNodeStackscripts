@@ -472,7 +472,7 @@ then
 	echo "Installing Shiny Server $SHINYSERVER_VERSION..."
 	echo "---------------------------------"
 
-	if [[ $SHINYSERVER_VERSION =~ "1.5.7.[0-9]{1,3}"]
+	if [[ $SHINYSERVER_VERSION=~"1.5.7.[0-9]{1,3}" ]]
 	then
 		
 		sudo wget https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-$SHINYSERVER_VERSION-amd64.deb -O /tmp/shiny-$SHINYSERVER_VERSION-amd64.deb
