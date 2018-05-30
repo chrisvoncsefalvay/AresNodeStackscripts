@@ -181,6 +181,7 @@ sudo apt-get install -y g++
 sudo wget https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
 sudo python3 /tmp/get-pip.py
 
+sudo pip3 --upgrade pip
 sudo pip3 install virtualenv virtualenvwrapper
 
 
