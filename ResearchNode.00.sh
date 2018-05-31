@@ -20,7 +20,7 @@
 
 # <UDF name="USER_USERNAME" label="User name" />
 # <UDF name="USER_PASSWORD" label="User password" />
-#
+# <UDF name="USER_USERGROUP" label="Authorisation usergroup" />
 #
 
 
@@ -37,5 +37,13 @@ source <ssinclude StackScriptID=316999>
 # Runs a basic system update
 rn01_update_system
 
+# RN01._create_user_and_usergroup
+# Creates a user with a given password, and assigns it to a newly created usergroup.
+rn02_create_user_and_usergroup ${USER_USERNAME} ${USER_PASSWORD} ${USER_USERGROUP}
 
+
+
+#=============================================================
+# PREFLIGHT AND CONFIGURATION
+#=============================================================
 
