@@ -3,7 +3,7 @@
 
 # ResearchNode installer
 #
-# PART 05
+# PART 03
 # JUPYTER KERNELS
 #
 # Linode embedding ID:    000000
@@ -21,7 +21,7 @@
 echo "Loaded subsidiary resource RN03.KERNELS.000000"
 
 
-# rn05_selective_domain_installer
+# rn03_selective_domain_installer
 # -------------------------------
 # Installs languages and kernels dependent on a domain selection string.
 #
@@ -37,7 +37,7 @@ echo "Loaded subsidiary resource RN03.KERNELS.000000"
 # The currently registered kernels are:
 # - Haskell
 
-rn05_selective_kernel_installer () {
+rn03_selective_kernel_installer () {
 	echo "---------------------------------------------"
 	echo "Installing selected Jupyter kernels..."
 	echo "---------------------------------------------"
@@ -48,30 +48,30 @@ rn05_selective_kernel_installer () {
 	IFS=',' read -ra KERNEL <<< "$1"
 	for i in "${KERNELS[@]}"; do	
 		echo "***** Installing ${i} kernel..."
-		rn05_install_kernel_${i}
+		rn02_install_kernel_${i}
 	done
 }
 
-# rn05_selective_kernel_installer %end%
+# rn03_selective_kernel_installer %end%
 
 
 
-# rn05_install_kernel_Ruby
+# rn03_install_kernel_Ruby
 # ------------------------
 # Installs a Ruby kernel.
 
-rn05_install_kernel_Ruby () {
+rn03_install_kernel_Ruby () {
 	sudo apt-get install -y ruby ruby-dev
 	gem install cztop iruby
 	iruby register --force
 	
 }
 
-# rn05_install_kernel_Ruby %end%
+# rn03_install_kernel_Ruby %end%
 
 
 
-# rn05_install_kernel_JavaScript
+# rn03_install_kernel_JavaScript
 # ------------------------------
 # Installs a JavaScript kernel based on node.
 
@@ -81,15 +81,15 @@ rn03_install_kernel_JavaScript () {
 	ijsinstall
 }
 
-# rn05_install_kernel_JavaScript %end%
+# rn03_install_kernel_Ocaml %end%
 
 
 
-# rn05_install_kernel_R
+# rn03_install_kernel_R
 # -------------------------
 # Installs an R kernel. This assumes a recent R is installed!
 
-rn05_install_kernel_R () {
+rn03_install_kernel_R () {
 R --slave <<EOF
 	install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest')
 	devtools::install_github('IRkernel/IRkernel')	library(IRkernel)
@@ -97,15 +97,15 @@ R --slave <<EOF
 EOF	
 }
 
-# rn05_install_kernel_R %end%
+# rn03_install_kernel_R %end%
 
 
 
-# rn05_install_kernel_OCaml
+# rn03_install_kernel_OCaml
 # -------------------------
 # Installs OCaml and an OCaml kernel to Jupyterhub
 
-rn05_install_kernel_Ocaml () {
+# rn03_install_kernel_Ocaml () {
 	sudo apt-get install -y ocaml-nox opam
 	opam init
 	opam install jupyter
@@ -113,83 +113,83 @@ rn05_install_kernel_Ocaml () {
 	sudo jupyter kernelspec install --name ocaml-jupyter "$(opam config var share)/ocaml-jupyter"
 }
 
-# rn05_install_kernel_Ocaml %end%
+# rn03_install_kernel_Ocaml %end%
 
 
 
-# rn05_install_kernel_Octave
+# rn03_install_kernel_Octave
 # --------------------------
 # Installs Octave and an Octave kernel to Jupyterhub
 
-rn05_install_kernel_Octave () {
+# rn03_install_kernel_Octave () {
 	sudo apt-get install -y octave
 	sudo pip3 install octave_kernel
 }
 
-# rn05_install_kernel_Octave %end%
+# rn03_install_kernel_Octave %end%
 
 
 
-# rn05_install_kernel_Bash
+# rn03_install_kernel_Bash
 # ------------------------
 # Installs a Bash kernel to Jupyterhub
 
-rn05_install_kernel_Bash () {
+# rn03_install_kernel_Bash () {
 	pip3 install bash_kernel
 	python -m bash_kernel.install
 }
 
-# rn05_install_kernel_Bash %end%
+# rn03_install_kernel_Bash %end%
 
 
 
-# rn05_install_kernel_Clojure
+# rn03_install_kernel_Clojure
 # ---------------------------
 # Installs a Clojure kernel to Jupyterhub
 
-rn05_install_kernel_Clojure () {
+# rn03_install_kernel_Clojure () {
 	cd /tmp
 	git clone https://github.com/clojupyter/clojupyter
 	make
 	sudo make install
 }
 
-# rn05_install_kernel_Clojure %end%
+# rn03_install_kernel_Clojure %end%
 
 
 
-# rn05_install_kernel_AIML
+# rn03_install_kernel_AIML
 # ------------------------
 # Installs AIML chatbot kernel
 
-rn05_install_kernel_AIML () {
+rn03_install_kernel_AIML () {
 	sudo pip3 install python-aiml aimlbotkernel
 	sudo jupyter aimlbotkernel install
 }
 
-# rn05_install_kernel_AIML %end%
+# rn03_install_kernel_Clojure %end%
 
 
 
-# rn05_install_kernel_ARMv6THUMB
+# rn03_install_kernel_ARMv6THUMB
 # ------------------------------
 # Installs a Jupyter kernel for the ARMv6 THUMB instruction set as 
 # implemented by the ARM0 Cortex M0+ CPU
 
-rn05_install_kernel_ARMv6THUMB () {
+rn02_install_kernel_ARMv6THUMB () {
 	sudo pip3 install iarm
 	sudo python3 -m iarm_kernel.install
 }
 
-# rn05_install_kernel_ARMv6THUMB %end%
+# rn03_install_kernel_ARMv6THUMB %end%
 
 
 
-# rn05_install_kernel_Haskell
+# rn03_install_kernel_Haskell
 # ---------------------------
 # Installs ghc and Haskell kernel
 
-rn05_install_kernel_Haskell () {
+rn03_install_kernel_Haskell () {
 	sudo apt-get install haskell-platform
 	cd /tmp
 	git clone https://github.com/gibiansky/IHaskell
@@ -200,15 +200,15 @@ rn05_install_kernel_Haskell () {
 	ihaskell install --stack
 }
 
-# rn05_install_kernel_Haskell %end%
+# rn03_install_kernel_Haskell %end%
 
 
 
-# rn05_install_kernel_MIT_Scheme
+# rn03_install_kernel_MIT_Scheme
 # ------------------------------
 # Installs MIT Scheme 9.2, ZeroMQ 4.2.1 and the MIT Scheme kernel
 
-rn05_install_kernel_MIT_Scheme () {
+rn03_install_kernel_MIT_Scheme () {
 	sudo apt-get install -y libtool pkg-config build-essential autoconf automake uuid-dev m4
 	sudo apt-get install -y checkinstall
 
@@ -240,4 +240,8 @@ rn05_install_kernel_MIT_Scheme () {
 	sudo make install
 }
 
-# rn05_install_kernel_MIT_Scheme %end%
+# rn03_install_kernel_MIT_Scheme %end%
+
+
+
+

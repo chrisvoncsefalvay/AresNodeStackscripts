@@ -31,6 +31,21 @@ rn04_install_jupyterhub () {
     sudo pip3 install --upgrade notebook
 }
 
+# rn04_install_jupyterhub %end%
+
+
+
+# rn04_install_RStudio
+# --------------------
+# Installs RStudio.
+#
+rn04_install_RStudio () {
+
+
+
+}
+
+
 
 # rn04_configure_jupyterhub
 # -----------------------
@@ -67,13 +82,13 @@ EOF
 
 
 
-# rn04_configure_for_PAM
-# ----------------------
+# rn04_configure_Jupyterhub_for_PAM
+# ---------------------------------
 # Sets up PAM authentication implicitly, and puts the comma separated list of users provided in as users.
 #
 # @param $@    Single user or comma separated list of users to add
 #
-rn04_configure_for_PAM () {
+rn04_configure_Jupyterhub_for_PAM () {
     local CLEANED_USER_LIST=$(echo "$@" | sed -e "s/\s//g")
     echo "c.Authenticator.admin_users = {'${CLEANED_USER_LIST}'}" >> /etc/jupyterhub/jupyerhub_config.py
 }
@@ -81,8 +96,8 @@ rn04_configure_for_PAM () {
 # rn04_configure_for_PAM %end%
 
 
-# rn04_configure_daemon
-# ---------------------
+# rn04_configure_Jupyterhub_daemon
+# --------------------------------
 # Configures daemon for Jupyterhub and sets up autostart.
 #
 configure_jupyterhub () {
@@ -119,4 +134,5 @@ EOF
     sudo systemctl enable jupyterhub
     sudo systemctl daemon-reload
 }
+
 
