@@ -120,14 +120,15 @@ echo ""
 ##	Downloading installer script
 curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.System.sh | sudo source -
 
-##	Installing libssl
-install_system_libssl()
 
 ##	Updating system
-install_system_update_system()
+install_system_update_system
+
+##	Installing libssl
+install_system_libssl
 
 ##	Installing NodeJS
-install_system_nodejs()
+install_system_nodejs
 
 ## Creating user group
 system_create_usergroup ${USERGROUPNAME}
@@ -149,17 +150,17 @@ curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/Res
 
 if [ $INSTALL_NEO4J = "yes" ]
 then
-	install_db_neo4j()
+	install_db_neo4j
 	
 fi
 
 if [ $INSTALL_MONGO = "yes" ]
 then
-	install_db_mongodb()
+	install_db_mongodb
 	
 fi
 
-install_db_postgresql()
+install_db_postgresql
 
 
 # --- INSTALLING OPENCV -------------------------------------------------------
@@ -177,22 +178,22 @@ fi
 # Source installation scripts
 curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Python.sh | sudo bash -
 
-install_barebones()
+install_barebones
 
 if [ $BAREBONES = "no" ]
 then
 
-	install_general()
-	install_dataviz()
-	install_nlp()
-	install_ML()
+	install_general
+	install_dataviz
+	install_nlp
+	install_ML
 
 fi
 
 if [ $BAREBONES = "no" ] && [ $INSTALL_CORPORA = "yes" ]
 then
 
-	download_corpora()
+	download_corpora
 	
 fi
 
@@ -201,7 +202,7 @@ fi
 
 if [ $BAREBONES = "no" ] && [ $CARTOTOOLS = "yes" ]
 then
-	install_cartotools()
+	install_cartotools
 
 fi
 
@@ -211,7 +212,7 @@ fi
 
 if [ $BAREBONES = "no" ] && [ $BIOINFORMATICS = "yes" ]
 then
-	install_bioinformatics()
+	install_bioinformatics
 
 fi
 
@@ -282,7 +283,7 @@ echo "--------------------------------"
 echo "Generating Github SSH/RSA key..."
 echo "--------------------------------"
 
-create_ssh_key()
+create_ssh_key
 
 
 echo "-------------------------------------------"
@@ -318,7 +319,7 @@ else
 	echo "The automatic key upload process has failed (the server returned an error code ${KEY_UPLOAD_RESULTS}). To upload your GitHub key, follow the steps below:"
 	echo ""
 	echo "1) Go to https://github.com/settings/ssh/new and log in."
-	echo "2) Copy your public key, displayed below, in the big textbox:
+	echo "2) Copy your public key, displayed below, in the big textbox:"
 	echo ""
 	echo "${PUBLIC_KEY}"
 	echo ""

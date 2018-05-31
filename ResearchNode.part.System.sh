@@ -134,4 +134,6 @@ EOF
 
 fi
 
+sudo mv /tmp/template.gitconfig /home/$USER_USERNAME/.gitconfig
+
 }

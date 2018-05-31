@@ -61,7 +61,7 @@ install_db_postgresql () {
 }
 
 install_db_all() {
-  install_db_mongodb()
-  install_db_neo4j()
-  install_db_postgresql()
+  install_db_mongodb
+  install_db_neo4j
+  install_db_postgresql
 }

@@ -49,7 +49,7 @@ configure_RStudio () {
 			www-address=0.0.0.0
 			rsession-which-r=$(which R)
 			auth-required-user-group="$2"
-	EOF
+EOF
 
 	sudo rstudio-server restart
 }

@@ -52,7 +52,7 @@ configure_jupyterhub () {
     c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
     c.Spawner.cmd = '/usr/local/bin/sudospawner'
     c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
-    EOF
+EOF
 
     # Upgrading the jupyterhub DB
     sudo jupyterhub upgrade-db
