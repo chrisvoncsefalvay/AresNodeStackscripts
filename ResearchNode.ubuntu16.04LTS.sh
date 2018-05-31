@@ -114,60 +114,11 @@ echo "Deep learning tools:  $DEEPLEARNING"
 echo "Bioinformatics tools: $BIOINFORMATICS"
 echo ""
 
-echo "Databases"
-echo "---------"
-echo "* PostgreSQL"
-echo "* SQLite"
-
-if [ $INSTALL_MONGO = "yes" ]; then
-  echo "* MongoDB"
-fi
-
-if [ $INSTALL_NEO4J = "yes" ]; then
-  echo "* Neo4j"
-fi
-
-echo ""
-echo "Ports"
-echo "-----"
-echo ""
-echo "         SERVICE       |  PORT  "
-echo "-----------------------|--------"
-echo "*-------->     RStudio | $RSTUDIO_PORT"
-echo "*-------->     Jupyter | $JUPYTER_PORT"
-
-if [ $DEEPLEARNING = "yes" ]
-then
-	echo "*--------> TensorBoard | 1234"
-fi
-
-if [ $INSTALL_NEO4J = "yes" ]
-then
-	echo "*-------->       Neo4j | 1234"
-fi
-
-if [ $INSTALL_MONGO = "yes" ]
-then
-	echo "*-------->       Mongo | 1234"
-fi
-
-echo "*-------->  PostgreSQL | 1234"
-echo "-----------------------|-------"
-
-if [ $BAREBONES = "yes" ] 
-then
-	echo "This is a barebones install, so it will be pretty quick."
-fi
-
-echo ""
-echo "OK, ready to roll!"
-echo ""
-
 
 # --- SYSTEM PREPARATION -----------------------------------------------------
 
 ##	Downloading installer script
-curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.System.sh | sudo bash -
+curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.System.sh | sudo source -
 
 ##	Installing libssl
 install_system_libssl()

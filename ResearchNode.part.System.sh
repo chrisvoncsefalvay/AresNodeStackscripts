@@ -122,11 +122,12 @@ system_configure_git () {
 		hotfix = hotfix-
 		support = support-
 		versiontag = v
+
 EOF
 
 if [ -n $5 ]; then
 
-	cat << EOF >> /tmp/template.gitconfig
+cat << EOF >> /tmp/template.gitconfig
 [github]
 user = $GIT_USERNAME
 EOF
