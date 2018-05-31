@@ -118,7 +118,7 @@ echo ""
 # --- SYSTEM PREPARATION -----------------------------------------------------
 
 ##	Downloading installer script
-curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.System.sh | sudo source -
+source <(curl -s https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.System.sh)
 
 
 ##	Updating system
@@ -140,11 +140,11 @@ system_configure_git "${GIT_FULLNAME}" $GIT_EMAIL $USER_USERNAME $PREFERRED_EDIT
 
 # --- INSTALLING PYTHON -------------------------------------------------------
 
-curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Python.sh | sudo bash -
+source <(curl -s https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Python.sh)
 
 # --- INSTALLING R -----------------------------------------------------------
 
-curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.R_base.sh | sudo bash -
+source <(curl -s https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.R_base.sh)
 
 # --- INSTALLING DATABASES ----------------------------------------------------
 
@@ -168,7 +168,7 @@ install_db_postgresql
 if [ $OPENCV = "yes" ]
 then
 	
-	curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.OpenCv.sh | sudo bash -
+	source <(curl -s https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.OpenCv.sh)
 
 fi
 
@@ -176,7 +176,7 @@ fi
 # --- INSTALLING PYTHON PACKAGES ----------------------------------------------
 
 # Source installation scripts
-curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Python.sh | sudo bash -
+source<(curl -s https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Python.sh)
 
 install_barebones
 
@@ -219,7 +219,7 @@ fi
 
 # --- INSTALLING JUPYTERHUB ---------------------------------------------------
 
-curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Jupyter.sh | sudo bash -
+source <(curl -s https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Jupyter.sh)
 
 configure_jupyterhub $JUPYTER_PORT $USER_USERNAME
 
@@ -260,7 +260,7 @@ fi
 
 # RStudio install
 
-curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.RStudio.sh | sudo bash -
+source <(curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.RStudio.sh)
 
 install_RStudio ${RSTUDIO_VERSION}
 
@@ -269,7 +269,7 @@ configure_RStudio ${RSTUDIO_PORT} ${USERGROUPNAME}
 
 # Shiny install
 
-curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Shiny.sh | sudo bash -
+source <(curl https://raw.githubusercontent.com/chrisvoncsefalvay/stackscripts/master/ResearchNode.part.Shiny.sh)
 
 install_Shiny ${SHINYSERVER_VERSION}
 
