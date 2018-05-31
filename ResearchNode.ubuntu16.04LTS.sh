@@ -39,11 +39,6 @@
 source <ssinclude StackScriptID=1>	# Linode stock functions - https://www.linode.com/stackscripts/view/1
 
 
-# Getting the IP address of the current box
-
-IPADDR=$(/sbin/ifconfig eth0 | awk '/inet / { print $2 }' | sed 's/addr://')
-
-
 # Declaring R package installer function
 
 install_Rpkg () {  
