@@ -44,6 +44,10 @@ rn02_create_user_and_usergroup ${USER_USERNAME} ${USER_PASSWORD} ${USER_USERGROU
 
 
 #=============================================================
-# PREFLIGHT AND CONFIGURATION
+# INSTALL CORE APPLICATIONS
 #=============================================================
+
+# SOURCE RN04                     V
+source <ssinclude StackScriptID=000000.
+# SOURCE RN04                     A
 

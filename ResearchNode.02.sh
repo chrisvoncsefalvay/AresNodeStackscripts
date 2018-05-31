@@ -57,6 +57,7 @@ rn02_install_barebones () {
 	sudo pip3 install scipy numpy pandas matplotlib
 }
 
+# rn02_install_barebones %end%
 
 
 # rn02_selective_domain_installer
@@ -86,14 +87,7 @@ rn02_selective_domain_installer () {
 	done
 }
 
-
-# rn02_install_domain_general
-# ---------------------------
-# Installs packages relating to
-
-rn02_install_domain_ () {
-
-}
+# rn02_selective_domain_installer %end%
 
 
 # rn02_install_domain_GeneralScience
@@ -107,6 +101,8 @@ rn02_install_domain_GeneralScience () {
 	sudo pip3 install scikit-metrics scikit-neuralnetwork
 }
 
+# rn02_install_domain_GeneralScience %end%
+
 
 # rn02_install_domain_MachineLearning
 # -----------------------------------
@@ -119,8 +115,9 @@ rn02_install_domain_MachineLearning () {
 	sudo pip3 install torchvision
 	sudo pip3 install keras	
 	sudo pip3 install yellowbrick livelossplot
-
 }
+
+# rn02_install_domain_MachineLearning %end%
 
 
 # rn02_install_domain_NLP
@@ -132,6 +129,8 @@ rn02_install_domain_NLP () {
 	sudo pip3 install markovify 
 }
 
+# rn02_install_domain_NLP %end%
+
 
 # rn02_install_domain_NLPCorpora
 # ------------------------------
@@ -142,6 +141,8 @@ rn02_install_domain_NLPCorpora () {
 	sudo python3 -m nltk.downloader -d /usr/local/share/nltk_data all 
 	sudo python3 -m spacy download en_core_web_sm
 }
+
+# rn02_install_domain_NLPCorpora %end%
 
 
 # rn02_install_domain_Bioinformatics
@@ -156,6 +157,8 @@ rn02_install_domain_Bioinformatics () {
   sudo pip3 install medgen-prime pygrowup 
   sudo pip3 install ncbi-acc-download ncbi-genome-download genomepy ncbi Geeneus multifastadb 
 }
+
+# rn02_install_domain_Bioinformatics %end%
 
 
 # rn02_install_domain_GIS
@@ -175,6 +178,7 @@ rn02_install_domain_GIS () {
   sudo pip3 install mapbox mapboxgl
 }
 
+# rn02_install_domain_GIS %end%
 
 
 # rn02_install_domain_DataVisualisation
@@ -185,3 +189,5 @@ rn02_install_domain_DataVisualisation () {
 	sudo pip3 install graphviz ggplot seaborn bokeh scikit-image scikit-plot Pillow
 	sudo pip3 install matplotlib-venn SeqFindr features iplotter colouringmap jupyterd3 ipython-d3-sankey
 }
+
+# rn02_install_domain_DataVisualisation %end%
