@@ -3,8 +3,8 @@
 
 # ResearchNode installer
 #
-# PART 05
-# JUPYTER KERNELS
+# PART 03
+# R AND RELATED ITEMS
 #
 # Linode embedding ID:    000000
 #
@@ -18,226 +18,219 @@
 #	  <chris@chrisvoncsefalvay.com>
 #
 
-echo "Loaded subsidiary resource RN03.KERNELS.000000"
+echo "Loaded subsidiary resource RN03.PYTHON.000000"
 
-
-# rn05_selective_domain_installer
-# -------------------------------
-# Installs languages and kernels dependent on a domain selection string.
+# _retry
+# ------
+# Retries a certain command. Designed to deal with flaky PPAs.
 #
-# WARNING: 
-# ******** INSTALL KERNELS ONLY AFTER INSTALLING JUPYTERHUB
-# ******** AND MOST OTHER LANGUAGES. R, ESPECIALLY, IS NOT 
-# ******** INSTALLED BY THE INCLUDED INSTALLER FUNCTIONS.
-# ******** THIS IS THEREFORE BEST DONE TOWARDS THE END OF THE
-# ******** INSTALLATION PROCESS.
+_retry() {
+    if "$@"; then
+        return 0
+    fi
+    for wait_time in 5 20 30 60; do
+        echo "Command failed, retrying in ${wait_time} ..."
+        sleep ${wait_time}
+        if "$@"; then
+            return 0
+        fi
+    done
+    echo "Failed all retries!"
+    exit 1
+}
+
+# _retry %end%
+
+
+# _install_Rpkg
+# -------------
+# Installs packages using littler. Depends on the `install.r` script, which it loads.
+#
+_install_Rpkg() {
+	if [ $(find /tmp --name install.r | wc -l) -eq 0 ]; then
+		cat << EOM > /tmp/install.r
+#!/usr/bin/env r
+if (is.null(argv) | length(argv)<1) {
+  cat("Usage: installr.r pkg1 [pkg2 pkg3 ...]\n")
+  q()
+}
+repos <- "http://cran.rstudio.com"
+lib.loc <- "/usr/local/lib/R/site-library"
+install.packages(argv, lib.loc, repos)
+EOM
+	fi
+	
+	r /tmp/install.r $@
+}
+
+# _install_Rpkg %end%
+
+
+# rn03_install_R
+# --------------
+# Installs R and dependencies.
+
+rn03_install_R () {
+	echo "---------------"
+	echo "Installing R..."
+	echo "---------------"
+	
+	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+
+	sudo add-apt-repository -y 'deb http://cran.rstudio.com/bin/linux/ubuntu xenial/'
+	sudo add-apt-repository -y "ppa:marutter/rrutter"
+    sudo add-apt-repository -y "ppa:marutter/c2d4u"
+	sudo apt-get update
+	sudo apt-get install -y r-base r-base-dev r-cran-littler
+}
+
+# rn03_install_R %end%
+
+
+# rn02_install_barebones
+# ----------------------
+# Installs the most essential python packages.
+
+rn02_install_barebones () {
+	echo "-----------------------------------"
+	echo "Installing basic Python packages..."
+	echo "-----------------------------------"
+
+	sudo pip3 install Cython requests BeautifulSoup4 scrapy
+	sudo pip3 install scipy numpy pandas matplotlib
+}
+
+# rn02_install_barebones %end%
+
+
+# rn02_selective_domain_installer
+# -------------------------------
+# Installs python packages dependent on a domain selection string.
 #		
 # @param $1: domain selection string, comma separated
 #
-# The currently registered kernels are:
-# - Haskell
+# The currently registered domains are:
+# - MachineLearning
+# - GeneralScience
+# - NLP
+# - NLPCorpora
+# - Bioinformatics
+# - GIS
+# - DataVisualisation
 
-rn05_selective_kernel_installer () {
+rn02_selective_domain_installer () {
 	echo "---------------------------------------------"
-	echo "Installing selected Jupyter kernels..."
+	echo "Installing domain specific python packages..."
 	echo "---------------------------------------------"
 
-	sudo add-apt-repository ppa:chronitis/jupyter
-	sudo apt-get update
-
-	IFS=',' read -ra KERNEL <<< "$1"
-	for i in "${KERNELS[@]}"; do	
-		echo "***** Installing ${i} kernel..."
-		rn05_install_kernel_${i}
+	IFS=',' read -ra DOMAINS <<< "$1"
+	for i in "${DOMAINS[@]}"; do	
+		echo "***** Installing domain ${i}"
+		rn02_install_domain_${i}
 	done
 }
 
-# rn05_selective_kernel_installer %end%
+# rn02_selective_domain_installer %end%
 
 
+# rn02_install_domain_GeneralScience
+# ----------------------------------
+# Installs general scientific packages
 
-# rn05_install_kernel_Ruby
-# ------------------------
-# Installs a Ruby kernel.
-
-rn05_install_kernel_Ruby () {
-	sudo apt-get install -y ruby ruby-dev
-	gem install cztop iruby
-	iruby register --force
-	
+rn02_install_domain_GeneralScience () {
+	sudo pip3 install deap NetworkX simpy mesa BayesPy
+	sudo pip3 install statsmodels cubes PyMC PyMix 
+	sudo pip3 install scikit-learn scikit-dataaccess scikit-datasets 
+	sudo pip3 install scikit-metrics scikit-neuralnetwork
 }
 
-# rn05_install_kernel_Ruby %end%
+# rn02_install_domain_GeneralScience %end%
 
 
+# rn02_install_domain_MachineLearning
+# -----------------------------------
+# Installs ML and deep learning packages
 
-# rn05_install_kernel_JavaScript
+rn02_install_domain_MachineLearning () {
+	sudo pip3 install scikit-learn scikit-neuralnetwork
+	sudo pip3 install tensorflow
+	sudo pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.0-cp35-cp35m-linux_x86_64.whl 
+	sudo pip3 install torchvision
+	sudo pip3 install keras	
+	sudo pip3 install yellowbrick livelossplot
+}
+
+# rn02_install_domain_MachineLearning %end%
+
+
+# rn02_install_domain_NLP
+# -----------------------
+# Installs natural language programming packages
+
+rn02_install_domain_NLP () {
+	sudo pip3 install nltk textblob nalaf spacy gensim
+	sudo pip3 install markovify 
+}
+
+# rn02_install_domain_NLP %end%
+
+
+# rn02_install_domain_NLPCorpora
 # ------------------------------
-# Installs a JavaScript kernel based on node.
+# Installs NLP corpora
 
-rn03_install_kernel_JavaScript () {
-	sudo apt-get install -y nodejs npm
-	sudo npm install -g ijavascript
-	ijsinstall
+rn02_install_domain_NLPCorpora () {
+	sudo python3 -m nalaf.download_data
+	sudo python3 -m nltk.downloader -d /usr/local/share/nltk_data all 
+	sudo python3 -m spacy download en_core_web_sm
 }
 
-# rn05_install_kernel_JavaScript %end%
+# rn02_install_domain_NLPCorpora %end%
 
 
+# rn02_install_domain_Bioinformatics
+# ----------------------------------
+# Installs bioinformatics packages
 
-# rn05_install_kernel_R
-# -------------------------
-# Installs an R kernel. This assumes a recent R is installed!
-
-rn05_install_kernel_R () {
-R --slave <<EOF
-	install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest')
-	devtools::install_github('IRkernel/IRkernel')	library(IRkernel)
-	IRkernel::installspec(user = FALSE)	
-EOF	
+rn02_install_domain_Bioinformatics () {
+  sudo pip3 install biopython 
+  sudo pip3 install scikit-bio
+  sudo pip3 install boyle clintrials dicom-numpy dicompyler dinopy epipylib 
+  sudo pip3 install fhir hl7 hl7parser PyMedTermino metapub pubmed bioscraping pubmed-lookup pubMunch3 pubmedasync
+  sudo pip3 install medgen-prime pygrowup 
+  sudo pip3 install ncbi-acc-download ncbi-genome-download genomepy ncbi Geeneus multifastadb 
 }
 
-# rn05_install_kernel_R %end%
+# rn02_install_domain_Bioinformatics %end%
 
 
+# rn02_install_domain_GIS
+# -----------------------
+# Installs GIS packages
 
-# rn05_install_kernel_OCaml
-# -------------------------
-# Installs OCaml and an OCaml kernel to Jupyterhub
-
-rn05_install_kernel_Ocaml () {
-	sudo apt-get install -y ocaml-nox opam
-	opam init
-	opam install jupyter
-	opam install jupyter-archimedes
-	sudo jupyter kernelspec install --name ocaml-jupyter "$(opam config var share)/ocaml-jupyter"
+rn02_install_domain_GIS () {
+  sudo apt-get install -y proj-bin libproj-dev libgeos-dev
+  sudo add-apt-repository -y ppa:ubuntugis/ppa
+  sudo apt-get update
+  sudo apt-get install -y pyproj 
+  sudo apt-get install -y gdal-bin python-gdal python3-gdal
+  sudo pip3 install GEOS 
+  sudo pip3 install GDAL pygdal
+  sudo pip3 install geopandas geojson geopy geoviews elevation OSMnx giddy
+  sudo pip3 install spint landsatxplore telluric 
+  sudo pip3 install mapbox mapboxgl
 }
 
-# rn05_install_kernel_Ocaml %end%
+# rn02_install_domain_GIS %end%
 
 
+# rn02_install_domain_DataVisualisation
+# -------------------------------------
+# Installs data visualisation packages
 
-# rn05_install_kernel_Octave
-# --------------------------
-# Installs Octave and an Octave kernel to Jupyterhub
-
-rn05_install_kernel_Octave () {
-	sudo apt-get install -y octave
-	sudo pip3 install octave_kernel
+rn02_install_domain_DataVisualisation () {
+	sudo pip3 install graphviz ggplot seaborn bokeh scikit-image scikit-plot Pillow
+	sudo pip3 install matplotlib-venn SeqFindr features iplotter colouringmap jupyterd3 ipython-d3-sankey
 }
 
-# rn05_install_kernel_Octave %end%
-
-
-
-# rn05_install_kernel_Bash
-# ------------------------
-# Installs a Bash kernel to Jupyterhub
-
-rn05_install_kernel_Bash () {
-	pip3 install bash_kernel
-	python -m bash_kernel.install
-}
-
-# rn05_install_kernel_Bash %end%
-
-
-
-# rn05_install_kernel_Clojure
-# ---------------------------
-# Installs a Clojure kernel to Jupyterhub
-
-rn05_install_kernel_Clojure () {
-	cd /tmp
-	git clone https://github.com/clojupyter/clojupyter
-	make
-	sudo make install
-}
-
-# rn05_install_kernel_Clojure %end%
-
-
-
-# rn05_install_kernel_AIML
-# ------------------------
-# Installs AIML chatbot kernel
-
-rn05_install_kernel_AIML () {
-	sudo pip3 install python-aiml aimlbotkernel
-	sudo jupyter aimlbotkernel install
-}
-
-# rn05_install_kernel_AIML %end%
-
-
-
-# rn05_install_kernel_ARMv6THUMB
-# ------------------------------
-# Installs a Jupyter kernel for the ARMv6 THUMB instruction set as 
-# implemented by the ARM0 Cortex M0+ CPU
-
-rn05_install_kernel_ARMv6THUMB () {
-	sudo pip3 install iarm
-	sudo python3 -m iarm_kernel.install
-}
-
-# rn05_install_kernel_ARMv6THUMB %end%
-
-
-
-# rn05_install_kernel_Haskell
-# ---------------------------
-# Installs ghc and Haskell kernel
-
-rn05_install_kernel_Haskell () {
-	sudo apt-get install haskell-platform
-	cd /tmp
-	git clone https://github.com/gibiansky/IHaskell
-	cd IHaskell
-	pip3 install -r requirements.txt
-	stack install gtk2hs-buildtools
-	stack install --fast
-	ihaskell install --stack
-}
-
-# rn05_install_kernel_Haskell %end%
-
-
-
-# rn05_install_kernel_MIT_Scheme
-# ------------------------------
-# Installs MIT Scheme 9.2, ZeroMQ 4.2.1 and the MIT Scheme kernel
-
-rn05_install_kernel_MIT_Scheme () {
-	sudo apt-get install -y libtool pkg-config build-essential autoconf automake uuid-dev m4
-	sudo apt-get install -y checkinstall
-
-	cd /tmp
-	
-	git clone https://github.com/joeltg/mit-scheme-kernel
-	wget http://ftp.gnu.org/gnu/mit-scheme/stable.pkg/9.2/mit-scheme-9.2-x86-64.tar.gz
-	tar -xzvf mit-scheme-9.2-x86-64.tar.gz
-	wget https://github.com/zeromq/libzmq/releases/download/v4.2.5/zeromq-4.2.5.tar.gz
-	tar -xvzf zeromq-4.2.1.tar.gz
-	
-	
-	# Install MIT Scheme 9.2
-	cd /tmp/mit-scheme-9.2/src/
-	./configure
-	make compile-microcode
-	sudo make install
-	
-	# Install ZeroMQ 4.2.5
-	cd /tmp/zeromq-4.2.1/
-	./configure
-	make
-	sudo make install
-	
-	# Install the kernel
-	cd /tmp/mit-scheme-kernel
-	export LD_LIBRARY_PATh=/usr/local/lib
-	make
-	sudo make install
-}
-
-# rn05_install_kernel_MIT_Scheme %end%
+# rn02_install_domain_DataVisualisation %end%
