@@ -21,13 +21,15 @@
 # <UDF name="USER_USERNAME" label="User name" />
 # <UDF name="USER_PASSWORD" label="User password" />
 # <UDF name="USER_USERGROUP" label="Authorisation usergroup" />
-#
-
+# <UDF name="PY_PACKAGES" label="Python packages to install" manyOf="GeneralScience,MachineLearning,NLP,NLPCorpora,Bioinformatics,GIS,DataVisualisation" default="GeneralScience,DataVisualisation" />
+# <UDF name="R_PACKAGES" label="R packages to install" manyOf="General,ReproducibleResearch,StatisticalMethods,SocialNetworkAnalysis,Epidemiology,ClinicalTrials,Plotting,Spatial,ExportImport,TextMining,BayesianInference,MachineLearning,TimeSeries" default="General,ReproducibleResearch,StatisticalMethods,Plotting" />
 
 
 #=============================================================
 # PREFLIGHT AND CONFIGURATION
 #=============================================================
+
+set -x
 
 # SOURCE RN01                     V
 source <ssinclude StackScriptID=316999>
@@ -44,10 +46,29 @@ rn02_create_user_and_usergroup ${USER_USERNAME} ${USER_PASSWORD} ${USER_USERGROU
 
 
 #=============================================================
-# INSTALL CORE APPLICATIONS
+# INSTALL R AND PYTHON
 #=============================================================
 
-# SOURCE RN04                     V
-source <ssinclude StackScriptID=000000.
-# SOURCE RN04                     A
+# SOURCE RN02                     V
+source <ssinclude StackScriptID=317342>
+# SOURCE RN02                     A
 
+# SOURCE RN03                     V
+source <ssinclude StackScriptID=317343>
+# SOURCE RN03                     A
+
+# Install Python 3 and barebones configuration
+rn02_install_python3
+
+# Install R and barebones configuration
+rn03_install_R
+
+# Install Python packages
+if [ -n ${PY_PACKAGES} ]; then
+    rn02_selective_domain_installer ${PY_PACKAGES}
+fi
+
+# Install R packages
+if [ -n ${R_PACKAGES} ]; then
+    rn03_selective_domain_installer ${R_PACKAGES}
+fi
