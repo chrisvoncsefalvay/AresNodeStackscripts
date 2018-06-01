@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # ResearchNode installer
 #
 # PART 03
@@ -46,12 +45,14 @@ _retry() {
 # -------------
 # Installs packages using littler. Depends on the `install.r` script, which it loads.
 #
+# @param $@	packages to install
+#
 _install_Rpkg() {
 	if [ $(find /tmp --name install.r | wc -l) -eq 0 ]; then
 		cat << EOM > /tmp/install.r
 #!/usr/bin/env r
 if (is.null(argv) | length(argv)<1) {
-  cat("Usage: installr.r pkg1 [pkg2 pkg3 ...]\n")
+  cat("Usage: install.r pkg1 [pkg2 pkg3 ...]\n")
   q()
 }
 repos <- "http://cran.rstudio.com"
@@ -64,6 +65,51 @@ EOM
 }
 
 # _install_Rpkg %end%
+
+# _install_Rpkgit
+# ---------------
+# Installs a single package from github. Specify package as username and repo. For example,
+#
+#		_install_Rpkgit chrisvoncsefalvay testrepo
+#
+# will install from github.com/chrisvoncsefalvay/testrepo.git
+#
+# To install a particular subdirectory, reference or pull, add these to the repo. For example,
+#
+#	_install_Rpkgit chrisvoncsefalvay testrepo/src#4
+#
+# installs pull request #4 of the folder /src in the repo, and
+#
+#	_install_Rpkgit chrisvoncsefalvay testrepo@f3ab23f
+#
+# installs commit ref f3ab23f of the repo. Note that you *cannot* combine # and @, i.e. you cannot specify both a reference AND a PR.
+#
+# To get a particular branch, add a third argument:
+#
+#	_install_Rpkgit chrisvoncsefalvay testrepo devel
+#
+# gets you the `devel` branch of `testrepo`.
+#
+# @param $1	Github username
+# @param $2	repository name and params
+# @param $3 (optional) token if installing from private repo
+
+_install_Rpkgit () {
+
+	if [ $(find /tmp --name github.r | wc -l) -eq 0 ]; then
+		cat << EOM > /tmp/github.r
+#!/usr/bin/env r
+
+library(devtools)
+
+devtools::install_github(paste(argv[1], argv[2], sep="/"))
+
+EOM
+
+	r /tmp/github.r $1/$2
+}
+
+# _install_Rpkgit %end%
 
 
 # rn03_install_R
@@ -82,30 +128,15 @@ rn03_install_R () {
     sudo add-apt-repository -y "ppa:marutter/c2d4u"
 	sudo apt-get update
 	sudo apt-get install -y r-base r-base-dev r-cran-littler
+	_install_Rpkg docopt remotes devtools
 }
 
 # rn03_install_R %end%
 
 
-# rn02_install_barebones
-# ----------------------
-# Installs the most essential python packages.
-
-rn02_install_barebones () {
-	echo "-----------------------------------"
-	echo "Installing basic Python packages..."
-	echo "-----------------------------------"
-
-	sudo pip3 install Cython requests BeautifulSoup4 scrapy
-	sudo pip3 install scipy numpy pandas matplotlib
-}
-
-# rn02_install_barebones %end%
-
-
-# rn02_selective_domain_installer
+# rn03_selective_domain_installer
 # -------------------------------
-# Installs python packages dependent on a domain selection string.
+# Installs R packages dependent on a domain selection string.
 #		
 # @param $1: domain selection string, comma separated
 #
@@ -118,119 +149,139 @@ rn02_install_barebones () {
 # - GIS
 # - DataVisualisation
 
-rn02_selective_domain_installer () {
-	echo "---------------------------------------------"
-	echo "Installing domain specific python packages..."
-	echo "---------------------------------------------"
+rn03_selective_domain_installer () {
+	echo "----------------------------------------"
+	echo "Installing domain specific R packages..."
+	echo "----------------------------------------"
 
 	IFS=',' read -ra DOMAINS <<< "$1"
 	for i in "${DOMAINS[@]}"; do	
 		echo "***** Installing domain ${i}"
-		rn02_install_domain_${i}
+		rn03_install_domain_${i}
 	done
 }
 
-# rn02_selective_domain_installer %end%
+# rn03_selective_domain_installer %end%
 
 
-# rn02_install_domain_GeneralScience
-# ----------------------------------
-# Installs general scientific packages
 
-rn02_install_domain_GeneralScience () {
-	sudo pip3 install deap NetworkX simpy mesa BayesPy
-	sudo pip3 install statsmodels cubes PyMC PyMix 
-	sudo pip3 install scikit-learn scikit-dataaccess scikit-datasets 
-	sudo pip3 install scikit-metrics scikit-neuralnetwork
+# rn03_install_domain_general
+# ---------------------------
+
+rn03_install_domain_general(){
+
+}
+# rn03_install_domain_general %end%
+
+
+
+# rn03_install_domain_General
+# ---------------------------
+
+rn03_install_domain_General(){
+	# Essential deps
+	_install_Rpkg Rcpp magrittr devtools 
+	# Tools for programming and testing
+	_install_Rpkg testthat
+	# Basic data wrangling and transforms
+	_install_Rpkg data.table dplyr plyr reshape lubridate stringr forecast nlme sqldf purrr tidyr validate
+	# Basic HTTP
+	_install_Rpkg digest curl httpr 
 }
 
-# rn02_install_domain_GeneralScience %end%
+# rn03_install_domain_General %end%
 
 
-# rn02_install_domain_MachineLearning
-# -----------------------------------
-# Installs ML and deep learning packages
 
-rn02_install_domain_MachineLearning () {
-	sudo pip3 install scikit-learn scikit-neuralnetwork
-	sudo pip3 install tensorflow
-	sudo pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.0-cp35-cp35m-linux_x86_64.whl 
-	sudo pip3 install torchvision
-	sudo pip3 install keras	
-	sudo pip3 install yellowbrick livelossplot
+# rn03_install_domain_Reporting
+# -----------------------------
+
+rn03_install_domain_Reporting(){
+	sudo apt-get install -y texlive-full texlive-xetex ttf-mscorefonts-installer 
+	_install_Rpkg rmarkdown knitr xtable 
 }
-
-# rn02_install_domain_MachineLearning %end%
-
-
-# rn02_install_domain_NLP
-# -----------------------
-# Installs natural language programming packages
-
-rn02_install_domain_NLP () {
-	sudo pip3 install nltk textblob nalaf spacy gensim
-	sudo pip3 install markovify 
-}
-
-# rn02_install_domain_NLP %end%
+# rn03_install_domain_Reporting %end%
 
 
-# rn02_install_domain_NLPCorpora
+
+# rn03_install_domain_Biomedical
 # ------------------------------
-# Installs NLP corpora
 
-rn02_install_domain_NLPCorpora () {
-	sudo python3 -m nalaf.download_data
-	sudo python3 -m nltk.downloader -d /usr/local/share/nltk_data all 
-	sudo python3 -m spacy download en_core_web_sm
+rn03_install_domain_Biomedical(){
+
 }
+# rn03_install_domain_Biomedical %end%
 
-# rn02_install_domain_NLPCorpora %end%
 
 
-# rn02_install_domain_Bioinformatics
-# ----------------------------------
-# Installs bioinformatics packages
+# rn03_install_domain_Plotting
+# ----------------------------
 
-rn02_install_domain_Bioinformatics () {
-  sudo pip3 install biopython 
-  sudo pip3 install scikit-bio
-  sudo pip3 install boyle clintrials dicom-numpy dicompyler dinopy epipylib 
-  sudo pip3 install fhir hl7 hl7parser PyMedTermino metapub pubmed bioscraping pubmed-lookup pubMunch3 pubmedasync
-  sudo pip3 install medgen-prime pygrowup 
-  sudo pip3 install ncbi-acc-download ncbi-genome-download genomepy ncbi Geeneus multifastadb 
+rn03_install_domain_Plotting(){
+	_install_Rpkg RColorBrewer ggplot2 ggthemes ggpubr scales colorspace corrplot 
+	_install_Rpkgit thomasp85 patchwork
 }
+# rn03_install_domain_Plotting %end%
 
-# rn02_install_domain_Bioinformatics %end%
 
 
-# rn02_install_domain_GIS
-# -----------------------
-# Installs GIS packages
+# rn03_install_domain_Cartography
+# -------------------------------
 
-rn02_install_domain_GIS () {
-  sudo apt-get install -y proj-bin libproj-dev libgeos-dev
-  sudo add-apt-repository -y ppa:ubuntugis/ppa
-  sudo apt-get update
-  sudo apt-get install -y pyproj 
-  sudo apt-get install -y gdal-bin python-gdal python3-gdal
-  sudo pip3 install GEOS 
-  sudo pip3 install GDAL pygdal
-  sudo pip3 install geopandas geojson geopy geoviews elevation OSMnx giddy
-  sudo pip3 install spint landsatxplore telluric 
-  sudo pip3 install mapbox mapboxgl
+rn03_install_domain_Cartography(){
+
 }
+# rn03_install_domain_Cartography %end%
 
-# rn02_install_domain_GIS %end%
 
 
-# rn02_install_domain_DataVisualisation
-# -------------------------------------
-# Installs data visualisation packages
 
-rn02_install_domain_DataVisualisation () {
-	sudo pip3 install graphviz ggplot seaborn bokeh scikit-image scikit-plot Pillow
-	sudo pip3 install matplotlib-venn SeqFindr features iplotter colouringmap jupyterd3 ipython-d3-sankey
+# rn03_install_domain_ExportImport
+# --------------------------------
+
+rn03_install_domain_ExportImport(){
+	_install_Rpkg foreign readr readxl RODBC googlesheets rio datapasta jsonlite XML rvest officeR
+	_install_Rpkgit timelyportfolio listviewer
+	_install_Rpkgit rstudio DT
 }
+# rn03_install_domain_ExportImport %end%
 
-# rn02_install_domain_DataVisualisation %end%
+
+
+
+# rn03_install_domain_StatisticsAndRegression
+# -------------------------------------------
+
+rn03_install_domain_StatisticsAndRegression(){
+	_install_Rpkg class RWeka PerformanceAnalytics Hmisc car caret mlbench Boruta DAAG xgboost
+}
+# rn03_install_domain_StatisticsAndRegression %end%
+
+
+
+# rn03_install_domain_TextMining
+# ------------------------------
+
+rn03_install_domain_TextMining(){
+	_install_Rpkg tm
+}
+# rn03_install_domain_TextMining %end%
+
+
+# rn03_install_domain_MachineLearning
+# -----------------------------------
+
+rn03_install_domain_MachineLearning(){
+
+}
+# rn03_install_domain_MachineLearning %end%
+
+
+
+# rn03_install_domain_TimeSeries
+# ------------------------------
+
+rn03_install_domain_TimeSeries(){
+	_install_Rpkg xts zoo
+}
+# rn03_install_domain_TimeSeries %end%
