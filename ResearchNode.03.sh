@@ -77,13 +77,11 @@ _install_Rpkgit () {
 	if [ $(find /tmp --name github.r | wc -l) -eq 0 ]; then
 		cat << EOM > /tmp/github.r
 #!/usr/bin/env r
-
 library(devtools)
-
 devtools::install_github(paste(argv[1], argv[2], sep="/"))
-
 EOM
-
+	fi
+	
 	r /tmp/github.r $1/$2
 }
 
@@ -99,15 +97,11 @@ rn03_install_R () {
 	echo "Installing R..."
 	echo "---------------"
 	
-	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-
-	sudo add-apt-repository -y 'deb http://cran.rstudio.com/bin/linux/ubuntu xenial/'
-	sudo add-apt-repository -y "ppa:marutter/rrutter"
-    sudo add-apt-repository -y "ppa:marutter/c2d4u"
-	sudo apt-get update
 	sudo apt-get install -y r-base r-base-dev r-cran-littler
 	_install_Rpkg docopt remotes devtools
 }
+
+rn03_install_R
 
 # rn03_install_R %end%
 
@@ -202,7 +196,7 @@ rn03_install_domain_StatisticalMethods () {
 # rn03_install_domain_SocialNetworkAnalysis
 # -----------------------------------------
 
-rn03_install_domain_SocialNetworkAnalysis () 
+rn03_install_domain_SocialNetworkAnalysis () {
 	_install_Rpkg sna network latentnet ergm statnet RSiena multiplex tsna NetData2
 	_install_Rpkg instaR Rfacebook twitteR streamR graphTweets
 }
@@ -357,7 +351,7 @@ rn03_install_domain_TimeSeries () {
 	# Spectral density estimation
 	_install_Rpkg bspec quantspec lomb spectral multitaper kza 
 	# Wavelets and Fourier harmonics
-	_install_Rpkg wavelets WavbeletComp brainwaver waveslim HarmonicRegression
+	_install_Rpkg wavelets WaveletComp brainwaver waveslim HarmonicRegression
 	# Filtering, decomposition and SSA
 	_install_Rpkg robfilter sleekts ArDec tsdecomp rmaf Rssa spectral.methods Rlibeemd mFilter
 	# Seasonality

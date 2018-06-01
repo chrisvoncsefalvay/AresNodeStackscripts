@@ -36,12 +36,18 @@ rn02_install_python3 () {
 	sudo wget https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
 	sudo python3 /tmp/get-pip.py
 
+	sudo mv $(which pip) /usr/local/bin/pip2.7
+	sudo ln -s $(which pip3) /usr/local/bin/pip3
+	pip completion --bash >> ~/.profile
+
 	sudo pip3 install --upgrade pip setuptools
 	sudo pip3 install virtualenv virtualenvwrapper
 
 	sudo pip3 install Cython requests BeautifulSoup4 scrapy
 	sudo pip3 install scipy numpy pandas matplotlib
 }
+
+rn02_install_python3
 
 # rn02_install_python3 %end%
 
@@ -173,7 +179,7 @@ rn02_install_domain_GIS () {
 
 rn02_install_domain_DataVisualisation () {
 	sudo pip3 install graphviz ggplot seaborn bokeh scikit-image scikit-plot Pillow
-	sudo pip3 install matplotlib-venn SeqFindr features iplotter colouringmap jupyterd3 ipython-d3-sankey
+	sudo pip3 install matplotlib-venn features iplotter colouringmap jupyterd3 ipython-d3-sankey
 }
 
 # rn02_install_domain_DataVisualisation %end%
