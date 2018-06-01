@@ -22,6 +22,9 @@ echo "Loaded subsidiary resource RN01.PRE_FLIGHT.316999"
 
 _update_apt () {
     # Add ALL packages
+    sudo apt-get install -y software-properties-common build-essential
+    sudo apt-get install -y python-software-properties python3-software-properties
+    
     echo "Adding package: Yarn/Node"
     echo "-------------------------"
     
@@ -67,8 +70,6 @@ _install_libssl () {
     echo "Configuring libssl and linking it..."
     echo "------------------------------------"
 
-    sudo apt-get install -y software-properties-common build-essential
-    sudo apt-get install -y python-software-properties python3-software-properties
     sudo apt-get install -y libssl-dev libssl-doc libcurl4-openssl-dev
 }
 
