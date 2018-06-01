@@ -107,6 +107,7 @@ rn02_install_domain_MachineLearning () {
 	sudo pip3 install torchvision
 	sudo pip3 install keras	
 	sudo pip3 install yellowbrick livelossplot
+	sudo pip3 install jupyter-tensorboard
 }
 
 # rn02_install_domain_MachineLearning %end%

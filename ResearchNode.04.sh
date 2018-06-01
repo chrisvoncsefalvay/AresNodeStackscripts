@@ -33,10 +33,10 @@ rn04_install_RStudio () {
 
 	if [[ "$RSTUDIO_VER" =~ "1\.1\.\d*" ]]; then
 		echo 'Stable version ${RSTUDIO_VER} requested'
-		sudo wget https://download2.rstudio.org/rstudio-server/"$1"-amd64.deb -O /tmp/rstudio-"${RSTUDIO_VER}"-amd64.deb
+		sudo wget https://download2.rstudio.org/rstudio-server/"${RSTUDIO_VER}"-amd64.deb -O /tmp/rstudio-"${RSTUDIO_VER}"-amd64.deb
 	else
 		echo 'Nightly version ${RSTUDIO_VER} requested'
-		sudo wget https://s3.amazonaws.com/rstudio-ide-build/server/trusty/amd64/rstudio-server-"${RSTUDIO_VER}"-amd64.deb -O /tmp/rstudio-"$1"-amd64.deb
+		sudo wget https://s3.amazonaws.com/rstudio-ide-build/server/trusty/amd64/rstudio-server-"${RSTUDIO_VER}"-amd64.deb -O /tmp/rstudio-"${RSTUDIO_VER}s"-amd64.deb
 	fi
 
 	sudo gdebi -n /tmp/rstudio-"${RSTUDIO_VER}"-amd64.deb
@@ -78,6 +78,13 @@ rn04_install_Jupyterhub () {
 	npm install -g configurable-http-proxy
 	sudo pip3 install jupyterhub==${JUPYTERHUB_VER} sudospawner
 	sudo pip3 install --upgrade notebook
+	sudo pip3 install jupyterthemes 
+	
+	# Set notebook theme
+	jt -t solarizedl
+	
+	sudo pip3 install jupyter_contrib_nbextensions
+	sudo jupyter contrib nbextension install --system
 }
 
 # rn04_install_Jupyterhub %end%
@@ -99,15 +106,17 @@ rn04_configure_Jupyterhub () {
     echo "Configuring JupyterHub config file..."
     echo "-------------------------------------"
 
-    cat << EOF >> /etc/jupyterhub/jupyterhub_config.py
-    c.JupyterHub.ip = '0.0.0.0'
-    c.JupyterHub.port = "${JUPYTERHUB_PORT}"
-    c.JupyterHub.pid_file = '/var/run/jupyterhub.pid'
-    c.Authenticator.admin_users = {'${USER_USERNAME}'}
-    c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
-    c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
-    c.Spawner.cmd = '/usr/local/bin/sudospawner'
-    c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
+    cat << EOF > /etc/jupyterhub/jupyterhub_config.py
+c.JupyterHub.ip = '0.0.0.0'
+c.JupyterHub.port = "${JUPYTERHUB_PORT}"
+c.JupyterHub.pid_file = '/var/run/jupyterhub.pid'
+c.Authenticator.admin_users = {'${USER_USERNAME}'}
+c.LocalAuthenticator.group_whitelist = {'${USER_USERGROUP}'}
+c.LocalAuthenticator.create_system_users = True
+c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
+c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
+c.Spawner.cmd = '/usr/local/bin/sudospawner'
+c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
 EOF
 
 	sudo jupyterhub upgrade-db
@@ -117,9 +126,9 @@ EOF
     echo "Creating daemon..."
     echo "------------------"
 
-	    cat << EOF > jupyterhub.service
+	    cat << EOF > /etc/jupyterhub.service
 [Unit]
-Description=Jupyterhub
+Description=jupyterhub
 After=syslog.target network.target
 
 [Service]
@@ -133,7 +142,7 @@ WantedBy=multi-user.target
 EOF
 
     sudo mkdir /usr/lib/systemd/system
-    sudo mv jupyterhub.service /usr/lib/systemd/system/jupyterhub.service
+    sudo mv /etc/jupyterhub.service /usr/lib/systemd/system/jupyterhub.service
     sudo chmod a+x /usr/lib/systemd/system/jupyterhub.service
     sudo systemctl enable jupyterhub
     sudo systemctl daemon-reload

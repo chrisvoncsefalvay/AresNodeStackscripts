@@ -43,7 +43,7 @@ source <ssinclude StackScriptID=316999>
 
 # RN01._create_user_and_usergroup
 # Creates a user with a given password, and assigns it to a newly created usergroup.
-rn01_create_user_and_usergroup ${USER_USERNAME} ${USER_PASSWORD} ${USER_USERGROUP}
+# rn01_create_user_and_usergroup ${USER_USERNAME} ${USER_PASSWORD} ${USER_USERGROUP}
 
 
 
@@ -68,7 +68,6 @@ fi
 if [ -n ${R_PACKAGES} ]; then
     rn03_selective_domain_installer ${R_PACKAGES}
 fi
-
 
 
 

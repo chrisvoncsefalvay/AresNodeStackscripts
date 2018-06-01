@@ -22,8 +22,6 @@ echo "Loaded subsidiary resource RN01.PRE_FLIGHT.316999"
 
 _update_apt () {
     # Add ALL packages
-    sudo apt-get install -y software-properties-common build-essential
-    sudo apt-get install -y python-software-properties python3-software-properties
     
     echo "Adding package: Yarn/Node"
     echo "-------------------------"
@@ -36,13 +34,14 @@ _update_apt () {
     echo "---------------------------"
     
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-	sudo add-apt-repository -y 'deb http://cran.rstudio.com/bin/linux/ubuntu xenial/'
-	sudo add-apt-repository -y "ppa:marutter/rrutter"
+    sudo add-apt-repository -y 'deb http://cran.rstudio.com/bin/linux/ubuntu xenial/'
+    sudo add-apt-repository -y "ppa:marutter/rrutter"
     sudo add-apt-repository -y "ppa:marutter/c2d4u"
 	
 
     # Update
     sudo apt-get update
+
 }
 
 # _update_apt %end%
@@ -50,6 +49,7 @@ _update_apt () {
 
 
 _install_basic_packages () {
+    
     sudo apt-get install -y git-all git-flow
     sudo apt-get install -y libxml2-dev wget autoremove libcurl3-dev libfreetype6-dev
     sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
@@ -59,6 +59,7 @@ _install_basic_packages () {
     sudo apt-get install -y libv8-dev libpango1.0-dev libmagic-dev libblas-dev
     sudo apt-get install -y libtinfo-dev libzmq-dev libzmq3-dev libcairo2-dev
     sudo apt-get install -y libtool libffi-dev autoconf pkg-config liblapack-dev
+
 }
 
 # _install_basic_packages %end%
@@ -66,11 +67,13 @@ _install_basic_packages () {
 
 
 _install_libssl () {
+
     echo "------------------------------------"
     echo "Configuring libssl and linking it..."
     echo "------------------------------------"
 
     sudo apt-get install -y libssl-dev libssl-doc libcurl4-openssl-dev
+
 }
 
 # _install_libssl %end%
@@ -79,16 +82,19 @@ _install_libssl () {
 # _install_zmq
 # ------------
 _install_zmq () {
+
     echo "------------------------------------"
     echo "Configuring 0MQ and CZMQ..."
     echo "------------------------------------"
-
-    mkdir
-    git clone https://github.com/zeromq/czmq /tmp
-    cd /tmp/czmq
+    
+    sudo apt-get install -y libtool autoconf automake libzmq5-dev
+    sudo mkdir /tmp/zmq
+    git clone https://github.com/zeromq/czmq /tmp/zmq
+    cd /tmp/zmq
     ./autogen.sh && ./configure
     sudo make
     sudo make install
+
 }
 
 # _install_zmq %end%
@@ -98,6 +104,7 @@ _install_zmq () {
 # _install_node
 # -------------
 _install_node () {
+
     echo "--------------------"
     echo "Installing NodeJS..."
     echo "--------------------"
@@ -105,45 +112,10 @@ _install_node () {
     curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
     sudo apt-get install -y nodejs
     sudo apt-get install -y yarn
+
 }
 
 # _install_node %end%
-
-
-
-
-# rn01_update_system
-# ------------------
-# Runs a system update, installs libssl, NodeJS, Yarn, etc.
-
-rn01_update_system {
-    echo "-------------------------------------------------------------"
-    echo "Updating system and installing the good stuff..."
-    echo "-------------------------------------------------------------"
-
-    echo "Updating APT..."
-    _update_apt
-    
-    # Upgrade
-    DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
-    
-    # Install fundamental packages
-    _install_basic_packages
-
-    # Set up libSSL
-    _install_libssl
-
-    # Download and complile 0MQ
-    _install_zmq
-    
-    # Install NodeJS
-    _install_node
-}
-
-rn01_update_system
-
-# rn01_update_system %end%
-
 
 
 # rn01_create_user_and_usergroup
@@ -154,7 +126,7 @@ rn01_update_system
 # @param $2: user password
 # @param $3: usergroup name
 
-rn01_create_user_and_usergroup {
+rn01_create_user_and_usergroup () {
     echo "-------------------------------------------------------------"
     echo "Setting up user $1 and usergroup $3..."
     echo "-------------------------------------------------------------"
@@ -162,8 +134,35 @@ rn01_create_user_and_usergroup {
     sudo addusergroup "$1"
     sudo su -c "useradd \"$1\" -s /bin/bash -m -g \"$3\""
     sudo echo "$1":"$2" | chpasswd   
+    
 }
 
 # rn01_create_user_and_usergroup %end%
 
+
+echo "-------------------------------------------------------------"
+echo "Updating system and installing the good stuff..."
+echo "-------------------------------------------------------------"
+
+sudo apt-get update
+sudo apt-get install -y software-properties-common build-essential
+sudo apt-get install -y python-software-properties python3-software-properties
+sudo apt-get install -y git
+
+echo "Updating APT..."
+_update_apt
+    
+DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+    
+echo "Installing basic packages..."
+_install_basic_packages
+
+echo "Installing libssl..."
+_install_libssl
+
+echo "Installing ZMQ..."
+_install_zmq
+    
+echo "Setting up NodeJS..."
+_install_node
 

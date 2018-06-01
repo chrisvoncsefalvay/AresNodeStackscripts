@@ -166,7 +166,7 @@ rn03_install_domain_General () {
 
 rn03_install_domain_ReproducibleResearch () {
 	sudo apt-get install -y texlive-full texlive-xetex 
-	_install_Rpkg rmarkdown knitr xtable lazyWeave brew papeR ztable knitLatex tikzDevice animation texreg bibtex RefManageR latex2exp formattable rapport pander tufterhandout sparktex reporttools humanformat prettyunits
+	_install_Rpkg rmarkdown knitr xtable lazyWeave brew papeR ztable knitLatex	animation texreg bibtex RefManageR formattable rapport pander
 }
 
 # rn03_install_domain_ReproducibleResearch %end%
@@ -179,15 +179,15 @@ rn03_install_domain_StatisticalMethods () {
 	# ABM
 	_install_Rpkg RNetLogo SpaDES EpiModel spartan
 	# Missing data
-	_install_Rpkg mi Amelia mitools VIM
+	_install_Rpkg mi Amelia
 	# Model selections
 	_install_Rpkg MASS leaps 
 	# Matching and demographics
-	_install_Rpkg PSAgraphics arm optmatch demography
+	_install_Rpkg PSAgraphics demography
 	# Misc functions and models
-	_install_Rpkg spatial nnet Zelig rms Hmisc
+	_install_Rpkg spatial nnet Zelig 
 	# Regression models
-	_install_Rpkg brglm logistf exactLoglinTest vcd gnm catspec betareg nlstools nlme lme4 lmeSplines MCMCglmm gee gmcv locfit np sm acepack quantreg biglm lmtest perturb effects visreg class RWeka PerformanceAnalytics Hmisc car caret mlbench Boruta DAAG xgboost glmnet ORCR gbm arules tree mboost ROCR lars earth CORElearn
+	_install_Rpkg brglm	vcd gnm catspec betareg nlme lme4 lmeSplines MCMCglmm gmcv locfit np sm acepack quantreg biglm lmtest effects visreg class Hmisc car caret mlbench Boruta DAAG xgboost glmnet ORCR gbm arules tree mboost ROCR lars CORElearn
 }
 
 # rn03_install_domain_StatisticalMethods %end%
@@ -197,7 +197,7 @@ rn03_install_domain_StatisticalMethods () {
 # -----------------------------------------
 
 rn03_install_domain_SocialNetworkAnalysis () {
-	_install_Rpkg sna network latentnet ergm statnet RSiena multiplex tsna NetData2
+	_install_Rpkg sna network latentnet ergm statnet
 	_install_Rpkg instaR Rfacebook twitteR streamR graphTweets
 }
 
@@ -214,13 +214,13 @@ rn03_install_domain_Epidemiology () {
 	# Meta-analyses 
 	_install_Rpkg metasens meta metafor rmeta psychmeta metagear revtools metavcov epiR ratesci ipdmeta ecoreg surrosurv netmeta 
 	# Meta-analysis plots
-	_install_Rpkg forestmodel forestplot metaplotr MetaAnalyser metaviz
+	_install_Rpkg forestplot metaplotr MetaAnalyser metaviz
 	# Pop genetics
-	_install_Rpkg genetics rmetasim LDheatmap HardyWeinberg Biodem
+	_install_Rpkg genetics rmetasim
 	# Survival
-	_install_Rpkg survival rms prodlim eha NADA NestedCohort survPresmooth landest tranSurv condSURV MLEcens dblcens interval fitdistrplus vitality muhaz ICE bshazard maxstat Survgini controlTest clinfuntimereg dynamichazard smcure pch isoph dynsurv gof CPE smoothHR rankhazard
+	_install_Rpkg survival rms prodlim eha landest tranSurv condSURV interval fitdistrplus vitality maxstat controlTest clinfuntimereg dynamichazard smcure pch isoph rankhazard
 	# Drug side effects 
-	_install_Rpkg MHTrajectoryR WCE discreteMTP openEBGM adepro vaersvax vaersNDvax PhViD 
+	_install_Rpkg MHTrajectoryR WCE discreteMTP openEBGM vaersvax vaersNDvax PhViD 
 }
 
 # rn03_install_domain_Epidemiology %end%
@@ -308,7 +308,7 @@ rn03_install_domain_TextMining () {
 # -------------------------------------
 
 rn03_install_domain_BayesianInference () {
-	_install_Rpkg arm BACCO bayesm bayesSurv DPpackage MCMCpack mcmc nimble openEBGM bayesGARCH bayesImageS bayesQR BayesTree BAYSTAR bbemkr bclust deal catnet eigenmodel ggmcmc simpleTable spikeslab LearnBayes
+	_install_Rpkg arm BACCO bayesm bayesSurv DPpackage MCMCpack nimble openEBGM bayesImageS BayesTree BAYSTAR bbemkr bclust deal catnet eigenmodel ggmcmc simpleTable LearnBayes
 }
 
 # rn03_install_domain_BayesianInference %end%
@@ -319,19 +319,19 @@ rn03_install_domain_BayesianInference () {
 # -----------------------------------
 
 rn03_install_domain_MachineLearning () {
-	_install_Rpkg mice rpart party caret nnet e1071 kernLab tree arules	ipred lars ROCR CORElearn 
+	_install_Rpkg mice rpart caret nnet e1071
 	# Neural nets & Deep Learning
 	_install_Rpkg rnn deepnet RcppDL tensorflow RSNNS
 	# Random forests
-	_install_Rpkg randomForest quantregForest LogicForest Boruta trtf
+	_install_Rpkg randomForest quantregForest
 	# Bayesianism & association rules
-	_install_Rpkg openEBGM tgp BayesTree BART bartMachine 
+	_install_Rpkg openEBGM tgp BayesTree BART bartMachine
 	# GenAlgs
-	_install_Rpkg rgenoud Rmalschains
+	_install_Rpkg rgenoud
 	# ESLR companion package
 	_install_Rpkg ElemStatLearn
 	# ML visualisation
-	_install_Rpkg effects pdp plotmo ICEbox ggRandomForests
+	_install_Rpkg effects pdp plotmo ggRandomForest
 	
 }
 
@@ -343,25 +343,25 @@ rn03_install_domain_MachineLearning () {
 # ------------------------------
 
 rn03_install_domain_TimeSeries () {
-	_install_Rmpkg xts zoo forecast ggseas ZRA fanplot
+	_install_Rmpkg xts zoo forecast ggseas fanplot
 	# Date and time classes
-	_install_Rpkg chron tsibble tibbletime timetk tsbox TimeProjection 
+	_install_Rpkg chron tsibble tibbletime TimeProjection 
 	# Basic models
 	_install_Rpkg prophet forecTheta fitARMA tseries pear fracdiff TSA tsoutliers strucchange trend changepoint funtimes scoringRules sweep timsac 
 	# Spectral density estimation
 	_install_Rpkg bspec quantspec lomb spectral multitaper kza 
 	# Wavelets and Fourier harmonics
-	_install_Rpkg wavelets WaveletComp brainwaver waveslim HarmonicRegression
+	_install_Rpkg wavelets WaveletComp waveslim
 	# Filtering, decomposition and SSA
-	_install_Rpkg robfilter sleekts ArDec tsdecomp rmaf Rssa spectral.methods Rlibeemd mFilter
+	_install_Rpkg robfilter sleekts ArDec tsdecomp spectral.methods Rlibeemd mFilter
 	# Seasonality
 	_install_Rpkg seasonal season bfast seas deseasonalize
 	# Stationarity, Engle-Granger etc.
-	_install_Rpkg CommonTrend tsDyn urca LSTS wavethresh locits costat CADFtest MultipleBubbles uroot
+	_install_Rpkg CommonTrend tsDyn urca LSTS wavethresh locits
 	# Nonlinear, dynamic and mvar models
-	_install_Rpkg tseriesChaos tsDyn nnfor fractal ntls dse dlm dyn dlnm tpr orderedLasso sparsevar MTS ecm dlmodeler dlm freqdom pomp ptw pastecs ptw rts sae2 spTimer Tides tiger
+	_install_Rpkg tseriesChaos tsDyn nnfor fractal ntls dse dlm dyn dlnm tpr orderedLasso sparsevar MTS ecm dlmodeler freqdom Tides tiger
 	# Time series cohorts
-	_install_Rpkg TSdist TSrepr jmotif rucrdtw TSclust dtwclust BNPTSclust pdc thief gtop
+	_install_Rpkg TSdist TSrepr jmotif rucrdtw TSclust thief
 }
 
 # rn03_install_domain_TimeSeries %end%
