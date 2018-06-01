@@ -42,20 +42,27 @@ _update_apt () {
     sudo apt-get update
 }
 
+# _update_apt %end%
+
+
+
 _install_basic_packages () {
     sudo apt-get install -y git-all git-flow
     sudo apt-get install -y libxml2-dev wget autoremove libcurl3-dev libfreetype6-dev
     sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
     sudo apt-get install -y checkinstall libreadline-gplv2-dev libncursesw5-dev 
     sudo apt-get install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
-    sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev
+    sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev libnlopt-dev
     sudo apt-get install -y libv8-dev libpango1.0-dev libmagic-dev libblas-dev
     sudo apt-get install -y libtinfo-dev libzmq-dev libzmq3-dev libcairo2-dev
     sudo apt-get install -y libtool libffi-dev autoconf pkg-config liblapack-dev
 }
 
+# _install_basic_packages %end%
 
-install_libssl () {
+
+
+_install_libssl () {
     echo "------------------------------------"
     echo "Configuring libssl and linking it..."
     echo "------------------------------------"
@@ -65,13 +72,17 @@ install_libssl () {
     sudo apt-get install -y libssl-dev libssl-doc libcurl4-openssl-dev
 }
 
+# _install_libssl %end%
 
 
+# _install_zmq
+# ------------
 _install_zmq () {
     echo "------------------------------------"
     echo "Configuring 0MQ and CZMQ..."
     echo "------------------------------------"
 
+    mkdir
     git clone https://github.com/zeromq/czmq /tmp
     cd /tmp/czmq
     ./autogen.sh && ./configure
@@ -79,7 +90,12 @@ _install_zmq () {
     sudo make install
 }
 
+# _install_zmq %end%
 
+
+
+# _install_node
+# -------------
 _install_node () {
     echo "--------------------"
     echo "Installing NodeJS..."
@@ -89,6 +105,8 @@ _install_node () {
     sudo apt-get install -y nodejs
     sudo apt-get install -y yarn
 }
+
+# _install_node %end%
 
 
 

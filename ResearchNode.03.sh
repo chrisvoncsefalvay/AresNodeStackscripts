@@ -165,7 +165,7 @@ rn03_install_domain_General () {
 # ----------------------------------------
 
 rn03_install_domain_ReproducibleResearch () {
-	sudo apt-get install -y texlive-full texlive-xetex ttf-mscorefonts-installer 
+	sudo apt-get install -y texlive-full texlive-xetex 
 	_install_Rpkg rmarkdown knitr xtable lazyWeave brew papeR ztable knitLatex tikzDevice animation texreg bibtex RefManageR latex2exp formattable rapport pander tufterhandout sparktex reporttools humanformat prettyunits
 }
 
@@ -319,7 +319,7 @@ rn03_install_domain_BayesianInference () {
 # -----------------------------------
 
 rn03_install_domain_MachineLearning () {
-	_install_Rpkg mice rpart party caret nnet e1071 kernLab tree arules RWeka ipred lars ROCR CORElearn 
+	_install_Rpkg mice rpart party caret nnet e1071 kernLab tree arules	ipred lars ROCR CORElearn 
 	# Neural nets & Deep Learning
 	_install_Rpkg rnn deepnet RcppDL tensorflow RSNNS
 	# Random forests
