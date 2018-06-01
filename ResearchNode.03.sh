@@ -5,7 +5,7 @@
 # PART 03
 # R AND RELATED ITEMS
 #
-# Linode embedding ID:    000000
+# Linode embedding ID:    317343
 #
 # Part of the CBRD/ResearchNode project.
 #
@@ -17,7 +17,7 @@
 #	  <chris@chrisvoncsefalvay.com>
 #
 
-echo "Loaded subsidiary resource RN03.RPACKAGES.000000"
+echo "Loaded subsidiary resource RN03.RPACKAGES.317343"
 
 # _install_Rpkg
 # -------------

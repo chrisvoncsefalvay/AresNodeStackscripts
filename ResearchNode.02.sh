@@ -6,7 +6,7 @@
 # PART 02
 # PYTHON AND RELATED ITEMS
 #
-# Linode embedding ID:    000000
+# Linode embedding ID:    317342
 #
 # Part of the CBRD/ResearchNode project.
 #
@@ -18,7 +18,7 @@
 #	  <chris@chrisvoncsefalvay.com>
 #
 
-echo "Loaded subsidiary resource RN02.PYTHON.000000"
+echo "Loaded subsidiary resource RN02.PYTHON.317342"
 
 
 # rn02_install_python3
@@ -38,26 +38,12 @@ rn02_install_python3 () {
 
 	sudo pip3 install --upgrade pip setuptools
 	sudo pip3 install virtualenv virtualenvwrapper
-}
-
-
-# rn02_install_python3 %end%
-
-
-# rn02_install_barebones
-# ----------------------
-# Installs the most essential python packages.
-
-rn02_install_barebones () {
-	echo "-----------------------------------"
-	echo "Installing basic Python packages..."
-	echo "-----------------------------------"
 
 	sudo pip3 install Cython requests BeautifulSoup4 scrapy
 	sudo pip3 install scipy numpy pandas matplotlib
 }
 
-# rn02_install_barebones %end%
+# rn02_install_python3 %end%
 
 
 # rn02_selective_domain_installer
