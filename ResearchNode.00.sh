@@ -25,9 +25,9 @@
 # <UDF name="USER_USERGROUP" label="Authorisation usergroup" default="ares"/>
 # <UDF name="PY_PACKAGES" label="Python packages to install" manyOf="GeneralScience,MachineLearning,NLP,NLPCorpora,Bioinformatics,GIS,DataVisualisation" default="GeneralScience,DataVisualisation" />
 # <UDF name="R_PACKAGES" label="R packages to install" manyOf="General,ReproducibleResearch,StatisticalMethods,SocialNetworkAnalysis,Epidemiology,ClinicalTrials,Plotting,Spatial,ExportImport,TextMining,BayesianInference,MachineLearning,TimeSeries" default="General,ReproducibleResearch,StatisticalMethods,Plotting" />
-# <UDF name="RSTUDIO_PORT" label="RStudio port" default=9999 />
+# <UDF name="RSTUDIO_PORT" label="RStudio port" default="9999" />
 # <UDF name="RSTUDIO_VER" label="RStudio version" oneOf="1.2.679,1.1.453," default="1.1.453" />
-# <UDF name="JUPYTERHUB_PORT" label="Jupyterhub port" default=8888 />
+# <UDF name="JUPYTERHUB_PORT" label="Jupyterhub port" default="8888" />
 # <UDF name="JUPYTERHUB_VER" label="Jupyterhub version" oneOf="0.9.0b3,0.9.0b2,0.9.0b1,0.8.1,0.8.0,0.7.2" default="0.8.1" />
 
 
