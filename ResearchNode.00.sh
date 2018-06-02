@@ -35,6 +35,9 @@
 # <UDF name="GIT_TOKEN_PASSWORD" label="Github personal access token (leave empty to skip GitHub configuration)" />
 # <UDF name="GIT_EDITOR" label="Preferred editor for Git operations" oneOf="vim,nano" default="vim" />
 
+# Ascertain IP address for future use
+IPADDR=$(/sbin/ifconfig eth0 | awk '/inet / { print $2 }' | sed 's/addr://')
+
 
 #=============================================================
 # PREFLIGHT AND CONFIGURATION
@@ -61,12 +64,12 @@ source <ssinclude StackScriptID=317343>
 # SOURCE RN03                     A
 
 # Install Python packages
-if [ -n ${PY_PACKAGES} ]; then
+if [[ -n ${PY_PACKAGES} ]]; then
     rn02_selective_domain_installer ${PY_PACKAGES}
 fi
 
 # Install R packages
-if [ -n ${R_PACKAGES} ]; then
+if [[ -n ${R_PACKAGES} ]]; then
     rn03_selective_domain_installer ${R_PACKAGES}
 fi
 

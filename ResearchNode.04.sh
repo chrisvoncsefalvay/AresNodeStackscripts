@@ -20,21 +20,6 @@
 
 echo "Loaded subsidiary resource RN04.FRONTENDS.317448"
 
-# _get_ip
-# -------
-
-_get_ip () {
-    local _ip _myip _line _nl=$'\n'
-    while IFS=$': \t' read -a _line ;do
-        [ -z "${_line%inet}" ] &&
-           _ip=${_line[${#_line[1]}>4?1:2]} &&
-           [ "${_ip#127.0.0.1}" ] && _myip=$_ip
-      done< <(LANG=C /sbin/ifconfig)
-    printf ${1+-v} $1 "%s${_nl:0:$[${#1}>0?0:1]}" $_myip
-}
-
-# _get_ip %end%
-
 
 # rn04_install_RStudio
 # --------------------
@@ -127,7 +112,7 @@ rn04_configure_Jupyterhub () {
     echo "-------------------------------------"
 
     cat << EOF > /etc/jupyterhub/jupyterhub_config.py
-c.JupyterHub.ip = '$(_get_ip)'
+c.JupyterHub.ip = '$IPADDR'
 c.JupyterHub.port = ${JUPYTERHUB_PORT}
 c.JupyterHub.hub_port = 8880
 c.JupyterHub.log_level = 10

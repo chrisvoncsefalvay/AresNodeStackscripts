@@ -20,8 +20,6 @@
 
 echo "Loaded subsidiary resource RN01.PRE_FLIGHT.316999"
 
-IPADDR=$(/sbin/ifconfig eth0 | awk '/inet / { print $2 }' | sed 's/addr://')
-
 _update_apt () {
     # Add ALL packages
     
@@ -203,7 +201,7 @@ rn01_upload_rsakey () {
 
 rn01_configure_git () {
 
-	if [ -n $GIT_FULLNAME ] && [ -n $GIT_EMAIL ]; then
+	if [[ -n ${GIT_FULLNAME} ]] && [[ -n ${GIT_EMAIL} ]]; then
 		echo "------------------"
 		echo "Configuring git..."
 		echo "------------------"
@@ -254,7 +252,7 @@ EOF
 
 		# Configure Github only if Github username and token have been provided
 		#
-		if [ -n $GIT_USERNAME ] && [ -n $GIT_TOKEN_PASSWORD ]; then
+		if [[ -n $GIT_USERNAME ]] && [[ -n $GIT_TOKEN_PASSWORD ]]; then
 			
 		
 			cat << EOF >> /tmp/template.gitconfig
@@ -264,7 +262,7 @@ token = $GIT_TOKEN_PASSWORD
 EOF
 		
 					
-			if [ $RSA_UPLOAD_STATUS -eq 200 ]; then
+			if [[ $RSA_UPLOAD_STATUS -eq 200 ]]; then
 				echo "Key upload successful."
 			else
 				echo "Key upload failed, server returned Error ${RSA_UPLOAD_STATUS}."
