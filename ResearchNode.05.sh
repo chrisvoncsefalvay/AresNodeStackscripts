@@ -52,7 +52,7 @@ rn05_selective_kernel_installer () {
 	echo "Installing selected Jupyter kernels..."
 	echo "---------------------------------------------"
 
-	sudo add-apt-repository ppa:chronitis/jupyter
+	sudo add-apt-repository -y ppa:chronitis/jupyter
 	sudo apt-get update
 
 	IFS=',' read -ra KERNEL <<< "$1"
@@ -100,11 +100,13 @@ rn05_install_kernel_JavaScript () {
 # Installs an R kernel. This assumes a recent R is installed!
 
 rn05_install_kernel_R () {
-R --slave <<EOF
+R --slave << EOF
 	install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest')
 	devtools::install_github('IRkernel/IRkernel')	library(IRkernel)
 	IRkernel::installspec(user = FALSE)	
-EOF	
+
+EOF
+
 }
 
 # rn05_install_kernel_R %end%

@@ -144,9 +144,8 @@ sudo service jupyterhub restart
 # RN01._configure_git
 # Configures git and uploads keys.
 rn01_configure_git
-rn01_attach_key
 
-clear
+# clear
 
 #=============================================================
 # Print installation summary

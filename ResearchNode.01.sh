@@ -176,8 +176,8 @@ rn01_upload_rsakey () {
 	echo "Preparing to upload your RSA key to GitHub..."
 	local PUBLIC_KEY=$(cat /home/${USER_USERNAME}/.ssh/id_rsa.pub)
 	local JSON='{"title": "Research box at ${IPADDR} (${USER_USERNAME}:${LINODE_DATACENTERID}.${LINODE_LISHUSERNAME}", "key": "${PUBLIC_KEY}")'
-	local UPLOAD_RESULT_STATUS=$(curl -u ${GIT_USERNAME}:${GIT_TOKEN_PASSWORD} --data ${JSON} https://api.github.com/user/keys) | grep HTTP
-	echo $UPLOAD_RESULT_STATUS
+	UPLOAD_RESULT_STATUS=$(curl -u ${GIT_USERNAME}:${GIT_TOKEN_PASSWORD} --data ${JSON} https://api.github.com/user/keys) | grep HTTP
+	echo ${UPLOAD_RESULT_STATUS}
 }
 
 # rn01_upload_rsakey %end%
@@ -260,12 +260,13 @@ EOF
 user = $GIT_USERNAME
 token = $GIT_TOKEN_PASSWORD
 EOF
-			RSA_UPLOAD_STATUS=rn01_upload_rsakey
+			rn01_upload_rsakey
 					
-			if [[ $RSA_UPLOAD_STATUS -eq 200 ]]; then
+			if [[ "${UPLOAD_RESULT_STATUS}" = "200" ]]; then
 				echo "Key upload successful."
 			else
-				echo "Key upload failed, server returned Error ${RSA_UPLOAD_STATUS}."
+				echo "Key upload failed, server returned Error ${UPLOAD_RESULT_STATUS}."
+				
 			fi
 			
 		else
@@ -290,14 +291,6 @@ EOF
 	fi
 }
 
-# rn01_attach_key
-# ---------------
-# Adds key to SSH agent.
-
-rn01_attach_key () {
-	eval "$(ssh-agent -s)"
-	ssh-add /home/${USER_USERNAME}/.ssh/id_rsa
-}
 
 
 
@@ -322,7 +315,7 @@ rn01_print_install_summary () {
 	echo "${RSTUDIO_VER}"			
 	echo ""
 	
-	if [ -n ${SHINY_VER} ]; then
+	if [ "${SHINY_VER}" != "None" ]; then
 	echo "Shiny Server			http://${IPADDR}:3838/"
 	echo "${SHINY_VER}"
 	echo ""
@@ -332,6 +325,11 @@ rn01_print_install_summary () {
 	echo "Additional kernels: ${JUPYTERHUB_KERNELS}" 
 	echo ""
 	echo "Key upload status: ${RSA_UPLOAD_STATUS}"
+	echo ""
+	echo "Make sure you attach your key by executing"
+	echo "	$ eval $(ssh-agent -s)"
+	echo "	$ ssh-add /home/${USER_USERNAME}/.ssh/id_rsa"
+	echo ""	
 }
 
 
