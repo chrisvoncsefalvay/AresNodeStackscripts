@@ -3,10 +3,10 @@
 
 # ResearchNode installer
 #
-# PART 04
-# CORE APPLICATIONS
+# PART 06
+# DATABASES
 #
-# Linode embedding ID:    000000
+# Linode embedding ID:    317565
 #
 # Part of the CBRD/ResearchNode project.
 #
@@ -18,121 +18,123 @@
 #	  <chris@chrisvoncsefalvay.com>
 #
 
-echo "Loaded subsidiary resource RN04.COREAPPS.000000"
+echo "Loaded subsidiary resource RN06.COREAPPS.317565"
 
 
-# rn04_install_jupyterhub
+
+# rn06_selective_db_installer
+# ---------------------------
+# Installs databases and their supporting clients dependent on a domain selection string.
+#
+# WARNING: 
+# ******** INSTALL DBs ONLY AFTER INSTALLING JUPYTERHUB
+# ******** AND MOST OTHER LANGUAGES. R, ESPECIALLY, IS NOT 
+# ******** INSTALLED BY THE INCLUDED INSTALLER FUNCTIONS.
+# ******** THIS IS THEREFORE BEST DONE TOWARDS THE END OF THE
+# ******** INSTALLATION PROCESS.
+#		
+# @param $1: domain selection string, comma separated
+#
+# The currently registered databases are:
+# - Neo4j
+# - MongoDB
+# - PostgreSQL
+
+rn06_selective_db_installer () {
+	echo "---------------------------------------------------------------"
+	echo "Installing selected databases and their R and Python support..."
+	echo "---------------------------------------------------------------"
+
+	IFS=',' read -ra KERNEL <<< "$1"
+	for i in "${KERNELS[@]}"; do	
+		echo "***** Installing ${i}..."
+		rn06_install_db_${i}
+	done
+}
+
+# rn06_selective_db_installer %end%
+
+
+
+# rn06_install_db_MongoDB
 # -----------------------
-# Installs Jupyterhub.
-#
-rn04_install_jupyterhub () {
-    npm install -g configurable-http-proxy
-    sudo pip3 install jupyterhub sudospawner virtualenv
-    sudo pip3 install --upgrade notebook
+
+rn06_install_db_MongoDB () {
+	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+	echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse"
+	sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+	sudo apt-get update
+	sudo apt-get install -y mongodb-org
+	sudo pip3 install pymongo
+	_install_Rpkg mongolite
+	sudo systemctl start mongod
 }
 
-# rn04_install_jupyterhub %end%
+# rn06_install_db_MongoDB %end%
 
 
 
-# rn04_install_RStudio
-# --------------------
-# Installs RStudio.
-#
-rn04_install_RStudio () {
+# rn06_install_db_Neo4j
+# ---------------------
 
+rn06_install_db_Neo4j () {
+	sudo apt-get install -y default-jre default-jre-headless
+	sudo update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/bin/java
+	sudo update-alternatives --set javac /usr/lib/jvm/java-8-openjdk-amd64/bin/javac
 
+	wget --no-check-certificate https://debian.neo4j.org/neotechnology.gpg.key -O /tmp/neotechnology.key | sudo apt-key add /tmp/neotechnology.key
+	echo 'deb http://debian.neo4j.org/repo stable/' | sudo tee /etc/apt/sources.list.d/neo4j.list
 
-}
+	sudo apt-get update -y
+	sudo apt-get -y install neo4j
 
+	sudo pip3 uninstall scikit-learn
+	sudo pip3 install scikit-learn>=0.18.1
+	sudo pip3 install neo4j-driver==1.5.2 py2neo neomodel
+	sudo pip3 install neo4jupyter
+	_install_Rpkg rstudioapi RNeo4j
+	
+	ln -s $(which neo4j) /etc/init.d/neo4j
+	
+	cat << EOM > /lib/systemd/system/neo4j.services
+[Unit] 
+Description=Neo4j Management Service
 
-
-# rn04_configure_jupyterhub
-# -----------------------
-# Configures Jupyterhub.
-#
-# @param $1    Jupyterhub port
-#
-rn04_configure_jupyterhub () {
-    # Generate jupyter config
-    echo "------------------------------------"
-    echo "Generating JupyterHub config file..."
-    echo "------------------------------------"
-
-    sudo mkdir /etc/jupyterhub
-    sudo mkdir /usr/local/jupyterhub
-    sudo jupyterhub --generate-config -f /etc/jupyterhub/jupyterhub_config.py
-
-    echo "-------------------------------------"
-    echo "Configuring JupyterHub config file..."
-    echo "-------------------------------------"
-
-    cat << EOF >> /etc/jupyterhub/jupyterhub_config.py
-c.JupyterHub.ip = '0.0.0.0'
-c.JupyterHub.port = "$1"
-c.JupyterHub.pid_file = '/var/run/jupyterhub.pid'
-c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
-c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
-c.Spawner.cmd = '/usr/local/bin/sudospawner'
-c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
-EOF
-}
-
-# rn04_configure_jupyterhub %end%
-
-
-
-# rn04_configure_Jupyterhub_for_PAM
-# ---------------------------------
-# Sets up PAM authentication implicitly, and puts the comma separated list of users provided in as users.
-#
-# @param $@    Single user or comma separated list of users to add
-#
-rn04_configure_Jupyterhub_for_PAM () {
-    local CLEANED_USER_LIST=$(echo "$@" | sed -e "s/\s//g")
-    echo "c.Authenticator.admin_users = {'${CLEANED_USER_LIST}'}" >> /etc/jupyterhub/jupyerhub_config.py
-}
-
-# rn04_configure_for_PAM %end%
-
-
-# rn04_configure_Jupyterhub_daemon
-# --------------------------------
-# Configures daemon for Jupyterhub and sets up autostart.
-#
-configure_jupyterhub () {
-
-    # Upgrading the jupyterhub DB
-    sudo jupyterhub upgrade-db
-    
-    echo "------------------"
-    echo "Creating daemon..."
-    echo "------------------"
-
-    cat << EOF > jupyterhub.service
-[Unit]
-Description=Jupyterhub
-After=syslog.target network.target
-
-[Service]
-User=root
-ExecStart=/usr/local/bin/jupyterhub -f /etc/jupyterhub/jupyterhub_config.py JupyterHub.spawner_class=sudospawner.SudoSpawner 
-WorkingDirectory=/etc/jupyterhub
-Restart=always
+[Service] 
+Type=forking
+User=neo4j
+ExecStart=/etc/init.d/neo4j start
+ExecStop=/etc/init.d/neo4j stop
+ExecReload=/etc/init.d/neo4j restart
+RemainAfterExit=no
+Restart=on-failure
+PIDFile=/opt/neo4j/data/neo4j-service.pid
+LimitNOFILE=60000
+TimeoutSec=600
 
 [Install]
 WantedBy=multi-user.target
-EOF
 
-    echo "-----------------"
-    echo "Placing daemon..."
-    echo "-----------------"
+EOM
 
-    sudo mkdir /usr/lib/systemd/system
-    sudo mv jupyterhub.service /usr/lib/systemd/system/jupyterhub.service
-    sudo chmod a+x /usr/lib/systemd/system/jupyterhub.service
-    sudo systemctl enable jupyterhub
-    sudo systemctl daemon-reload
+	sudo systemctl enable neo4j.service
+	sudo systemctl daemon-reload
 }
 
+# rn06_install_db_Neo4j %end%
+
+
+# rn06_install_db_Postgresql
+# --------------------------
+
+rn06_install_db_Postgresql () {
+	sudo apt-get install -y postgresql postgresql-contrib
+	sudo pip3 install psycopg2
+	_install_Rpkg RPostgreSQL
+	
+	sudo systemctl enable postgresql
+	sudo systemctl daemon-reload
+}
+
+# rn06_install_db_Postgresql %end%
 

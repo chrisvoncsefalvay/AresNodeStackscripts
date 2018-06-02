@@ -29,11 +29,15 @@
 # <UDF name="RSTUDIO_VER" label="RStudio version" oneOf="1.2.679,1.1.453," default="1.1.453" />
 # <UDF name="JUPYTERHUB_PORT" label="Jupyterhub port" default="8888" />
 # <UDF name="JUPYTERHUB_VER" label="Jupyterhub version" oneOf="0.9.0b3,0.9.0b2,0.9.0b1,0.8.1,0.8.0,0.7.2" default="0.8.1" />
-# <UDF name="GIT_FULLNAME" label="Full name (for Git) (leave empty to skip Git configuration)" />
-# <UDF name="GIT_EMAIL" label="Git e-mail (leave empty to skip Git configuration)" />
-# <UDF name="GIT_USERNAME" label="Github user name (leave empty to skip GitHub configuration)" />
-# <UDF name="GIT_TOKEN_PASSWORD" label="Github personal access token (leave empty to skip GitHub configuration)" />
+# <UDF name="JUPYTERHUB_KERNELS" label="Additional kernels for JupyterHub" manyOf="Haskell,Ruby,JavaScript,R,OCaml,Octave,Bash,Clojure,AIML,ARMv6THUMB,MIT_Scheme" default="Haskell,R,Bash" />
+# <UDF name="INSTALL_DATABASES" label="Databases to install" manyOf="MongoDB,Neo4j,Postgresql" default="Neo4j,PostgreSQL" />
+# <UDF name="GIT_FULLNAME" label="Full name (for Git) (leave empty to skip Git configuration)" default="" />
+# <UDF name="GIT_EMAIL" label="Git e-mail (leave empty to skip Git configuration)" default="" />
+# <UDF name="GIT_USERNAME" label="Github user name (leave empty to skip GitHub configuration)" default="" />
+# <UDF name="GIT_TOKEN_PASSWORD" label="Github personal access token (leave empty to skip GitHub configuration)" default="" />
 # <UDF name="GIT_EDITOR" label="Preferred editor for Git operations" oneOf="vim,nano" default="vim" />
+
+
 
 # Ascertain IP address for future use
 IPADDR=$(/sbin/ifconfig eth0 | awk '/inet / { print $2 }' | sed 's/addr://')
@@ -47,7 +51,6 @@ IPADDR=$(/sbin/ifconfig eth0 | awk '/inet / { print $2 }' | sed 's/addr://')
 # SOURCE RN01                     V
 source <ssinclude StackScriptID=316999>
 # SOURCE RN01                     A
-
 
 
 
@@ -95,6 +98,35 @@ rn04_configure_Jupyterhub
 # RN01._create_user_and_usergroup
 # Creates a user with a given password, and assigns it to a newly created usergroup.
 rn01_create_user_and_usergroup
+
+
+
+#=============================================================
+# INSTALL ADDITIONAL KERNELS
+#=============================================================
+
+# SOURCE RN05
+source <ssinclude StackScriptID=317564>
+# SOURCE RN05
+
+if [[ -n ${JUPYTERHUB_KERNELS} ]]; then
+    rn05_selective_kernel_installer ${JUPYTERHUB_KERNELS}
+fi
+
+
+
+#=============================================================
+# INSTALL DATABASES
+#=============================================================
+
+# SOURCE RN06
+source <ssinclude StackScriptID=317565>
+# SOURCE RN06
+
+if [[ -n ${INSTALL_DATABASES} ]]; then
+    rn06_selective_db_installer ${INSTALL_DATABASES}
+fi
+
 
 
 #=============================================================
