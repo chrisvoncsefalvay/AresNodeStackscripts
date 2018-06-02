@@ -41,9 +41,6 @@ set -x
 source <ssinclude StackScriptID=316999>
 # SOURCE RN01                     A
 
-# RN01._create_user_and_usergroup
-# Creates a user with a given password, and assigns it to a newly created usergroup.
-rn01_create_user_and_usergroup ${USER_USERNAME} ${USER_PASSWORD} ${USER_USERGROUP}
 
 
 
@@ -86,3 +83,13 @@ rn04_create_RStudio_config
 rn04_install_Jupyterhub
 
 rn04_configure_Jupyterhub
+
+
+# RN01._create_user_and_usergroup
+# Creates a user with a given password, and assigns it to a newly created usergroup.
+rn01_create_user_and_usergroup
+
+clear
+
+sudo rstudio-server start
+/usr/local/bin/jupyterhub -f /etc/jupyterhub/jupyterhub_config.py

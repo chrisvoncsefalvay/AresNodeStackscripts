@@ -121,19 +121,15 @@ _install_node () {
 # rn01_create_user_and_usergroup
 # ------------------------------
 # Creates a user with a given password, and assigns it to a newly created usergroup.
-#
-# @param $1: user name
-# @param $2: user password
-# @param $3: usergroup name
 
 rn01_create_user_and_usergroup () {
     echo "-------------------------------------------------------------"
-    echo "Setting up user $1 and usergroup $3..."
+    echo "Setting up user ${USER_USERNAME} and usergroup ${USER_USERGROUP}..."
     echo "-------------------------------------------------------------"
 
-    sudo addgroup "$1"
-    sudo su -c "useradd \"$1\" -s /bin/bash -m -g \"$3\""
-    sudo echo "$1":"$2" | chpasswd   
+    sudo addgroup ${USER_USERGROUP}
+    sudo su -c "useradd ${USER_USERNAME} -s /bin/bash -m -g ${USER_USERGROUP}"
+    sudo echo ${USER_USERNAME}:${USER_PASSWORD} | chpasswd
     
 }
 

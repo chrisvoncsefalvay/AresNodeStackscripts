@@ -70,7 +70,7 @@ rn04_create_RStudio_config () {
 
 	cat << EOF > /etc/rstudio/rserver.conf
 www-port=${RSTUDIO_PORT}
-www-address=$(_get_ip)
+www-address=0.0.0.0
 rsession-which-r=$(which R)
 auth-required-user-group=${USER_USERGROUP}
 EOF
@@ -129,12 +129,16 @@ rn04_configure_Jupyterhub () {
     cat << EOF > /etc/jupyterhub/jupyterhub_config.py
 c.JupyterHub.ip = '$(_get_ip)'
 c.JupyterHub.port = ${JUPYTERHUB_PORT}
+c.JupyterHub.hub_port = 8880
+c.JupyterHub.log_level = 10
 c.JupyterHub.pid_file = '/var/run/jupyterhub.pid'
 c.Authenticator.admin_users = {'${USER_USERNAME}'}
 c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
 c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
+c.JupyterHub.spawner_class = 'sudospawner.SudoSpawner'
 c.Spawner.cmd = '/usr/local/bin/sudospawner'
 c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
+c.SudoSpawner.debug_mediator = True
 EOF
 
 	sudo jupyterhub upgrade-db
