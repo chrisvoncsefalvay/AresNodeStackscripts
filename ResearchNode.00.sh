@@ -29,13 +29,17 @@
 # <UDF name="RSTUDIO_VER" label="RStudio version" oneOf="1.2.679,1.1.453," default="1.1.453" />
 # <UDF name="JUPYTERHUB_PORT" label="Jupyterhub port" default="8888" />
 # <UDF name="JUPYTERHUB_VER" label="Jupyterhub version" oneOf="0.9.0b3,0.9.0b2,0.9.0b1,0.8.1,0.8.0,0.7.2" default="0.8.1" />
+# <UDF name="GIT_FULLNAME" label="Full name (for Git) (leave empty to skip Git configuration)" />
+# <UDF name="GIT_EMAIL" label="Git e-mail (leave empty to skip Git configuration)" />
+# <UDF name="GIT_USERNAME" label="Github user name (leave empty to skip GitHub configuration)" />
+# <UDF name="GIT_TOKEN_PASSWORD" label="Github personal access token (leave empty to skip GitHub configuration)" />
+# <UDF name="GIT_EDITOR" label="Preferred editor for Git operations" oneOf="vim,nano" default="vim" />
 
 
 #=============================================================
 # PREFLIGHT AND CONFIGURATION
 #=============================================================
 
-set -x
 
 # SOURCE RN01                     V
 source <ssinclude StackScriptID=316999>
@@ -89,7 +93,28 @@ rn04_configure_Jupyterhub
 # Creates a user with a given password, and assigns it to a newly created usergroup.
 rn01_create_user_and_usergroup
 
-clear
+
+#=============================================================
+# START SERVICES
+#=============================================================
 
 sudo rstudio-server start
-/usr/local/bin/jupyterhub -f /etc/jupyterhub/jupyterhub_config.py
+sudo service jupyterhub restart
+
+#=============================================================
+# CONFIGURE GIT
+#=============================================================
+
+# RN01._configure_git
+# Configures git and uploads keys.
+rn01_configure_git
+rn01_attach_key
+
+clear
+
+#=============================================================
+# Print installation summary
+#=============================================================
+
+# RN01._print_install_summary
+# rn01_print_install_summary
