@@ -98,12 +98,26 @@ rn03_install_R () {
 	echo "---------------"
 	
 	sudo apt-get install -y r-base r-base-dev r-cran-littler
-	_install_Rpkg docopt remotes devtools
+	_install_Rpkg docopt remotes devtools 
+	
+	if [ ${SHINY_VER} != "None" ]; then
+		echo "---------------------------------"
+		echo "Installing Shiny Server ${SHINY_VER}..."
+		echo "---------------------------------"
+
+		_install_Rpkg shiny
+
+		sudo wget https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-${SHINY_VER}-amd64.deb -O /tmp/shiny-${SHINY_VER}-amd64.deb
+		
+		sudo gdebi -n /tmp/shiny-${SHINY_VER}-amd64.deb
+		sudo rm /tmp/shiny-${SHINY_VER}-amd64.deb
+	fi
 }
 
 rn03_install_R
 
 # rn03_install_R %end%
+
 
 
 # rn03_selective_domain_installer

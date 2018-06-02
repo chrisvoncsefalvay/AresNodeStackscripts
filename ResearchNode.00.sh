@@ -23,10 +23,11 @@
 # <UDF name="USER_USERNAME" label="User name" />
 # <UDF name="USER_PASSWORD" label="User password" />
 # <UDF name="USER_USERGROUP" label="Authorisation usergroup" default="ares"/>
-# <UDF name="PY_PACKAGES" label="Python packages to install" manyOf="GeneralScience,MachineLearning,NLP,NLPCorpora,Bioinformatics,GIS,DataVisualisation" default="GeneralScience,DataVisualisation" />
+# <UDF name="PY_PACKAGES" label="Python packages to install" manyOf="GeneralScience,MachineLearning,NLP,NLPCorpora,Bioinformatics,GIS,DataVisualisation" default="GeneralScience,DataVisualisation,OpenCV" />
 # <UDF name="R_PACKAGES" label="R packages to install" manyOf="Core,General,ReproducibleResearch,StatisticalMethods,SocialNetworkAnalysis,Epidemiology,ClinicalTrials,Plotting,Spatial,ExportImport,TextMining,BayesianInference,MachineLearning,TimeSeries" default="Core,General,ReproducibleResearch,StatisticalMethods,Plotting" />
 # <UDF name="RSTUDIO_PORT" label="RStudio port" default="9999" />
 # <UDF name="RSTUDIO_VER" label="RStudio version" oneOf="1.2.679,1.1.453," default="1.1.453" />
+# <UDF name="SHINY_VER" label="Shiny server version" oneOf="None,1.5.7.907" default="None" />
 # <UDF name="JUPYTERHUB_PORT" label="Jupyterhub port" default="8888" />
 # <UDF name="JUPYTERHUB_VER" label="Jupyterhub version" oneOf="0.9.0b3,0.9.0b2,0.9.0b1,0.8.1,0.8.0,0.7.2" default="0.8.1" />
 # <UDF name="JUPYTERHUB_KERNELS" label="Additional kernels for JupyterHub" manyOf="Haskell,Ruby,JavaScript,R,OCaml,Octave,Bash,Clojure,AIML,ARMv6THUMB,MIT_Scheme" default="Haskell,R,Bash" />
@@ -152,4 +153,4 @@ clear
 #=============================================================
 
 # RN01._print_install_summary
-# rn01_print_install_summary
+rn01_print_install_summary

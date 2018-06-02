@@ -260,7 +260,7 @@ EOF
 user = $GIT_USERNAME
 token = $GIT_TOKEN_PASSWORD
 EOF
-		
+			RSA_UPLOAD_STATUS=rn01_upload_rsakey
 					
 			if [[ $RSA_UPLOAD_STATUS -eq 200 ]]; then
 				echo "Key upload successful."
@@ -320,7 +320,18 @@ rn01_print_install_summary () {
 	echo ""
 	echo "RStudio				http://${IPADDR}:${RSTUDIO_PORT}/"
 	echo "${RSTUDIO_VER}"			
+	echo ""
 	
+	if [ -n ${SHINY_VER} ]; then
+	echo "Shiny Server			http://${IPADDR}:3838/"
+	echo "${SHINY_VER}"
+	echo ""
+	fi
+	
+	echo "Databases: ${INSTALL_DATABASES}"
+	echo "Additional kernels: ${JUPYTERHUB_KERNELS}" 
+	echo ""
+	echo "Key upload status: ${RSA_UPLOAD_STATUS}"
 }
 
 
