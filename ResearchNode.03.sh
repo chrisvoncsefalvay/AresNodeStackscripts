@@ -113,6 +113,7 @@ rn03_install_R
 # @param $1: domain selection string, comma separated
 #
 # The currently registered domains are:
+# - Core
 # - General
 # - ReproducibleResearch
 # - StatisticalMethods
@@ -140,6 +141,17 @@ rn03_selective_domain_installer () {
 }
 
 # rn03_selective_domain_installer %end%
+
+
+# rn03_install_domain_Core
+# ------------------------
+
+rn03_install_domain_Core () {
+	# Essential deps
+	_install_Rpkg magrittr data.table dplyr reshape stringr curl
+}
+
+# rn03_install_domain_Core
 
 
 

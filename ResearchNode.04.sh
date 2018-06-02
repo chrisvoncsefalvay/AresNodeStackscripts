@@ -20,6 +20,22 @@
 
 echo "Loaded subsidiary resource RN04.FRONTENDS.317448"
 
+# _get_ip
+# -------
+
+_get_ip () {
+    local _ip _myip _line _nl=$'\n'
+    while IFS=$': \t' read -a _line ;do
+        [ -z "${_line%inet}" ] &&
+           _ip=${_line[${#_line[1]}>4?1:2]} &&
+           [ "${_ip#127.0.0.1}" ] && _myip=$_ip
+      done< <(LANG=C /sbin/ifconfig)
+    printf ${1+-v} $1 "%s${_nl:0:$[${#1}>0?0:1]}" $_myip
+}
+
+# _get_ip %end%
+
+
 # rn04_install_RStudio
 # --------------------
 # Installs RStudio and configures it. Automatically distinguishes between stable (1.1.*) and Nightly (1.2.*) releases.
@@ -53,12 +69,16 @@ rn04_create_RStudio_config () {
 	echo "----------------------------------"
 
 	cat << EOF > /etc/rstudio/rserver.conf
-	www-port=${RSTUDIO_PORT}
-	www-address=0.0.0.0
-	rsession-which-r=$(which R)
-	auth-required-user-group=${USER_GROUP}
-	r-cran-repos=https://cloud.r-project-org/
+www-port=${RSTUDIO_PORT}
+www-address=$(_get_ip)
+rsession-which-r=$(which R)
+auth-required-user-group=${USER_USERGROUP}
 EOF
+
+	cat << EOF > /etc/rstudio/rsession.conf
+r-cran-repos=https://cloud.r-project-org/
+EOF
+
 }
 
 # rn04_configure_RStudio %end%
@@ -107,12 +127,10 @@ rn04_configure_Jupyterhub () {
     echo "-------------------------------------"
 
     cat << EOF > /etc/jupyterhub/jupyterhub_config.py
-c.JupyterHub.ip = '0.0.0.0'
+c.JupyterHub.ip = '$(_get_ip)'
 c.JupyterHub.port = ${JUPYTERHUB_PORT}
 c.JupyterHub.pid_file = '/var/run/jupyterhub.pid'
 c.Authenticator.admin_users = {'${USER_USERNAME}'}
-c.LocalAuthenticator.group_whitelist = {'${USER_USERGROUP}'}
-c.LocalAuthenticator.create_system_users = True
 c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
 c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
 c.Spawner.cmd = '/usr/local/bin/sudospawner'

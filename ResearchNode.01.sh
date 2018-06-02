@@ -131,7 +131,7 @@ rn01_create_user_and_usergroup () {
     echo "Setting up user $1 and usergroup $3..."
     echo "-------------------------------------------------------------"
 
-    sudo addusergroup "$1"
+    sudo addgroup "$1"
     sudo su -c "useradd \"$1\" -s /bin/bash -m -g \"$3\""
     sudo echo "$1":"$2" | chpasswd   
     

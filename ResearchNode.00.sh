@@ -24,7 +24,7 @@
 # <UDF name="USER_PASSWORD" label="User password" />
 # <UDF name="USER_USERGROUP" label="Authorisation usergroup" default="ares"/>
 # <UDF name="PY_PACKAGES" label="Python packages to install" manyOf="GeneralScience,MachineLearning,NLP,NLPCorpora,Bioinformatics,GIS,DataVisualisation" default="GeneralScience,DataVisualisation" />
-# <UDF name="R_PACKAGES" label="R packages to install" manyOf="General,ReproducibleResearch,StatisticalMethods,SocialNetworkAnalysis,Epidemiology,ClinicalTrials,Plotting,Spatial,ExportImport,TextMining,BayesianInference,MachineLearning,TimeSeries" default="General,ReproducibleResearch,StatisticalMethods,Plotting" />
+# <UDF name="R_PACKAGES" label="R packages to install" manyOf="Core,General,ReproducibleResearch,StatisticalMethods,SocialNetworkAnalysis,Epidemiology,ClinicalTrials,Plotting,Spatial,ExportImport,TextMining,BayesianInference,MachineLearning,TimeSeries" default="Core,General,ReproducibleResearch,StatisticalMethods,Plotting" />
 # <UDF name="RSTUDIO_PORT" label="RStudio port" default="9999" />
 # <UDF name="RSTUDIO_VER" label="RStudio version" oneOf="1.2.679,1.1.453," default="1.1.453" />
 # <UDF name="JUPYTERHUB_PORT" label="Jupyterhub port" default="8888" />
@@ -43,7 +43,7 @@ source <ssinclude StackScriptID=316999>
 
 # RN01._create_user_and_usergroup
 # Creates a user with a given password, and assigns it to a newly created usergroup.
-# rn01_create_user_and_usergroup ${USER_USERNAME} ${USER_PASSWORD} ${USER_USERGROUP}
+rn01_create_user_and_usergroup ${USER_USERNAME} ${USER_PASSWORD} ${USER_USERGROUP}
 
 
 
