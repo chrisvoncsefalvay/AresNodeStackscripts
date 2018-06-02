@@ -33,14 +33,14 @@ rn04_install_RStudio () {
 
 	if [[ "$RSTUDIO_VER" =~ "1\.1\.\d*" ]]; then
 		echo 'Stable version ${RSTUDIO_VER} requested'
-		sudo wget https://download2.rstudio.org/rstudio-server/"${RSTUDIO_VER}"-amd64.deb -O /tmp/rstudio-"${RSTUDIO_VER}"-amd64.deb
+		sudo wget https://download2.rstudio.org/rstudio-server/${RSTUDIO_VER}-amd64.deb -O /tmp/rstudio-${RSTUDIO_VER}-amd64.deb
 	else
 		echo 'Nightly version ${RSTUDIO_VER} requested'
-		sudo wget https://s3.amazonaws.com/rstudio-ide-build/server/trusty/amd64/rstudio-server-"${RSTUDIO_VER}"-amd64.deb -O /tmp/rstudio-"${RSTUDIO_VER}s"-amd64.deb
+		sudo wget https://s3.amazonaws.com/rstudio-ide-build/server/trusty/amd64/rstudio-server-${RSTUDIO_VER}-amd64.deb -O /tmp/rstudio-${RSTUDIO_VER}-amd64.deb
 	fi
 
-	sudo gdebi -n /tmp/rstudio-"${RSTUDIO_VER}"-amd64.deb
-	sudo rm /tmp/rstudio-"${RSTUDIO_VER}"-amd64.deb
+	sudo gdebi -n /tmp/rstudio-${RSTUDIO_VER}-amd64.deb
+	sudo rm /tmp/rstudio-${RSTUDIO_VER}-amd64.deb
 }
 
 # rn04_create_RStudio_config
@@ -108,7 +108,7 @@ rn04_configure_Jupyterhub () {
 
     cat << EOF > /etc/jupyterhub/jupyterhub_config.py
 c.JupyterHub.ip = '0.0.0.0'
-c.JupyterHub.port = "${JUPYTERHUB_PORT}"
+c.JupyterHub.port = ${JUPYTERHUB_PORT}
 c.JupyterHub.pid_file = '/var/run/jupyterhub.pid'
 c.Authenticator.admin_users = {'${USER_USERNAME}'}
 c.LocalAuthenticator.group_whitelist = {'${USER_USERGROUP}'}
