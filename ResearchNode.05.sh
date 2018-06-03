@@ -86,7 +86,6 @@ rn05_install_kernel_Ruby () {
 # Installs a JavaScript kernel based on node.
 
 rn05_install_kernel_JavaScript () {
-	sudo apt-get install -y nodejs npm
 	sudo npm install -g ijavascript
 	ijsinstall
 }
@@ -100,12 +99,15 @@ rn05_install_kernel_JavaScript () {
 # Installs an R kernel. This assumes a recent R is installed!
 
 rn05_install_kernel_R () {
-R --slave << EOF
-	install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest')
-	devtools::install_github('IRkernel/IRkernel')	library(IRkernel)
-	IRkernel::installspec(user = FALSE)	
-
+	cat << EOF > /tmp/install_Rkernel.R
+install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest')
+library(devtools)
+devtools::install_github('IRkernel/IRkernel')
+library(IRkernel)
+IRkernel::installspec(user = FALSE)
 EOF
+
+	R CMD BATCH /tmp/install_Rkernel.R /tmp/install_Rkernel.Rout
 
 }
 
@@ -117,7 +119,7 @@ EOF
 # -------------------------
 # Installs OCaml and an OCaml kernel to Jupyterhub
 
-# rn05_install_kernel_Ocaml () {
+rn05_install_kernel_Ocaml () {
 	sudo apt-get install -y ocaml-nox opam
 	opam init
 	opam install -y jupyter
@@ -148,7 +150,7 @@ EOF
 
 # rn05_install_kernel_Bash () {
 	pip3 install bash_kernel
-	python -m bash_kernel.install
+	python3 -m bash_kernel.install
 }
 
 # rn05_install_kernel_Bash %end%
@@ -161,7 +163,12 @@ EOF
 
 # rn05_install_kernel_Clojure () {
 	cd /tmp
+	wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+	sudo chmod a+x lein
+	sudo mv lein /usr/bin/lein
+	lein
 	git clone https://github.com/clojupyter/clojupyter
+	cd clojupyter
 	make
 	sudo make install
 }
@@ -179,7 +186,7 @@ rn05_install_kernel_AIML () {
 	sudo jupyter aimlbotkernel install
 }
 
-# rn05_install_kernel_Clojure %end%
+# rn05_install_kernel_AIML %end%
 
 
 
@@ -200,17 +207,19 @@ rn05_install_kernel_ARMv6THUMB () {
 # rn05_install_kernel_Haskell
 # ---------------------------
 # Installs ghc and Haskell kernel
+#
+# Currently BROKEN due to STACK failure
 
-rn05_install_kernel_Haskell () {
-	sudo apt-get install haskell-platform
-	cd /tmp
-	git clone https://github.com/gibiansky/IHaskell
-	cd IHaskell
-	pip3 install -r requirements.txt
-	stack install gtk2hs-buildtools
-	stack install --fast
-	ihaskell install --stack
-}
+#rn05_install_kernel_Haskell () {
+#	sudo apt-get install -y haskell-platform haskell-stacks
+#	cd /tmp
+#	git clone https://github.com/gibiansky/IHaskell
+#	cd IHaskell
+#	pip3 install -r requirements.txt
+#	stack install gtk2hs-buildtools
+#	stack install --fast
+#	ihaskell install --stack
+# }
 
 # rn05_install_kernel_Haskell %end%
 

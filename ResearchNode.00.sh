@@ -30,7 +30,7 @@
 # <UDF name="SHINY_VER" label="Shiny server version" oneOf="None,1.5.7.907" default="None" />
 # <UDF name="JUPYTERHUB_PORT" label="Jupyterhub port" default="8888" />
 # <UDF name="JUPYTERHUB_VER" label="Jupyterhub version" oneOf="0.9.0b3,0.9.0b2,0.9.0b1,0.8.1,0.8.0,0.7.2" default="0.8.1" />
-# <UDF name="JUPYTERHUB_KERNELS" label="Additional kernels for JupyterHub" manyOf="Haskell,Ruby,JavaScript,R,OCaml,Octave,Bash,Clojure,AIML,ARMv6THUMB,MIT_Scheme" default="Haskell,R,Bash" />
+# <UDF name="JUPYTERHUB_KERNELS" label="Additional kernels for JupyterHub" manyOf="Ruby,JavaScript,R,OCaml,Octave,Bash,Clojure,AIML,ARMv6THUMB,MIT_Scheme" default="R,Bash,Octave,AIML" />
 # <UDF name="INSTALL_DATABASES" label="Databases to install" manyOf="MongoDB,Neo4j,Postgresql" default="Neo4j,PostgreSQL" />
 # <UDF name="GIT_FULLNAME" label="Full name (for Git) (leave empty to skip Git configuration)" default="" />
 # <UDF name="GIT_EMAIL" label="Git e-mail (leave empty to skip Git configuration)" default="" />
@@ -152,4 +152,4 @@ rn01_configure_git
 #=============================================================
 
 # RN01._print_install_summary
-rn01_print_install_summary
+# rn01_print_install_summary

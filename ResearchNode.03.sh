@@ -176,7 +176,7 @@ rn03_install_domain_General () {
 	# Essential deps
 	_install_Rpkg Rcpp magrittr
 	# Tools for programming and testing
-	_install_Rpkg testthat foreach doMC SOAR Matrix 
+	_install_Rpkg testthat foreach doMC 
 	# Basic data wrangling and transforms
 	_install_Rpkg data.table dplyr plyr reshape lubridate stringr forecast nlme sqldf purrr tidyr validate
 	# Basic HTTP
@@ -192,7 +192,7 @@ rn03_install_domain_General () {
 
 rn03_install_domain_ReproducibleResearch () {
 	sudo apt-get install -y texlive-full texlive-xetex 
-	_install_Rpkg rmarkdown knitr xtable lazyWeave brew papeR ztable knitLatex	animation texreg bibtex RefManageR formattable rapport pander
+	_install_Rpkg rmarkdown knitr xtable brew ztable knitLatex bibtex RefManageR formattable rapport pander
 }
 
 # rn03_install_domain_ReproducibleResearch %end%
@@ -203,17 +203,17 @@ rn03_install_domain_ReproducibleResearch () {
 
 rn03_install_domain_StatisticalMethods () {
 	# ABM
-	_install_Rpkg RNetLogo SpaDES EpiModel spartan
+	_install_Rpkg RNetLogo EpiModel
 	# Missing data
-	_install_Rpkg mi Amelia
+	_install_Rpkg Amelia
 	# Model selections
-	_install_Rpkg MASS leaps 
+	_install_Rpkg MASS 
 	# Matching and demographics
-	_install_Rpkg PSAgraphics demography
+	_install_Rpkg demography
 	# Misc functions and models
 	_install_Rpkg spatial nnet Zelig 
 	# Regression models
-	_install_Rpkg brglm	vcd gnm catspec betareg nlme lme4 lmeSplines MCMCglmm gmcv locfit np sm acepack quantreg biglm lmtest effects visreg class Hmisc car caret mlbench Boruta DAAG xgboost glmnet ORCR gbm arules tree mboost ROCR lars CORElearn
+	_install_Rpkg nlme lme4 lmeSplines MCMCglmm gmcv class Hmisc car caret mlbench xgboost glmnet gbm arules tree mboost ROCR
 }
 
 # rn03_install_domain_StatisticalMethods %end%
@@ -223,7 +223,7 @@ rn03_install_domain_StatisticalMethods () {
 # -----------------------------------------
 
 rn03_install_domain_SocialNetworkAnalysis () {
-	_install_Rpkg sna network latentnet ergm statnet
+	_install_Rpkg sna network
 	_install_Rpkg instaR Rfacebook twitteR streamR graphTweets
 }
 
@@ -236,17 +236,15 @@ rn03_install_domain_SocialNetworkAnalysis () {
 
 rn03_install_domain_Epidemiology () {
 	# Basic epi
-	_install_Rpkg Epi epitools epiR pubh prevalence landsepi episensr epibasix cmprsk EpiModel IDSpatialStats 
+	_install_Rpkg Epi epitools epiR pubh prevalence EpiModel IDSpatialStats 
 	# Meta-analyses 
-	_install_Rpkg metasens meta metafor rmeta psychmeta metagear revtools metavcov epiR ratesci ipdmeta ecoreg surrosurv netmeta 
+	_install_Rpkg metasens meta metafor rmeta psychmeta ratesci netmeta 
 	# Meta-analysis plots
 	_install_Rpkg forestplot metaplotr MetaAnalyser metaviz
-	# Pop genetics
-	_install_Rpkg genetics rmetasim
 	# Survival
-	_install_Rpkg survival rms prodlim eha landest tranSurv condSURV interval fitdistrplus vitality maxstat controlTest clinfuntimereg dynamichazard smcure pch isoph rankhazard
+	_install_Rpkg survival rms condSURV interval vitality rankhazard
 	# Drug side effects 
-	_install_Rpkg MHTrajectoryR WCE discreteMTP openEBGM vaersvax vaersNDvax PhViD 
+	_install_Rpkg MHTrajectoryR openEBGM vaersvax vaersNDvax PhViD 
 }
 
 # rn03_install_domain_Epidemiology %end%
@@ -258,9 +256,9 @@ rn03_install_domain_Epidemiology () {
 
 rn03_install_domain_ClinicalTrials () {
 	# Trial analysis
-	_install_Rpkg seqmon PIPS PowerTOST clinfun CRM dfpk dfped clinsig speff2trial ThreeGroups epibasix multcomp survival
+	_install_Rpkg clinfun CRM clinsig speff2trial ThreeGroups epibasix
 	# Experimental design
-	_install_Rpkg AlgDesign skpr OptimalDesign LDOD planor FrF2 BHH2 ThreeArmedTrials gsDesign DoseFinding TrialSize blockrand CRTSize experiment samplesize binseqtest BOIN designmatch toxtestD sensoMineR bioOED
+	_install_Rpkg OptimalDesign FrF2 ThreeArmedTrials DoseFinding TrialSize blockrand CRTSize experiment sensoMineR
 }
 
 # rn03_install_domain_ClinicalTrials %end%
@@ -272,7 +270,7 @@ rn03_install_domain_ClinicalTrials () {
 rn03_install_domain_Plotting () {
 	_install_Rpkg RColorBrewer scales colorspace corrplot animation lattice
 	# GGverse
-	_install_Rpkg ggplot2 ggthemes ggpubr ggQC ggedit ggforce ggalt ggrepel ggraph geomnet ggExtra ggfortify gganimate ggspectra ggseas ggsci ggmosaic survminer GGally ggridges qqplotr  ggalluvial ggdag 
+	_install_Rpkg ggplot2 ggthemes ggpubr ggQC ggedit ggforce ggalt ggrepel ggraph geomnet ggExtra ggfortify gganimate ggspectra ggseas ggsci ggmosaic survminer ggridges qqplotr  ggalluvial ggdag 
 	_install_Rpkgit sachsmc plotROC
 	_install_Rpkgit ricardio-bion ggradar
 	_install_Rpkgit Ather-Energy ggTimeSeries
@@ -291,15 +289,15 @@ rn03_install_domain_Plotting () {
 # ---------------------------
 
 rn03_install_domain_Spatial () {
-	_install_Rpkg sf stplanr raster rasterVis spatial.tools micromap recmap statebins spacetime geosphere trip gdistance magclass UScensus2000cdp UScensus2000tract marmap rworldmap rworldxtra cshapes landsat gdalUtils rgdal rgeos wkb maps mapdata mapproj shapefiles spatstat geonames OpenStreetMap osmar rpostgis tmap mapview RgoogleMaps ggmap ggsn plotKML leafletR spatial spatgraphs smacpod ecespa aspace spatialsegregation GriegSmith latticeDensity
+	_install_Rpkg raster rasterVis spatial.tools micromap statebins spacetime UScensus2000cdp UScensus2000tract rworldmap rworldxtra cshapes gdalUtils rgdal rgeos maps mapdata mapproj shapefiles spatstat geonames OpenStreetMap osmar rpostgis RgoogleMaps ggmap plotKML leafletR spatial spatgraphs spatialsegregation
 	# Geostatistics
-	_install_Rpkg gstat automap geoR geoRglm intamap vardiag spsann FRK RandomFields SpatialExtremes spTimer gear
+	_install_Rpkg gstat automap geoR geoRglm intamap vardiag SpatialExtremes spTimer gear
 	# Geoepidemiology
-	_install_Rpkg DCluster SpatialEpi diseasemapping AMOEBA OasisR spgwr sparr CARBayes spaMM geospacom spatsurv spselect
+	_install_Rpkg DCluster SpatialEpi diseasemapping OasisR CARBayes spaMM geospacom spatsurv spselect
 	# Spatiotemporal
 	_install_Rpkg googleVis plm spacetime surveillance stppResid SpatioTemporal adehabitatLT splancs stam pastecs nlme lme4 spBayes tripEstimation crawl move 
 	# Geolocation
-	_install_Rpkg rgeolocate threewords nominatim geoparser
+	_install_Rpkg rgeolocate geoparser
 }
 
 # rn03_install_domain_Spatial %end%

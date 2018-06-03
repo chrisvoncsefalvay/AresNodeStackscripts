@@ -72,7 +72,7 @@ _install_libssl () {
     echo "Configuring libssl and linking it..."
     echo "------------------------------------"
 
-    sudo apt-get install -y libssl-dev libssl-doc libcurl4-openssl-dev
+    sudo apt-get install -y libssl-dev libssl-doc libcurl4-openssl-dev libssh2-1-dev
 
 }
 
@@ -175,9 +175,10 @@ rn01_create_rsakey () {
 rn01_upload_rsakey () {
 	echo "Preparing to upload your RSA key to GitHub..."
 	local PUBLIC_KEY=$(cat /home/${USER_USERNAME}/.ssh/id_rsa.pub)
-	local JSON='{"title": "Research box at ${IPADDR} (${USER_USERNAME}:${LINODE_DATACENTERID}.${LINODE_LISHUSERNAME}", "key": "${PUBLIC_KEY}")'
-	UPLOAD_RESULT_STATUS=$(curl -u ${GIT_USERNAME}:${GIT_TOKEN_PASSWORD} --data ${JSON} https://api.github.com/user/keys) | grep HTTP
-	echo ${UPLOAD_RESULT_STATUS}
+	local JSON="{\"title\": \"Ares at ${IPADDR} (${USER_USERNAME}:${LINODE_LISHUSERNAME})\", \"key\": \"${PUBLIC_KEY}\"}"
+	echo "Uploading key, JSON:\n ${JSON}"
+	KEY_UPL_RES=$(curl -u ${GIT_USERNAME}:${GIT_TOKEN_PASSWORD} --data "${JSON}" https://api.github.com/user/keys)
+	echo "${KEY_UPL_RES}"
 }
 
 # rn01_upload_rsakey %end%
@@ -261,11 +262,6 @@ user = $GIT_USERNAME
 token = $GIT_TOKEN_PASSWORD
 EOF
 			rn01_upload_rsakey
-					
-			if [[ "${UPLOAD_RESULT_STATUS}" = "200" ]]; then
-				echo "Key upload successful."
-			else
-				echo "Key upload failed, server returned Error ${UPLOAD_RESULT_STATUS}."
 				
 			fi
 			
@@ -324,13 +320,13 @@ rn01_print_install_summary () {
 	echo "Databases: ${INSTALL_DATABASES}"
 	echo "Additional kernels: ${JUPYTERHUB_KERNELS}" 
 	echo ""
-	echo "Key upload status: ${RSA_UPLOAD_STATUS}"
+	echo "Key upload status: ${KEY_UPL_RES}"
 	echo ""
 	echo "Make sure you attach your key by executing"
 	echo "	$ eval $(ssh-agent -s)"
 	echo "	$ ssh-add /home/${USER_USERNAME}/.ssh/id_rsa"
 	echo ""	
-}
+}		
 
 
 
