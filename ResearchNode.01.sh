@@ -149,15 +149,14 @@ rn01_create_user_and_usergroup () {
 #
 #	$ ssh-keygen -p -f ~/.ssh/id_rsa	
 #
-#
-# Uses the following UDFs:
-# $GIT_EMAIL			Git e-mail address
-# $USER_USERNAME		System user name
 
 rn01_create_rsakey () {
 	echo "Generating public key for ${GIT_EMAIL}..."
 	sudo mkdir /home/${USER_USERNAME}/.ssh/
-	ssh-keygen -t rsa -b 4096 -f /home/${USER_USERNAME}/.ssh/id_rsa -C "${GIT_EMAIL}" -q -P $USER_PASSWORD
+	ssh-keygen -t rsa -b 4096 -f /home/${USER_USERNAME}/.ssh/id_rsa -C "${GIT_EMAIL}" -q -P "${USER_PASSWORD}"
+	
+	echo "Successfully generated RSA key:"
+	echo $(cat /home/${USER_USERNAME}/.ssh/id_rsa)
 }
 
 # rn01_create_rsakey %end%
@@ -194,26 +193,25 @@ rn01_upload_rsakey () {
 # $GIT_EMAIL			E-mail of the user (git basic configuration)
 # $GIT_EDITOR			Preferred editor (default: vim)
 # $GIT_USERNAME			GitHub username (GitHub configuration)
-# $GIT_TOKEN_PASSWORD	Github Personal Access Token (GitHub configuration)
 #
-# Basic configuration requires ALL git basic configuration items to be set ($GIT_FULLNAME, $GIT_EMAIL).
-# GitHub key upload requires $GIT_USERNAME and $GIT_TOKEN_PASSWORD to be set in addition.
-#
+# Basic configuration requires ALL git basic configuration items to be set 
+# ($GIT_FULLNAME, $GIT_EMAIL).
 
 rn01_configure_git () {
 
 	if [[ -n ${GIT_FULLNAME} ]] && [[ -n ${GIT_EMAIL} ]]; then
+	
 		echo "------------------"
 		echo "Configuring git..."
 		echo "------------------"
 
 		cat << EOF > /tmp/template.gitconfig
 [user]
-		name = ${GIT_FULLNAME}
-		email = ${GIT_EMAIL}
-		username = ${GIT_USERNAME}
+		name = "${GIT_FULLNAME}"
+		email = "${GIT_EMAIL}"
+		username = "${GIT_USERNAME}"
 [core]
-		editor = ${GIT_EDITOR}
+		editor = "${GIT_EDITOR}"
 		whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
 		excludesfile = ~/.gitignore	
 [push]
@@ -247,32 +245,12 @@ rn01_configure_git () {
 
 EOF
 
-		# Create rsa-ssh key
-		#
-		rn01_create_rsakey
-
-		# Configure Github only if Github username and token have been provided
-		#
-		if [[ -n $GIT_USERNAME ]] && [[ -n $GIT_TOKEN_PASSWORD ]]; then
-			
-		
-			cat << EOF >> /tmp/template.gitconfig
+		if [[ -n $GIT_USERNAME ]] && [[ -n $GIT_TOKEN_PASSWORD ]]; then			cat << EOF >> /tmp/template.gitconfig
 [github]
 user = $GIT_USERNAME
 token = $GIT_TOKEN_PASSWORD
 EOF
-			rn01_upload_rsakey
-				
-			fi
-			
-		else
-		
-			echo "----------------------------------------------"
-			echo "git configured, but key could not be uploaded."
-			echo "----------------------------------------------"
-		
 		fi
-		
 
 		# Move template to key user .gitconfig if there's at least basic git configuration.
 		#

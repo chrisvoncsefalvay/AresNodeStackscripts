@@ -108,34 +108,19 @@ IRkernel::installspec(user = FALSE)
 EOF
 
 	R CMD BATCH /tmp/install_Rkernel.R /tmp/install_Rkernel.Rout
+	echo "Jupyterhub R kernel installation complete."
+	echo $(cat /tmp/install_Rkernel.Rout)
 
 }
 
 # rn05_install_kernel_R %end%
 
 
-
-# rn05_install_kernel_OCaml
-# -------------------------
-# Installs OCaml and an OCaml kernel to Jupyterhub
-
-rn05_install_kernel_Ocaml () {
-	sudo apt-get install -y ocaml-nox opam
-	opam init
-	opam install -y jupyter
-	opam install -y jupyter-archimedes
-	sudo jupyter kernelspec install --name ocaml-jupyter "$(opam config var share)/ocaml-jupyter"
-}
-
-# rn05_install_kernel_Ocaml %end%
-
-
-
 # rn05_install_kernel_Octave
 # --------------------------
 # Installs Octave and an Octave kernel to Jupyterhub
 
-# rn05_install_kernel_Octave () {
+rn05_install_kernel_Octave () {
 	sudo apt-get install -y octave
 	sudo pip3 install octave_kernel
 }
@@ -148,7 +133,7 @@ rn05_install_kernel_Ocaml () {
 # ------------------------
 # Installs a Bash kernel to Jupyterhub
 
-# rn05_install_kernel_Bash () {
+rn05_install_kernel_Bash () {
 	pip3 install bash_kernel
 	python3 -m bash_kernel.install
 }
@@ -161,7 +146,7 @@ rn05_install_kernel_Ocaml () {
 # ---------------------------
 # Installs a Clojure kernel to Jupyterhub
 
-# rn05_install_kernel_Clojure () {
+rn05_install_kernel_Clojure () {
 	cd /tmp
 	wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
 	sudo chmod a+x lein
@@ -242,6 +227,7 @@ rn05_install_kernel_MIT_Scheme () {
 	# Install MIT Scheme 9.2
 	cd /tmp/mit-scheme-9.2/src/
 	./configure
+	
 	make compile-microcode
 	sudo make install
 	

@@ -192,7 +192,7 @@ rn03_install_domain_General () {
 
 rn03_install_domain_ReproducibleResearch () {
 	sudo apt-get install -y texlive-full texlive-xetex 
-	_install_Rpkg rmarkdown knitr xtable brew ztable knitLatex bibtex RefManageR formattable rapport pander
+	_install_Rpkg rmarkdown knitr
 }
 
 # rn03_install_domain_ReproducibleResearch %end%
