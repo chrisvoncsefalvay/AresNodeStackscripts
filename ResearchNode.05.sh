@@ -120,8 +120,8 @@ EOF
 # rn05_install_kernel_Ocaml () {
 	sudo apt-get install -y ocaml-nox opam
 	opam init
-	opam install jupyter
-	opam install jupyter-archimedes
+	opam install -y jupyter
+	opam install -y jupyter-archimedes
 	sudo jupyter kernelspec install --name ocaml-jupyter "$(opam config var share)/ocaml-jupyter"
 }
 
