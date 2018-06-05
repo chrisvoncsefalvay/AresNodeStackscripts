@@ -177,7 +177,9 @@ rn01_upload_rsakey () {
 	local JSON="{\"title\": \"Ares at ${IPADDR} (${USER_USERNAME}:${LINODE_LISHUSERNAME})\", \"key\": \"${PUBLIC_KEY}\"}"
 	echo "Uploading key, JSON:\n ${JSON}"
 	KEY_UPL_RES=$(curl -u ${GIT_USERNAME}:${GIT_TOKEN_PASSWORD} --data "${JSON}" https://api.github.com/user/keys)
-	echo "${KEY_UPL_RES}"
+	echo ""
+	echo "Passing permissions on /home/${USER_USERNAME}/.ssh to user ${USER_USERNAME}:${USER_USERGROUP}..."
+	sudo chown -R "${USER_USERNAME}":"${USER_USERGROUP}" /home/"${USER_USERNAME}"/.ssh
 }
 
 # rn01_upload_rsakey %end%
@@ -264,8 +266,6 @@ EOF
 
 	fi
 }
-
-
 
 
 # rn01_print_install_summary
