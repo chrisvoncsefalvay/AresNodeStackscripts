@@ -112,7 +112,7 @@ rn04_configure_Jupyterhub () {
     echo "-------------------------------------"
 
     cat << EOF > /etc/jupyterhub/jupyterhub_config.py
-c.JupyterHub.ip = '$IPADDR'
+c.JupyterHub.ip = '0.0.0.0'
 c.JupyterHub.port = ${JUPYTERHUB_PORT}
 c.JupyterHub.hub_port = 8880
 c.JupyterHub.log_level = 10

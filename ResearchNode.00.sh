@@ -20,6 +20,7 @@
 # UDFs and user configuration
 #=============================================================
 
+# <UDF name="BOX_UID" label="Box unique identifier" default="AresAlpha" />
 # <UDF name="USER_USERNAME" label="User name" default="chris" />
 # <UDF name="USER_PASSWORD" label="User password" />
 # <UDF name="USER_USERGROUP" label="Authorisation usergroup" default="ares"/>
@@ -35,8 +36,6 @@
 # <UDF name="GIT_USERNAME" label="Github user name (leave empty to skip GitHub configuration)" default="chrisvoncsefalvay" />
 # <UDF name="GIT_TOKEN_PASSWORD" label="Github personal access token (leave empty to skip GitHub configuration)" default="" />
 # <UDF name="GIT_EDITOR" label="Preferred editor for Git operations" oneOf="vim,nano" default="vim" />
-
-
 
 # Ascertain IP address for future use
 IPADDR=$(/sbin/ifconfig eth0 | awk '/inet / { print $2 }' | sed 's/addr://')
@@ -71,10 +70,7 @@ if [[ -n ${PY_PACKAGES} ]]; then
 fi
 
 # Install R packages
-# if [[ -n ${R_PACKAGES} ]]; then
-#    rn03_selective_domain_installer ${R_PACKAGES}
-# fi
-
+rn03_install_core_R_packages
 
 
 #=============================================================
@@ -133,11 +129,11 @@ if [[ -n ${GIT_TOKEN_PASSWORD} ]]; then
     rn01_upload_rsakey
 fi
 
-# clear
+clear
 
 #=============================================================
 # Print installation summary
 #=============================================================
 
 # RN01._print_install_summary
-# rn01_print_install_summary
+rn01_print_install_summary
