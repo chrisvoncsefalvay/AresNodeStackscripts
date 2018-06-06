@@ -48,8 +48,8 @@ echo "Loaded subsidiary resource RN05.KERNELS.317564"
 # - MIT_Scheme
 
 rn05_selective_kernel_installer () {
-	set -e
-	set -u
+	set +e
+	set +u
 
 	touch /var/log/stackscript_rn05.log
 	
