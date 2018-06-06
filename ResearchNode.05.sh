@@ -106,7 +106,7 @@ rn05_install_kernel_JavaScript () {
 
 rn05_install_kernel_R () {
 	cat << EOF > /tmp/install_Rkernel.R
-install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest')
+install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest'))
 devtools::install_github('IRkernel/IRkernel')
 IRkernel::installspec(user = FALSE)
 EOF
