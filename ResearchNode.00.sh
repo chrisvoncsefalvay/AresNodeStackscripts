@@ -1,5 +1,12 @@
 #!/bin/bash
 
+set -e
+set -u
+
+USER_GROUPS=sudo
+
+exec &> /user/root/stackscript.log
+
 # ResearchNode installer
 #
 # PART 00*
@@ -105,7 +112,7 @@ source <ssinclude StackScriptID=317564>
 # SOURCE RN05
 
 if [[ -n ${JUPYTERHUB_KERNELS} ]]; then
-    rn05_selective_kernel_installer "${JUPYTERHUB_KERNELS}"
+    rn05_selective_kernel_installer ${JUPYTERHUB_KERNELS}
 fi
 
 

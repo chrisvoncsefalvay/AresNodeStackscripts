@@ -37,7 +37,7 @@ _update_apt () {
     sudo add-apt-repository -y 'deb http://cran.rstudio.com/bin/linux/ubuntu xenial/'
     sudo add-apt-repository -y "ppa:marutter/rrutter"
     sudo add-apt-repository -y "ppa:marutter/c2d4u"
-	
+	sudo add-apt-repository -y "ppa:chronitis/jupyter"
 
     # Update
     sudo apt-get update
@@ -51,15 +51,15 @@ _update_apt () {
 _install_basic_packages () {
     
     sudo apt-get install -y git-all git-flow
-    sudo apt-get install -y libxml2-dev wget autoremove libcurl3-dev libfreetype6-dev
+    sudo apt-get install -y libxml2-dev wget libcurl3-dev libfreetype6-dev
     sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
     sudo apt-get install -y checkinstall libreadline-gplv2-dev libncursesw5-dev 
     sudo apt-get install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
     sudo apt-get install -y libdb5.3-dev libexpat1-dev liblzma-dev libnlopt-dev
     sudo apt-get install -y libv8-dev libpango1.0-dev libmagic-dev libblas-dev
-    sudo apt-get install -y libtinfo-dev libzmq-dev libzmq3-dev libcairo2-dev
+    sudo apt-get install -y libtinfo-dev libcairo2-dev libzmq3-dev
     sudo apt-get install -y libtool libffi-dev autoconf pkg-config liblapack-dev
-
+	sudo apt-get autoremove
 }
 
 # _install_basic_packages %end%

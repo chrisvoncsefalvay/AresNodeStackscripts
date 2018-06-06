@@ -48,17 +48,18 @@ echo "Loaded subsidiary resource RN05.KERNELS.317564"
 # - MIT_Scheme
 
 rn05_selective_kernel_installer () {
+
+	touch /var/log/stackscript_rn05.log
+	
+
 	echo "---------------------------------------------"
 	echo "Installing selected Jupyter kernels..."
 	echo "---------------------------------------------"
 
-	sudo add-apt-repository -y ppa:chronitis/jupyter
-	sudo apt-get update
-
-	IFS=',' read -ra KERNEL <<< "$1"
+	IFS=',' read -ra KERNELS <<< "$1"
 	for i in "${KERNELS[@]}"; do	
 		echo "***** Installing ${i} kernel..."
-		rn02_install_kernel_${i}
+		rn05_install_kernel_${i}
 	done
 }
 
@@ -101,9 +102,7 @@ rn05_install_kernel_JavaScript () {
 rn05_install_kernel_R () {
 	cat << EOF > /tmp/install_Rkernel.R
 install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest')
-library(devtools)
 devtools::install_github('IRkernel/IRkernel')
-library(IRkernel)
 IRkernel::installspec(user = FALSE)
 EOF
 
@@ -233,7 +232,7 @@ rn05_install_kernel_MIT_Scheme () {
 	
 	# Install the kernel
 	cd /tmp/mit-scheme-kernel
-	export LD_LIBRARY_PATh=/usr/local/lib
+	export LD_LIBRARY_PATH=/usr/local/lib
 	make
 	sudo make install
 }
