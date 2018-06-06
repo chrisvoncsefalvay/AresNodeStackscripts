@@ -48,6 +48,8 @@ echo "Loaded subsidiary resource RN05.KERNELS.317564"
 # - MIT_Scheme
 
 rn05_selective_kernel_installer () {
+	set -e
+	set -u
 
 	touch /var/log/stackscript_rn05.log
 	
@@ -58,8 +60,11 @@ rn05_selective_kernel_installer () {
 
 	IFS=',' read -ra KERNELS <<< "$1"
 	for i in "${KERNELS[@]}"; do	
+		exec &>> /var/log/stackscript_rn05.log
+		
 		echo "***** Installing ${i} kernel..."
 		rn05_install_kernel_${i}
+		
 	done
 }
 
