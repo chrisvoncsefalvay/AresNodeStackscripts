@@ -37,10 +37,15 @@ _update_apt () {
     sudo add-apt-repository -y 'deb http://cran.rstudio.com/bin/linux/ubuntu xenial/'
     sudo add-apt-repository -y "ppa:marutter/rrutter"
     sudo add-apt-repository -y "ppa:marutter/c2d4u"
-	sudo add-apt-repository -y "ppa:chronitis/jupyter"
+    sudo add-apt-repository -y "ppa:chronitis/jupyter"
+    sudo add-apt-repository -y "ppa:ubuntugis/ppa"
+  
 
     # Update
     sudo apt-get update
+
+    # Update distro
+    sudo apt -y dist-upgrade
 
 }
 
@@ -50,7 +55,7 @@ _update_apt () {
 
 _install_basic_packages () {
     
-    sudo apt-get install -y git-all git-flow
+    sudo apt-get install -y apt-transport-https git-all git-flow
     sudo apt-get install -y libxml2-dev wget libcurl3-dev libfreetype6-dev
     sudo apt-get install -y swig build-essential cmake g++ gfortran libopenblas-dev
     sudo apt-get install -y checkinstall libreadline-gplv2-dev libncursesw5-dev 
@@ -59,7 +64,14 @@ _install_basic_packages () {
     sudo apt-get install -y libv8-dev libpango1.0-dev libmagic-dev libblas-dev
     sudo apt-get install -y libtinfo-dev libcairo2-dev libzmq3-dev
     sudo apt-get install -y libtool libffi-dev autoconf pkg-config liblapack-dev
-	sudo apt-get autoremove
+    sudo apt-get install -y libgtk2.0-dev pkg-config libdc1394-22 libdc1394-22-dev 
+    sudo apt-get install -y libtiff5-dev libjasper-dev libavcodec-dev libavformat-dev 
+    sudo apt-get install -y libswscale-dev libxine2-dev libgstreamer0.10-dev 
+    sudo apt-get install -y libgstreamer-plugins-base0.10-dev libv4l-dev libtbb-dev 
+    sudo apt-get install -y libqt4-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev 
+    sudo apt-get install -y libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev 
+    sudo apt-get install -y x264 v4l-utils
+    sudo apt-get autoremove
 }
 
 # _install_basic_packages %end%
@@ -109,10 +121,10 @@ _install_node () {
     echo "Installing NodeJS..."
     echo "--------------------"
 
+        
     curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
     sudo apt-get install -y nodejs
     sudo apt-get install -y yarn
-
 }
 
 # _install_node %end%
@@ -313,6 +325,7 @@ echo "Updating system and installing the good stuff..."
 echo "-------------------------------------------------------------"
 
 sudo apt-get update
+sudo apt-get install -y apt-transport-https
 sudo apt-get install -y software-properties-common build-essential
 sudo apt-get install -y python-software-properties python3-software-properties
 sudo apt-get install -y git
@@ -333,4 +346,3 @@ _install_zmq
     
 echo "Setting up NodeJS..."
 _install_node
-

@@ -1,11 +1,7 @@
 #!/bin/bash
 
-set -e
-set -u
-
-USER_GROUPS=sudo
-
-exec &> /user/root/stackscript.log
+set +e
+set +u
 
 # ResearchNode installer
 #
@@ -31,13 +27,13 @@ exec &> /user/root/stackscript.log
 # <UDF name="USER_USERNAME" label="User name" default="chris" />
 # <UDF name="USER_PASSWORD" label="User password" />
 # <UDF name="USER_USERGROUP" label="Authorisation usergroup" default="ares"/>
-# <UDF name="PY_PACKAGES" label="Python packages to install" manyOf="GeneralScience,MachineLearning,NLP,NLPCorpora,Bioinformatics,GIS,DataVisualisation" default="GeneralScience,DataVisualisation,OpenCV" />
+# <UDF name="PYTHON_VER" label="Python version (NB.: OpenCV is not available for Python 3.7.0)" oneOf="3.5.3,3.5.4,3.6.5,3.6.6rc1,3.7.0" default="3.7.0" />
 # <UDF name="RSTUDIO_PORT" label="RStudio port" default="9999" />
 # <UDF name="RSTUDIO_VER" label="RStudio version" oneOf="1.2.679,1.1.453," default="1.2.679" />
-# <UDF name="SHINY_VER" label="Shiny server version" oneOf="None,1.5.7.907" default="None" />
 # <UDF name="JUPYTERHUB_PORT" label="Jupyterhub port" default="8888" />
 # <UDF name="JUPYTERHUB_VER" label="Jupyterhub version" oneOf="0.9.0b3,0.9.0b2,0.9.0b1,0.8.1,0.8.0,0.7.2" default="0.9.0b3" />
-# <UDF name="JUPYTERHUB_KERNELS" label="Additional kernels for JupyterHub" manyOf="Ruby,JavaScript,R,Octave,Bash,Clojure,AIML,ARMv6THUMB,MIT_Scheme" default="R,Bash,Octave,AIML" />
+# <UDF name="JUPYTERHUB_KERNELS" label="Additional kernels for JupyterHub" manyOf="Ruby,JavaScript,R,Octave,Bash,JavaScript,Haskell,Julia,Clojure,AIML,ARMv6THUMB,MIT_Scheme" default="R,Bash,Octave,AIML" />
+# <UDF name="JUPYTERHUB_THEME" label="JupyterHub theme" oneOf="default,chesterish,grade3,gruvboxd,gruvboxl,monokai,oceans16,onedork,solarizedd,solarizedl" default="default" />
 # <UDF name="GIT_FULLNAME" label="Full name (for Git) (leave empty to skip Git configuration)" default="Chris von Csefalvay" />
 # <UDF name="GIT_EMAIL" label="Git e-mail (leave empty to skip Git configuration)" default="chris@chrisvoncsefalvay.com" />
 # <UDF name="GIT_USERNAME" label="Github user name (leave empty to skip GitHub configuration)" default="chrisvoncsefalvay" />
@@ -70,11 +66,6 @@ source <ssinclude StackScriptID=317342>
 # SOURCE RN03                     V
 source <ssinclude StackScriptID=317343>
 # SOURCE RN03                     A
-
-# Install Python packages
-if [[ -n ${PY_PACKAGES} ]]; then
-    rn02_selective_domain_installer ${PY_PACKAGES}
-fi
 
 # Install R packages
 rn03_install_core_R_packages

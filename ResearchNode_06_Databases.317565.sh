@@ -137,4 +137,3 @@ rn06_install_db_Postgresql () {
 }
 
 # rn06_install_db_Postgresql %end%
-

@@ -48,11 +48,7 @@ echo "Loaded subsidiary resource RN05.KERNELS.317564"
 # - MIT_Scheme
 
 rn05_selective_kernel_installer () {
-	set +e
-	set +u
 
-	touch /var/log/stackscript_rn05.log
-	
 
 	echo "---------------------------------------------"
 	echo "Installing selected Jupyter kernels..."
@@ -60,7 +56,6 @@ rn05_selective_kernel_installer () {
 
 	IFS=',' read -ra KERNELS <<< "$1"
 	for i in "${KERNELS[@]}"; do	
-		exec &>> /var/log/stackscript_rn05.log
 		
 		echo "***** Installing ${i} kernel..."
 		rn05_install_kernel_${i}
@@ -79,8 +74,7 @@ rn05_selective_kernel_installer () {
 rn05_install_kernel_Ruby () {
 	sudo apt-get install -y ruby ruby-dev
 	gem install cztop iruby
-	iruby register --force
-	
+	jupyter kernelspec install /root/.ipython/kernels/ruby
 }
 
 # rn05_install_kernel_Ruby %end%
@@ -92,8 +86,19 @@ rn05_install_kernel_Ruby () {
 # Installs a JavaScript kernel based on node.
 
 rn05_install_kernel_JavaScript () {
-	sudo npm install -g ijavascript
-	ijsinstall
+    sudo apt install -y ijavascript
+}
+
+# rn05_install_kernel_JavaScript %end%
+
+
+# rn05_install_kernel_Julia
+# -------------------------
+# Installs a Julia kernel.
+
+
+rn05_install_kernel_Julia () {
+    sudo apt install -y ijulia
 }
 
 # rn05_install_kernel_JavaScript %end%
@@ -105,16 +110,7 @@ rn05_install_kernel_JavaScript () {
 # Installs an R kernel. This assumes a recent R is installed!
 
 rn05_install_kernel_R () {
-	cat << EOF > /tmp/install_Rkernel.R
-install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest'))
-devtools::install_github('IRkernel/IRkernel')
-IRkernel::installspec(user = FALSE)
-EOF
-
-	R CMD BATCH /tmp/install_Rkernel.R /tmp/install_Rkernel.Rout
-	echo "Jupyterhub R kernel installation complete."
-	echo $(cat /tmp/install_Rkernel.Rout)
-
+    sudo apt-get -y install irkernel
 }
 
 # rn05_install_kernel_R %end%
@@ -196,21 +192,10 @@ rn05_install_kernel_ARMv6THUMB () {
 # rn05_install_kernel_Haskell
 # ---------------------------
 # Installs ghc and Haskell kernel
-#
-# Currently BROKEN due to STACK failure
 
-#rn05_install_kernel_Haskell () {
-#	sudo apt-get install -y haskell-platform haskell-stacks
-#	cd /tmp
-#	git clone https://github.com/gibiansky/IHaskell
-#	cd IHaskell
-#	pip3 install -r requirements.txt
-#	stack install gtk2hs-buildtools
-#	stack install --fast
-#	ihaskell install --stack
-# }
-
-# rn05_install_kernel_Haskell %end%
+rn05_install_kernel_Haskell () {
+    sudo apt-get install -y haskell-ipython-kernel
+}
 
 
 

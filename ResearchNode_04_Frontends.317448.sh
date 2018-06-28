@@ -42,6 +42,8 @@ rn04_install_RStudio () {
 
 	sudo gdebi -n /tmp/rstudio-${RSTUDIO_VER}-amd64.deb
 	sudo rm /tmp/rstudio-${RSTUDIO_VER}-amd64.deb
+
+        rstudio-server restart
 }
 
 # rn04_create_RStudio_config
@@ -63,7 +65,6 @@ EOF
 	cat << EOF > /etc/rstudio/rsession.conf
 r-cran-repos=https://cloud.r-project-org/
 EOF
-
 }
 
 # rn04_configure_RStudio %end%
@@ -80,14 +81,23 @@ rn04_install_Jupyterhub () {
 	echo "Installing JupyterHub ${JUPYTERHUB_VER}..."
 	echo "-----------------------------"
 
+        sudo apt-get install apt-transport-https
+        curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+        sudo apt-get -y update
+
 	npm install -g configurable-http-proxy
 	sudo pip3 install jupyterhub==${JUPYTERHUB_VER} sudospawner
 	sudo pip3 install --upgrade notebook
 	sudo pip3 install jupyterthemes 
+	sudo chmod a+rwx /tmp/yacctab.py
 	
 	# Set notebook theme
-	jt -t solarizedl
+        if [ $JUPYTERHUB_THEME != "default" ]; then
+		jt -t ${JUPYTERHUB_THEME} -T -N
+	fi
 	
+        sudo pip3 install ipywidgets
+        jupyter nbextension enable --py --sys-prefix widgetsnbextension
 	sudo pip3 install jupyter_contrib_nbextensions
 	sudo jupyter contrib nbextension install --system
 }
@@ -104,6 +114,7 @@ rn04_configure_Jupyterhub () {
 	echo "------------------------------------"
 
 	sudo mkdir /etc/jupyterhub
+        curl https://raw.githubusercontent.com/chrisvoncsefalvay/AresNodeStackscripts/master/logo.png -o /etc/jupyterhub/logo.png
 	sudo mkdir /usr/local/jupyterhub
 	sudo jupyterhub --generate-config -f /etc/jupyterhub/jupyterhub_config.py
 
@@ -116,7 +127,10 @@ c.JupyterHub.ip = '0.0.0.0'
 c.JupyterHub.port = ${JUPYTERHUB_PORT}
 c.JupyterHub.hub_port = 8880
 c.JupyterHub.log_level = 10
+c.JupyterHub.logo_file = '/etc/jupyterhub/logo.png'
 c.JupyterHub.pid_file = '/var/run/jupyterhub.pid'
+c.JupyterHub.cleanup_proxy = True
+c.JupytreHub.cleanup_servers = True
 c.Authenticator.admin_users = {'${USER_USERNAME}'}
 c.JupyterHub.db_url = 'sqlite:////usr/local/jupyterhub/jupyterhub.sqlite'
 c.JupyterHub.extra_log_file = '/var/log/jupyterhub.log'
@@ -124,6 +138,7 @@ c.JupyterHub.spawner_class = 'sudospawner.SudoSpawner'
 c.Spawner.cmd = '/usr/local/bin/sudospawner'
 c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
 c.SudoSpawner.debug_mediator = True
+
 EOF
 
 	sudo jupyterhub upgrade-db
@@ -153,6 +168,5 @@ EOF
     sudo chmod a+x /usr/lib/systemd/system/jupyterhub.service
     sudo systemctl enable jupyterhub
     sudo systemctl daemon-reload
+    sudo service jupyterhub restart
 }
-
-
